@@ -1,0 +1,25 @@
+Resource | Creating RC and RA formulas
+RC queries -- A RC query typically looks like the following, with four parts:
+
+{ outputs | EXISTS variables (A(a) AND B(b) AND conditions) }
+
+Output attributes
+Existential quantification of variables for other relations -- however, some problems require other forms of quantification
+Relating the variables to their relations
+Conditions
+RC does not distinguish join conditions from filter conditions, and it does not even clearly indicate any joins.
+
+RA queries -- Writing these is generally more difficult.  It requires distinguishing join conditions from filter conditions.  More importantly, it requires putting the operations in an appropriate order.  It is often easiest to build an RA query from the inside out, i.e., starting with operations on the raw relations, then operations on these results, operations on those results, and so on.
+
+For RA queries especially, writing them as one big formula can be unwieldy.  Is it often better to break them down into parts, assigning variables to subformulas, then using those variables in other formulas.
+
+ 
+
+For a first draft, develop the RC and RA queries by hand.  It's by far the easiest way to make changes as you solve the problem.
+
+For a final version, there are several options.
+
+Writing by hand (neatly!) is the simplest option.  Then scan your formula.
+The equation editor in Google Docs, Microsoft Word, or Apple Keynote (all have the same equation editor) is easy to learn.  However, its button-based interface is slow to use and hard to edit in.  Also, it is not very good as formatting long equations that need to be broken into multiple lines.
+LaTeX produces the best layout.  It has a steep learning curve, but is not to hard to use once you figure it out.
+For some exercises and assignments, you'll write RC and RA queries within a Jupyter Notebook.  You can write MathJax embedded within Markdown text.  MathJax resembles LaTeX.
