@@ -1,0 +1,13 @@
+Here is a longer "roadmap" for this content.
+
+During client meetings, the client should tell you about data constraints.  As a working example, the client says that each employee has a unique ID for looking up their info, and that salary equality is enforced in that everyone with the same position and years of service gets the same salary.  You translate these into two functional dependences:
+
+emp_id -> first_name last_name address position years_of_service
+position years_of_service -> salary
+We will introduce theoretical machinery that will allow us to use these functional dependences.  In particular, both functional dependence implications and functional dependence closures will allow us to see what else is implied from our existing knowledge.  In our example, among what we would learn are the following:
+
+emp_id -> first_name last_name       (an obvious simplification)
+emp_id -> salary                                 (combining the two above)
+In more complex systems, this can expose non-obvious dependencies in our data.
+
+We use this machinery to describe desirable properties of database designs, including normal forms (ways of structuring our relations to enforce some desirable properties) and normalization algorithms to convert our relations into these normal forms.

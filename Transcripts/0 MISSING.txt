@@ -1,0 +1,12 @@
+Lecture 4 | ERD Design Choices, Addresses (2:18)
+Lecture 5 | ERD Design Choices, Visits (8:49)
+Lecture 6 | ERD Design Choices, Purchases (8:10)
+Lecture 4 | Functional Dependence Implication
+Lecture 2 | Set Membership
+Lecture 3 | Joins Special Cases
+Lecture 3 | Schedules
+Lecture 5 | Conflict graph
+5.1 Lecture 3 | Finding data
+5.4 Lecture 4 | Don't block optimization
+6.2 Lecture 1 | NoSQL overview
+6.5 Lecture 2 | Neo4J data
