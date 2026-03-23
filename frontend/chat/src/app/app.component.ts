@@ -1,0 +1,78 @@
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { HttpClient } from '@angular/common/http';
+import { CardModule } from 'primeng/card';
+import { ButtonModule } from 'primeng/button';
+import { InputTextModule } from 'primeng/inputtext';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+import { TagModule } from 'primeng/tag';
+
+interface Message {
+    role: 'user' | 'assistant';
+    content: string;
+    sources?: string[];
+}
+
+@Component({
+    selector: 'app-root',
+    standalone: true,
+    imports: [
+        CommonModule,
+        FormsModule,
+        CardModule,
+        ButtonModule,
+        InputTextModule,
+        ProgressSpinnerModule,
+        TagModule
+    ],
+    templateUrl: './app.component.html',
+    styleUrl: './app.component.css'
+})
+export class AppComponent {
+    messages: Message[] = [];
+    question: string = '';
+    loading: boolean = false;
+
+    constructor(private http: HttpClient) {}
+
+    ask() {
+        if (!this.question.trim() || this.loading) return;
+
+        const userMessage: Message = {
+            role: 'user',
+            content: this.question
+        };
+
+        this.messages.push(userMessage);
+        const currentQuestion = this.question;
+        this.question = '';
+        this.loading = true;
+
+        this.http.post<{ answer: string, sources: string[] }>(
+            'http://localhost:8000/query',
+            { question: currentQuestion }
+        ).subscribe({
+            next: (response) => {
+                this.messages.push({
+                    role: 'assistant',
+                    content: response.answer,
+                    sources: response.sources
+                });
+                this.loading = false;
+            },
+            error: (err) => {
+                this.messages.push({
+                    role: 'assistant',
+                    content: 'Something went wrong. Please try again.',
+                    sources: []
+                });
+                this.loading = false;
+            }
+        });
+    }
+
+    onEnter(event: KeyboardEvent) {
+        if (event.key === 'Enter') this.ask();
+    }
+}
