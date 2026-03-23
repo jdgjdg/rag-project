@@ -1,21 +1,5 @@
 from chain import build_chain
 from retriever import get_retriever, load_vectordb, get_sources
-
-
-def ask(question: str) -> None:
-    """
-    Runs a question through the RAG chain and prints the answer and sources.
-    """
-    
-    vectordb = load_vectordb()
-    retriever = get_retriever(vectordb)
-    chain = build_chain(retriever)
-    
-    answer = chain.invoke(question)
-    print(f"\nQ: {question}")
-    print(f"\nA: {answer}")
-    get_sources(retriever, question)
-
 import time
 
 def ask_with_retry(question: str) -> None:
