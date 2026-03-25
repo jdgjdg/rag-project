@@ -16,7 +16,10 @@ CHUNK_OVERLAP = 200
 # ── Retrieval ──────────────────────────────────────────────────────────────
 TOP_K = 6
 
+# ── Query Splitting ──────────────────────────────────────────────────────────────
+NUMBER_OF_QUERIES = 3
+
 # ── Models ─────────────────────────────────────────────────────────────────
 EMBEDDING_MODEL = "gemini-embedding-001"
-LLM_MODEL       = "models/gemini-2.0-flash-001"
+LLM_MODEL       = "models/gemini-2.5-flash"
 LLM_TEMPERATURE = 0.2
