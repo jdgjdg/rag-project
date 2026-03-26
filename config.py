@@ -17,7 +17,7 @@ CHUNK_OVERLAP = 200
 TOP_K = 6
 
 # ── Query Splitting ──────────────────────────────────────────────────────────────
-NUMBER_OF_QUERIES = 3
+NUMBER_OF_QUERIES = 1
 
 # ── Models ─────────────────────────────────────────────────────────────────
 EMBEDDING_MODEL = "gemini-embedding-001"

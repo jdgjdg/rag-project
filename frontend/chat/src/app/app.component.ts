@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -36,6 +36,14 @@ export class AppComponent {
 
     constructor(private http: HttpClient) {}
 
+    @ViewChild('scrollAnchor') scrollAnchor!: ElementRef;
+
+    scrollToBottom() {
+        setTimeout(() => {
+            this.scrollAnchor.nativeElement.scrollIntoView({ behavior: 'smooth' });
+        }, 50);
+    }
+
     ask() {
         if (!this.question.trim() || this.loading) return;
 
@@ -45,6 +53,7 @@ export class AppComponent {
         };
 
         this.messages.push(userMessage);
+        this.scrollToBottom();
         const currentQuestion = this.question;
         this.question = '';
         this.loading = true;
@@ -60,6 +69,7 @@ export class AppComponent {
                     sources: response.sources
                 });
                 this.loading = false;
+                this.scrollToBottom();
             },
             error: (err) => {
                 this.messages.push({
