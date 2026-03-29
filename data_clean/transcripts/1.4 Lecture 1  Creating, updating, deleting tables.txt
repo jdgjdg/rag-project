@@ -1,0 +1,68 @@
+# CRUD Operations: Creating, Updating, and Deleting Tables
+
+We're going to turn to our CRUD operations. Remember, the R is reading; this is really the queries we've been looking at previously. Now we're going to focus on the other three: creating, updating, and deleting. Specifically, in this video, we're going to focus on the tables themselves, the table structure. Later, we'll look at the data and how we specify the data in the table. This time, we're going to focus on how we're creating the tables, as that's the point of this video. We will step through the mechanics and see each piece in turn.
+
+# Mechanics of Table Creation
+
+This is just about the mechanics of how to create the syntax. Later, we'll worry about what your tables should look like in the first place.
+
+# Dropping Tables
+
+The first step in this process is dropping the tables. What we are really doing is saying, "Please create a blank slate for me." This gets rid of any previous versions of these tables because we don't want them to interfere with what we're about to define. Dropping before creating is standard practice.
+
+Specifically, I'm going to use this phrasing: `DROP TABLE IF EXISTS`. If a table doesn't exist, we can't drop it. If I try to drop it when it doesn't exist, it will give us an error.
+
+Furthermore, I will use the keyword `CASCADE` here to say not only drop this table but any other tables that depend on it. Because once I get rid of this definition, those dependent definitions don't make any sense anymore. One thing `CASCADE` allows me to do is not worry about which of the tables I'm about to define depends upon which, or in which order I should be dropping them. It allows me to just say `DROP TABLE IF EXISTS this_one CASCADE`. This might get rid of just this table, or it might get rid of all the tables I'm about to define. `CASCADE` means I don't want to worry about it; get rid of everything that depends upon it. I will do that here.
+
+In previous videos, we used the `manufacturer` and `product` tables. I have now dropped those tables. When I say "drop those tables," it means they no longer exist. The names `manufacturer` and `product` are no longer known.
+
+# Creating Tables with Constraints (First Version)
+
+Now that we have essentially a blank slate, we want to create the tables we're about to use. Here is a way of specifying the `manufacturer` and `product` tables that we've been working with.
+
+We will look at two versions of these definitions. There are many other ways and places to put particular keywords, and we will not look at all the variants. This is my preferred form, and what we will focus on.
+
+In each of these, we create the table, specify its name, and then in parentheses, we specify not only the attributes and their types but also the relevant constraints.
+
+Notice the ordering of these two `CREATE TABLE` definitions: `product` refers to the `manufacturer` definition, so we need to define `manufacturer` first.
+
+In each table definition, you first have the attributes along with their types. The type `VARCHAR` is standard, meaning basically a string of unspecified length. As an aside, `VARCHAR` by itself is a PostgreSQL-specific feature. It is not in all versions of SQL. In many versions of SQL, you must specify a maximum length for `VARCHAR`; in PostgreSQL, you do not have to, and it is common not to.
+
+These are separated by commas. Note: Many of us are used to using semicolons to separate these, which is a common mistake.
+
+I can specify a default value. For example, I am specifying here that the two-character state will default to `TX` if no value is provided.
+
+Then I can specify other constraints. Here, I've provided a `PRIMARY KEY`. That is a list of attributes in parentheses. Remember, a primary key can be multiple attributes, so we group those by parentheses.
+
+I also have another key here, a candidate key, that I will specify as being `UNIQUE`: the combination of `man_address`, `man_city`, and `man_state`. That key is a complicated key of three attributes.
+
+In `product`, we have a similar definition. `MONEY` is one of the built-in types in PostgreSQL and some other versions of SQL. We have a `PRIMARY KEY`, and here we have our `FOREIGN KEY`. Here, we specify that this attribute (or more generally, an attribute set) refers to or references this attribute set in this table. This is why I need the definition of `manufacturer` before the definition of `product`.
+
+Finally, I have another constraint here: a general `CHECK` constraint specifying that the `prod_price` has to be non-negative.
+
+I will run that, and it acknowledges that those are done.
+
+# Creating Tables and Adding Constraints Later (Second Version)
+
+We will do it a second time and differently, just to illustrate some alternative options.
+
+We will start off again with the same drops. We definitely have tables called `product` and `manufacturer`, so I need to get rid of them because I am going to define them again.
+
+Now I am going to create, but in this version, I will do the creation without any constraints in the table definitions. One consequence of that is that I no longer have dependencies between the two `CREATE` definitions. So I just have `product` and `manufacturer`. In fact, I've listed them in the opposite order just to show that I can. All I have listed here are the attributes and their types.
+
+That's not to say that I don't want the constraints. What I will do now is define the constraints after the fact and say that I want to change those table definitions to add the constraints. Note that I could also change the table definitions to do other things, such as adding more attributes, deleting attributes, or changing types on the attributes. But in this case, I've only left out the constraints as something to do.
+
+We will do that here. You can see first I have `ALTER TABLE manufacturer`. I want to change the `manufacturer` table. How do I want to change it? I want to do three things:
+1.  Alter one of the columns, adding the default.
+2.  Add a primary key.
+3.  Add a candidate key.
+
+For changing the `product` table, just to show some variety, I am choosing a slightly different syntax for adding the constraints. The difference here is that I'm going to name these constraints. An advantage of naming the constraints is that later on, you can do things like delete the constraints, and there are some other advantages as well.
+
+I am going to alter the `product` table and do three things to it. I will add a constraint and give it the name `pk_product`, and it's a primary key. Similarly with the other constraints. What I have added relative to the previous version is the word `CONSTRAINT` and a name for the constraint for each one of these. I also have some reasonable naming scheme for those.
+
+I can execute that, and it's complete.
+
+# Next Steps
+
+Here, we've focused on defining and changing table definitions. What we still need to look at is how to deal with the data: how do we get data into the table and be able to change it?

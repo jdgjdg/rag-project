@@ -1,0 +1,34 @@
+### Memory Hierarchy Overview
+This module focuses on the cost of query execution, specifically the costs associated with accessing data. To understand these costs, it is helpful to examine the underlying memory hierarchy. While we will not delve into deep implementation details, we will review the broad issues inherent in a memory hierarchy.
+
+A memory hierarchy can be visualized as a pyramid. At the top, we have the CPU and its registers. Registers are located at the heart of the CPU; they store very little information, but they are extremely fast. As we move down the hierarchy, storage capacity increases, but access times become longer. In the middle of this hierarchy, we have main memory, followed by secondary storage, such as hard disk drives or solid-state drives. 
+
+As we move further away from the CPU, the cost per bit decreases. Conversely, as we move closer to the CPU, costs increase because we are using more expensive technology, which is also limited by physical space on the chip. Because of these varying technologies, we must leverage faster technology when possible and utilize larger, slower storage when necessary.
+
+### The Memory Map and Caching
+Both memory and secondary storage can be viewed as a large sequence of storage space ranging from zero to a maximum value, known as the memory map. While we can visualize each memory location as a single bit, we typically treat memory and disk storage as word-addressed, where each location holds a word-sized entity (e.g., 32 or 64 bits).
+
+To optimize performance, we use caching to take advantage of faster, smaller storage. When performing a read operation, the system first checks if the memory address is stored in the cache. If it is, the value is returned immediately. If it is not, the system must load the memory block from main memory into the cache. Because the cache is smaller, this often requires replacing an existing block. 
+
+When loading data, we load a memory block rather than a single location to take advantage of two types of locality:
+*   **Temporal Locality:** The principle that if a memory location is accessed now, it is likely to be accessed again in the near future (e.g., loops or common data values).
+*   **Spatial Locality:** The principle that if a memory location is accessed, nearby locations are likely to be accessed in the near future (e.g., sequential access of data or instructions).
+
+### Main Memory Management
+Main memory management involves several challenges. First, multiple users and programs often run simultaneously, requiring the system to track which memory belongs to which user or process. Furthermore, because databases often contain more data than can fit in physical memory at once, secondary storage must serve as a backup.
+
+Operating systems manage these issues through virtual memory. Database management systems, however, can often perform better by anticipating which tables and indices will be needed next. In PostgreSQL, this is handled via "shared buffers," though other database management systems use similar approaches to solve these fundamental problems:
+1.  **Ownership and Sharing:** Each physical memory block is labeled to identify its owner, allowing the system to keep memory blocks organized. This also allows multiple users to share memory blocks when accessing the same data.
+2.  **Caching:** Since physical memory cannot store everything, we treat the disk as the primary storage and use physical memory as a cache for that data. This is a software-implemented version of the hardware caching concept.
+
+### Disk Access and Performance
+A hard drive consists of multiple platters with an arm and a read head. The arm moves to specific tracks (circles on the disk), and the disk spins to bring the target location under the head. Access time is determined by the time required for the arm to seek the correct track and the time required for the disk to rotate to the correct position.
+
+Performance varies significantly based on the storage medium:
+*   **Memory:** Reading a megabyte is relatively quick.
+*   **Flash/Solid State Drive:** Reading is slower than memory.
+*   **Disk Seek:** Finding the correct location on a disk is a significant jump in time, as disks are relatively slow.
+*   **Sequential Disk Read:** Reading a megabyte sequentially is roughly equivalent to the time spent seeking the data.
+*   **Network:** Accessing data over a network is even more expensive, depending on the network type and distance.
+
+The primary takeaway is that one must understand database implementation sufficiently to limit disk access and avoid network access whenever possible.

@@ -1,0 +1,30 @@
+### Optimizing Query Operations by Combining Operators
+
+Previously, I outlined the idea that one way to optimize two operations communicating data to each other is to simply combine the operations. We will use an example query plan to illustrate this, specifically focusing on a filter feeding into a nested join. This is a primary example of when we can combine operations. We will illustrate this repeatedly using the nested join.
+
+As a reminder, here is the pseudocode for implementing a nested join:
+1. Loop through all tuples in one source, R.
+2. Loop through the other source, S.
+3. Perform the check for the join operation (written here as an equality).
+4. Yield the result if it meets the desired output criteria.
+
+### Combining Filter and Project Operations
+
+We can combine filters and projections with other operations. For these examples, I will focus on filtering and combining it with a simple nested join.
+
+#### Filter as a Child
+We can combine a filter with its parent, where the filter is the child and the join is the parent. In this scenario, the filter acts as one of the sources of data for the join (either R or S). Effectively, we add a condition to the join logic: if the test on the tuple from R or S passes, we keep it and proceed.
+
+#### Filter as a Parent
+We can also combine a filter with a nested join when the filter is the parent and the nested join is the child. In this case, before yielding the output of the nested join, we perform a test on the result. If the test passes, we then yield the result. Adding a filter condition into these operations is straightforward; it simply requires inserting a conditional statement.
+
+#### Projection
+A projection involves working with a subset of attributes of a particular tuple rather than all of them. We can combine projections by discarding unnecessary attributes and only utilizing the required ones within the operation.
+
+### Combining Scans with Parent Operations
+
+Consider the naive view of integrating data from operation to operation: after the child operation is finished, the system saves all data to disk, and the parent operation reads it from the disk as needed. 
+
+If the child operation is a scan—the purpose of which is to read data from the disk—it is inefficient to immediately save that data back to the disk so the next operation can read it again. Instead, we eliminate the scan as a separate operation and allow the parent to read the data directly from the original table as needed.
+
+By combining these simpler operations into more complicated ones, such as joins, we can execute them as single operations. When you eventually view query plans in Postgres, you will see that the system performs these combinations extensively.

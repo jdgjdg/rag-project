@@ -1,0 +1,17 @@
+### MongoDB Indexing Overview
+
+Since we have established the importance of indices to database performance, let us examine how MongoDB handles them. The general principles are straightforward and very similar to what we have seen with relational databases. MongoDB supports multiple types of indices, specifically B-trees and hashes, which are the most common types. Indices can be created on either single or multiple fields at a time, as previously discussed.
+
+### Default and Custom Indices
+
+There is automatically a unique index created on the `_id` field, which is consistent with many relational databases. We do not need to build an index for that field, but we can create additional indices. 
+
+To create an index on a single field, such as `prod_name`, you specify the field and the sort order. For example, to create an index in ascending order while enforcing a unique constraint, you would set `unique` to `true`. This ensures that every document has a unique value for `prod_name` and that the value exists. The system then returns the name of the newly created index.
+
+### Inspecting Indices
+
+You can retrieve information on all existing indices. In this scenario, there are two indices:
+1. The default index on the `_id` field, which identifies the `_id` field as the key and lists the namespace as `rice_db.products`.
+2. The new index on `prod_name`. The value `1` indicates an ascending sort order. The `unique` attribute is set to `true`.
+
+In relational databases, you specify a unique constraint using SQL. In MongoDB, you achieve this by including the unique parameter within the index definition. The implementation then checks and verifies uniqueness. Otherwise, this is a standard B-tree index.

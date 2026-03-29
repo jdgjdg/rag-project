@@ -1,0 +1,19 @@
+### Overview of Online Analytical Processing and Data Warehouses
+
+At the beginning of this course, I introduced the distinction between transactional processing and analytical processing. While we have focused on transactional processing for the bulk of the course, we will now turn our attention to analytical processing.
+
+#### Distinctions Between Transactional and Analytical Processing
+
+The key distinctions lie in how these systems are used. Transactional processing involves both reading and writing data. In contrast, analytical processing is primarily about reading data to perform analysis. There is very little, if any, writing involved, and typically, writes occur as periodic updates to the entire collection of data. For example, a business might perform a quarterly refresh to incorporate the last quarter's worth of data for analysis.
+
+Furthermore, transactional databases do not anticipate what the queries will be; they do not optimize for specific queries. Conversely, analytical databases work with predetermined queries. We design the database to satisfy and optimize the specific queries we are interested in.
+
+#### The Relationship Between Transactional Systems and Data Warehouses
+
+A business will often use a transactional system in combination with an analytical system. The transactional system supports the day-to-day business needs and processes, utilizing a transactional database. Data is extracted from this database—and potentially other sources—to be placed into a data warehouse. This data may include all business data, transactions, and metadata. From the data warehouse, we perform our analysis, which can then inform business strategy, effectively closing the loop.
+
+Looking at this relationship another way, transactional databases and other data sources go through an extract, transform, and load (ETL) stage to move data into a warehouse. All of this data is combined and manipulated into a form that is then served to different kinds of users.
+
+#### OLAP Databases and Future Topics
+
+Revisiting the diagram from the beginning of the course, we see that Online Analytical Processing (OLAP) style databases can either be standalone or incorporated with a transactional component. We will dive deeper into how to use OLAP-style databases and data warehouses in upcoming videos.

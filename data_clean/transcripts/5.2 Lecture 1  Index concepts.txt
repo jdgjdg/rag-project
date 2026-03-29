@@ -1,0 +1,31 @@
+### Introduction to Database Indices
+Before we get to specific implementations of indices, I want to go over some of the basic concepts and ideas behind them. Indices are one of the most important factors behind database performance. An index is simply a data structure that maps from a search key—which is a set of attribute values—to tuple references, such as a disk or memory location where those tuples are stored. 
+
+For example, consider an index represented as a table. If our search key is the "Product Manufacturer," we can use the index to find the references to tuples that include specific values, such as "Gizmo Works."
+
+### Index Operations and Search Keys
+The basic operations we want to support on an index are searching, inserting, and deleting. Because inserts and deletes can lead to fragmentation in our indices, it is better to perform these operations in bulk, as doing multiple operations at the same time reduces fragmentation.
+
+The search key is simply a set of attributes that we are looking for. While it is frequently the primary key, this is not required, and the set is often just a single attribute. If the search key is a key, the index maps the value to a single location because the key is unique. Otherwise, each index can map to multiple locations.
+
+### Primary vs. Secondary Indices
+A primary index, also known as a clustered index, is determined by the storage order of the data. We are essentially sorting the data based on a set of attributes, typically the primary key. This is not a separate data structure; it is simply the sorting of the data itself. Consequently, there can be at most one clustered index because data can be sorted in only one way. This is similar to a dictionary organized alphabetically. 
+
+Note that some sources differentiate between a primary and a clustered index, defining a primary index as one based on a primary key and a clustered index as one based on something other than a primary key. As an aside, I do not consider these to be indices in the traditional sense because they are not separate data structures.
+
+A secondary index is a separate data structure. Therefore, we can have multiple secondary indices on the same table, as each is a separate structure referencing the underlying table. Any search key is allowed, and it does not determine the storage order. Since PostgreSQL does not support clustered indices, all indices in PostgreSQL are secondary indices.
+
+### Sparse vs. Dense Indices
+A sparse index only maps some of the search keys. You can think of this like a table of contents in a book: for some topics, it tells you where to go, but otherwise, you must go to the beginning of a chapter and perform a search from that point. In a sparse index, you use the index to reach a starting point and then perform a linear search. This requires the table to be sorted on the search key. The advantage of a sparse index is that it is smaller than a dense index.
+
+A dense index maps all of your search keys. It is conceptually simpler because the index directs you exactly to the location you are looking for, which is comparable to the index in the back of a book.
+
+### Covering and Ordered Indices
+A covering index is one where using the index alone is sufficient to answer a particular query. This requires the index to be dense—to contain all values of the search key—and requires that the search key contains all of the attributes used in the query. For example, if a query only uses the "Product Manufacturer," an index containing that attribute and all its values acts as a covering index.
+
+An ordered index is any index that uses an ordering relation on the data. While most common indices use this ordering relation, there are many types of indices that do not. We will look at specific examples of each later.
+
+### Index Data Structures and Selection
+We will focus on three particular index data structures: B+ trees, hash buckets, and bitmaps. These will be covered in detail in later videos.
+
+Finally, the choice of which index to use is determined by both the system—which makes automatic choices based on statistics and heuristics—and the database programmer. You are able to observe what the database system is doing and can potentially override those choices or create your own indices.

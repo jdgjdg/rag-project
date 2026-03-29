@@ -1,0 +1,32 @@
+### Introduction to Postgres Indices
+We have discussed the theory of indices; now, let us examine how they are used in Postgres. For our sample data, we will use a product and manufacturer example with random data generation. Note that generating 500,000 products takes some time. 
+
+Our general approach in the following examples is to first observe how a query executes without an index, then create the index, and finally observe how the query executes with the index in place. To analyze query execution, we use the `EXPLAIN ANALYZE` tool. While we will dive deeper into this tool in a later video, for now, we will focus on the output regarding data access methods—such as sequential scans, binary scans, or index scans—and the total execution time.
+
+### Example 1: Finding the Maximum Price
+Our first example is to find the largest price among all products. Without an index, the most straightforward approach is to perform a linear scan, keeping track of the largest value seen so far. This takes linear time.
+
+To analyze this, we use `EXPLAIN ANALYZE` with the `VERBOSE` keyword. The query plan shows that to access the product table, Postgres performs a parallel sequential scan using two workers, taking advantage of multithreading. The execution time for this query is approximately 169 milliseconds.
+
+#### Creating a B-Tree Index
+We could consider a binary search, but Postgres does not allow the creation of a clustered index that maintains ordering. Instead, we create a secondary index. In Postgres, all indices are secondary. We want a sorted index, and our only option is a B+ tree.
+
+We first drop any existing index with the same name, then create the index:
+`CREATE INDEX ON product (price);`
+
+Note that specifying `USING btree` is the default. Creating an index takes time, which is a relevant factor in real-world scenarios. After creating the index, we execute the same query again. The query plan now shows an "index only scan" performed backwards. Because the index contains the product price, it acts as a covering index, allowing us to answer the query without accessing the table itself. The execution time drops to 0.231 milliseconds, which is significantly faster than the original 169 milliseconds.
+
+### Example 2: Maximum Number of Products per Manufacturer
+Our second example calculates the maximum number of products for any particular manufacturer. The query groups products by manufacturer, counts them, and then computes the maximum of those counts.
+
+The query plan shows a sequential scan on the manufacturer table, followed by hashing and the use of a hash index. It also performs a sequential scan on the product table. The join operation utilizes the hash table, resulting in an execution time of 163 milliseconds. Note that when analyzing execution times, there may be slight variations between runs; these numbers should not be considered perfectly precise.
+
+#### Filtering with an Index
+We now create an index on `man_state` to assist in filtering manufacturers by state (e.g., Texas). A B+ tree is an appropriate choice for finding specific values. After creating the index, we re-run the query. 
+
+The query plan now shows a "bitmap index scan" followed by a "bitmap heap scan." Even though we created a B-tree index, the system chose to use a bitmap index instead. The execution time remained roughly the same, indicating that the index did not provide a performance benefit in this specific case. 
+
+It is important to note that Postgres uses internal heuristics and statistics to decide when to build and use an index. You cannot manually create a bitmap index using the `CREATE INDEX` command; it is an internal optimization strategy used by the database engine.
+
+### Conclusion
+We have covered how to create indices in Postgres, how to determine if an index is being used, how to identify the type of scan being performed, and how to measure query execution speed. These tools allow you to observe query behavior, determine if an index might improve performance, and evaluate whether a created index actually provides the intended benefit.

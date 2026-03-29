@@ -1,0 +1,35 @@
+### Introduction to Condition Selectivity Estimation
+As part of query optimization, size estimation, and understanding query plans, it is necessary to understand condition selectivity estimation. The general approach assumes a uniform distribution unless information suggests otherwise. While histograms provide specific information regarding data distribution, the assumption of a uniform distribution is applied within each histogram block.
+
+### Combining Selectivities
+To compute selectivities for complex conditions, we use the following combining forms, assuming that attributes A and B are independent:
+
+*   **AND:** Multiply the selectivities, as they represent probabilities.
+*   **Negation:** Subtract the underlying selectivity from one.
+*   **OR:** Apply De Morgan’s laws. Negate each condition, multiply the results as done with the AND operation, and then negate the final result.
+
+### Filtering Operations: Attribute Compared to a Constant
+When comparing an attribute to a constant value, the estimation method depends on the availability of a histogram:
+
+*   **No Histogram:** Assume a uniform distribution over all distinct values. The selectivity is estimated as one divided by the total count of distinct values.
+*   **With Histogram:** 
+    1. Identify the block or range containing the constant.
+    2. Assume a uniform distribution within that block.
+    3. Calculate the proportion of items in that range relative to the entire table.
+    4. Divide that proportion by the number of items in that range.
+
+### Filtering Operations: Comparing Two Attributes
+Comparing two different attributes is complex due to potential correlations. For simplicity, we assume the attributes are independent. This is treated as a simplified form where one attribute is treated as a constant, and we choose the more selective result. This approach assumes that each value of the attribute with fewer distinct values will have a match in the other attribute, which is common with foreign keys.
+
+*   **Calculation:** Take the minimum of the two individual selectivities. This logic applies whether using basic statistics or histograms.
+
+### Range Queries (Greater Than/Less Than)
+When dealing with range queries (e.g., attribute > constant), the estimation method depends on available statistics:
+
+*   **No Statistics:** Make an arbitrary decision that the condition divides the data range in half, resulting in a selectivity estimate of 0.5.
+*   **With Statistics:** Split the data range proportionally. If the constant is within the range, calculate the position within the range relative to the overall range size. If the constant is outside the range, the probability is zero.
+*   **Discrete vs. Continuous Data:** The proportional formula assumes a continuous range. For discrete data, count the individual values.
+*   **With Histograms:** Sum the values across the relevant histogram blocks, including the full count of blocks that satisfy the condition and the partial count of the block containing the cutoff point.
+
+### Purpose of Understanding Selectivity
+While database systems perform these calculations automatically, it is important to understand the underlying logic so that the optimizer does not function as a "black box." Understanding these estimations allows one to evaluate whether the optimizer is making sound decisions and to determine if those decisions should be overruled.

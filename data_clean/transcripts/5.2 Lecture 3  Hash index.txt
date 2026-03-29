@@ -1,0 +1,39 @@
+### Hash Indices
+
+Hash indices are a commonly used style of index. One major difference between hash indices and B+ trees is that hash indices are not ordered; they are not based upon any notion of sorting the data.
+
+#### The Hash Function
+The basic idea of a hash function involves mapping values to different buckets. For example, if we have four different values stored in an attribute, a hash function might map two values to bucket 1 and two values to bucket 2. 
+
+A good hash function must possess two important properties:
+1. **Uniform Distribution:** The hash function should distribute values uniformly across buckets.
+2. **Subset Uniformity:** The hash function should distribute subsets of the data uniformly as well. If we have a random subset of all our values, we expect the distribution of data into the buckets to remain fairly uniform.
+
+#### Indexing Mechanism
+To use hash functions for indexing, we hash the value we are looking for to identify the corresponding bucket. Within that bucket, there is a data structure—such as a list or a tree—that indicates where the specific tuples are stored. 
+
+To maintain efficiency, this data structure must be small, which requires a large number of buckets. If there are too few buckets, the process degenerates into a linear search through a list or tree. The goal is for the hash function computation to take constant time and for the number of data elements in each bucket to be small enough that searching the bucket also occurs in constant time.
+
+#### Handling Overflow
+Potential problems arise when buckets overflow. There are two primary scenarios for overflow:
+* **Skewed Data:** If only some buckets overflow while others are not near full, the hash function is not distributing the data uniformly for the particular data set.
+* **Insufficient Space:** If many buckets overflow simultaneously, it indicates that there is not enough space reserved for the buckets.
+* **Bucket Size:** If buckets are too large, the time required to search a single bucket becomes excessive.
+
+Several approaches exist to overcome overflow:
+* **Chaining:** Additional buckets can be chained together. However, this can lead to a chain of overflowed buckets, causing the search to degrade into a linear search through multiple full buckets.
+* **Reorganization:** One can stop and reorganize by reserving more space and rehashing the data into new buckets, or by using a different hash function. While this is expensive, there are techniques to mitigate the cost.
+* **Dynamic Hashing:** This technique allows the number of buckets to grow without requiring a full rehash of existing data. The cost is only incurred as new data is added. These involve more complicated hash functions, the details of which are generally not under user control.
+
+#### Comparison: Hash Indices vs. B+ Trees
+
+**Space Complexity**
+* **Hash Index:** Performs best if buckets are roughly half-empty, meaning one must reserve approximately twice as much space as theoretically needed.
+* **B+ Tree:** Requires extra space for pointers between nodes, as well as space for all internal and leaf nodes. Depending on the width of the tuples, this also adds up to roughly doubling the space required for the basic tuple data. Both structures are in the same ballpark regarding space requirements.
+
+**Time Complexity**
+* **Hash Index:** Theoretically achieves constant-time access. However, it can degrade to linear access depending on the use of linear chaining during overflows or the specific data structure used within each bucket.
+* **B+ Tree:** Provides logarithmic time access. It does not degrade, offering a consistent performance bound.
+
+**Operations**
+While both support adding, deleting, and searching for data, a hash index does not support range queries. A B+ tree is more appropriate for queries involving ranges or "less than" and "greater than" operations.

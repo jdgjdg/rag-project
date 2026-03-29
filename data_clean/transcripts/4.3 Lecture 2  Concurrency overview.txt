@@ -1,0 +1,23 @@
+### Introduction to Transaction Concurrency
+When discussing transactions, we first focus on issues dealing with concurrency. Later, we will address recovery from failure. To begin, consider an example of concurrency involving two transactions. In the first transaction, we update balances by transferring money from one account to another. In the second transaction, we pay interest to all accounts. We have both the SQL code for these transactions and a simplified shorthand that we will use in our examples. Our primary question is how to schedule these transactions.
+
+### Assumptions for Scheduling
+Before examining scheduling, we operate under two primary assumptions. First, we assume the presence of concurrent transactions. Second, we assume the use of shared state. In this example, the shared state is the account table. More generally, this could refer to shared memory or, in the context of databases, shared storage. 
+
+Concurrency and the concept of shared memory appear ubiquitously in modern systems. For example, on Amazon.com, many users buy items from the same pool of inventory concurrently. Similarly, multiple users message each other, students enroll in Rice University courses simultaneously, and traders buy stocks on the stock exchange at the same time. 
+
+On the hardware side, the concept associated with concurrency is parallelism. Concurrency describes a way of thinking where processes can occur simultaneously, while parallelism describes the reality where things are actually occurring at the same time—it is not merely an illusion we are supporting. This is evident in multicore chips, such as a six-core processor, or in computing clusters where many computers work together.
+
+### Serial Schedules and Isolation
+When scheduling our two transactions, we assume time flows forward. We start with the same initial bank account balances. In one scenario, the first transaction executes entirely, followed by the second transaction; performing the math results in a specific set of bank balances. Alternatively, we could schedule the transactions in the opposite order, which results in different final bank balances if the interest is paid before the transfer occurs. 
+
+By the property of isolation, we consider either of these outcomes to be appropriate and acceptable because they represent serial executions where transactions happen independently.
+
+### Serializable Schedules
+We must determine if we can allow transactions to overlap in time. Consider a scenario where the second transaction starts while the first is still underway. If the first part of the second transaction executes before the second part of the first transaction, we obtain a set of balances that matches one of our previous serial outcomes. By our isolation property, this order of execution is acceptable because, from an external perspective, it appears as though the sequence happened serially; we cannot tell the difference. We call this a serializable schedule.
+
+### Motivation for Interleaving
+We allow such interleaving primarily for performance. If one transaction is significantly faster than the other, we do not want to delay the fast transaction while it waits for the slow one. Furthermore, because we have parallel hardware—even a standard laptop has multiple cores—we want to minimize coordination overhead between transactions and allow them to run in parallel as much as possible.
+
+### Non-Serializable Schedules
+Consider another possible schedule: the first transaction starts, the entire second transaction runs, and then the first transaction completes. This results in a set of balances that does not correspond to either of our serial executions. Because this is not serializable, it is not considered acceptable. We do not want to allow this particular schedule to occur. We allow the database to interleave transactions only as long as consistency and isolation are maintained—or, stated another way, as long as we have a serializable schedule.

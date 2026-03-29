@@ -1,0 +1,26 @@
+### Denormalization in Database Analysis
+
+In a database focused on analysis, denormalization is an important concept. While we have previously discussed normalization—which is essentially the opposite, or the undoing of normalization—denormalization is an important concept for OLAP-style databases, though it can also be applied to transactional databases.
+
+#### Consequences of Normalization
+To understand denormalization, we must remind ourselves of the consequences of normalizing data. The primary goal of normalization is to reduce or eliminate data redundancy, which includes eliminating computed data. Normalization also implies that relations are broken into smaller, related tables, such as in the normalization algorithm for BCNF. Consequently, if you need the original relation and all the data from the original version, you must perform join operations, which are reasonably expensive.
+
+#### The Purpose of Denormalization
+Denormalization involves deliberately reintroducing some redundancy so that we can access data faster. In a transactional system, this is a significant danger sign because, if not handled carefully, redundancy leads to inconsistency. However, if an analytical database is read-only, this will not cause any problems.
+
+#### Techniques for Denormalizing Data
+There are several techniques used to denormalize data:
+
+*   **Duplicate Fields:** You can duplicate fields across tables. For example, if customer name and address originally occur only in one table, you can add them to a second table. If you are using an invoices table, you no longer need to join it with the customer table because the required data is already present in the invoices table, thereby reducing the number of joins needed.
+*   **Add Computed Fields:** You can perform computations beforehand instead of at runtime during a query. This is used for year-to-date sales, quantity in stock, and total in stock. In some cases, an entire table may be created just to hold a specific computed field.
+*   **Pre-join Tables:** You can store tables in a joined form so that they do not need to be joined during a query. For instance, information about products and information about colors, which would be two separate tables in a normalized form, can be stored together.
+*   **Split Tables (Sharding):** You can split a table based on a field, such as a region. This data can then be distributed so that specific data resides only on a server in a specific region (e.g., US, Asia, or Africa). This is the notion of sharding. This approach assumes that you would rarely, if ever, need all of the data together. 
+*   **Alternative Splitting Criteria:** Beyond regions, you can separate data based on subclasses or frequency of use. For example, you might separate active customers from inactive customers. Even if they are in the same table, you may want to treat them separately for business marketing purposes, focusing on active users for transactions while keeping inactive customers separate to attempt to re-engage them.
+
+#### Benefits of Denormalization
+The primary benefit of these techniques is that each table contains less data, meaning that when you are joining or querying, you are working with a smaller dataset. Additionally, distributing the data so that it is physically near the user requires less communication time.
+
+#### Managing Data Consistency
+If you are updating redundant data—whether in a transactional database or an analytical database that allows updates—you must address data consistency. You may need to determine if full consistency is required. Consistency can be maintained via standard techniques, such as API functions that update related fields, database triggers, or application code. Alternatively, you may choose to allow data to be inconsistent and use a background process to reconcile the data occasionally, or perform a consistency fix during scheduled system downtime.
+
+The overarching point is that we can reintroduce redundancy into our data to reduce the amount of time required for queries.

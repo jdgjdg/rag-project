@@ -1,0 +1,31 @@
+### Implementation Approaches for Transaction Logs
+There are multiple implementation approaches for transaction logs, but the most commonly used is write-ahead logging.
+
+### The Disk Write Buffer
+A disk write is an expensive operation. Instead of performing multiple small writes, data meant for the disk is typically written to a buffer in memory. This buffer is later written to the disk as a single operation. 
+
+The buffer is written to the disk under the following conditions:
+* **Buffer Capacity:** The buffer is a fixed size; if it fills up, it must be written to the disk.
+* **Flushing:** The buffer can be manually flushed, meaning it is emptied and written to the disk.
+* **Disk Seeks:** If the disk needs to perform a seek to a different location, the current buffer must be written out to ensure contiguous writes. If the writes are non-sequential, the system must write out the current buffer before preparing for writes at the new location.
+
+### Example of Write-Ahead Logging
+Consider a simple transaction with a diagram of memory containing one location for data and a log buffer. Initially, the value for A on the disk is the same as the value in memory. After each step, we evaluate how to recover if a fault occurs.
+
+1.  **Beginning the Transaction:** We write to the log buffer that the transaction is beginning. This is necessary to identify the start point for undoing operations. If a fault occurs here, the log buffer shows no actions taken, so there is nothing to undo.
+2.  **Reading Data:** We read the value of A from memory. If a fault occurs, we look at the log buffer; since we have not performed any actions, there is nothing to undo.
+3.  **Writing to the Log Buffer:** We write the value of one to our log buffer. If a fault occurs now, the log buffer is inconsistent with memory because we have not yet written to memory. We ignore the undoing of the write and remain at the beginning of the buffer.
+4.  **Completing the Write:** We write the value of one into A's location in memory. If a fault occurs now, we look at the log buffer and undo the operation to return to the beginning of the transaction. If the entire system fails and memory is lost, we recover by retrieving data from the disk, which remains consistent with the last valid state.
+5.  **Committing:** We write the commit status to the log buffer. If an abort occurs, we must re-execute the log to affect the disk data because the log is in memory but not yet on the disk.
+6.  **Writing the Log to Disk:** We write the log out to the disk. We write the log ahead of the data. If a fault occurs after this, we re-execute the steps from the log to fix the data.
+7.  **Writing Data to Disk:** Finally, we write the value onto the disk. We are now in a consistent state; if a failure occurs, there is nothing to be undone or redone.
+
+### Flushing Memory Pages During a Transaction
+If a memory page must be written to the disk during a transaction—for example, due to virtual memory constraints or contention—the log must be flushed first. This ensures that if the transaction is aborted, the log is available on the disk to undo the writing of the memory.
+
+### Postgres Optimization
+Postgres optimizes write-ahead logging to reduce the frequency of expensive disk writes. Instead of writing to the disk at every commit, Postgres writes only at checkpoints. It also discards logs at the checkpoint because the disk and memory are consistent at that time. If a rollback is required after a checkpoint, the system must look further back in time, such as to a disk array or backup, to restore the disk state.
+
+### Atomicity and Durability
+* **Atomicity:** This is achieved because writes are only finalized once the transaction has committed and the log is on the disk. Once the log is on the disk, the writes are considered to have occurred because they can be redone.
+* **Durability:** This is achieved because once the commit is recorded and the log is on the disk, the system can redo operations to ensure the correct data is on the disk and in memory. Once the data is written to the disk, it is stable and preserved.

@@ -1,0 +1,18 @@
+### Encapsulation in SQL
+We want to be able to encapsulate our code in SQL. This involves creating code blocks or grouping statements together to provide the standard benefits familiar from other programming languages. Encapsulation allows for unit abstraction, where code acts as a function that can be called without needing to know the underlying details. This facilitates code reuse, as the same function can be called multiple times. Maintenance is simplified by using names, defining input and output specifications, and writing the code once rather than multiple times. Additionally, this approach provides a way to improve security.
+
+### Procedural Extensions to SQL
+Strictly speaking, these procedural extensions are not part of the core SQL standard. Different versions of SQL implement different procedural extensions, which leads to a lack of standardization. For example, Postgres uses its own language called PL/pgSQL, while other versions use different languages. Despite these differences, these extensions are typically referred to as SQL. These languages add variables, assignments, conditionals, loops, and other standard programming constructs. Because this creates a full language that overlaps with SQL but remains distinct, we will focus on core concepts rather than introducing the entire language.
+
+### Code Blocks: Functions, Procedures, and Triggers
+In most SQL implementations, there are three kinds of code blocks: user-defined functions, stored procedures, and triggers.
+
+*   **User-Defined Functions vs. Stored Procedures:** A common point of confusion is the distinction between functions and procedures. Functions are meant to be side-effect-free; they do not update the database and are designed to return a value. Stored procedures are primarily used for their side effects and typically do not return a value.
+*   **Triggers:** Triggers correspond to event handlers in other programming languages.
+
+### Postgres Implementation
+Postgres simplifies this distinction by grouping what were previously known as functions and procedures into a single construct: a code block that can be called to perform side effects or not, and can return a value or not, depending on the requirements. 
+
+However, this has become more complex in version 11 of Postgres, which added a specific "procedure" construct. The distinction in Postgres differs from other SQL versions: in Postgres, procedures allow for transactions inside them, whereas functions do not. 
+
+In summary, we require a way to organize our code, and the primary mechanism we will introduce is the notion of functions.

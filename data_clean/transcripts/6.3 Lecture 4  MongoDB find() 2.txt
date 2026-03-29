@@ -1,0 +1,27 @@
+### Matching Non-Existent Fields and Null Values
+
+We will continue our exploration of the features of `find` in MongoDB using our sample data, including the colors mentioned previously. 
+
+Our first example involves matching non-existent fields and matching the value `null`, which appears as `None` in Python. Using the syntax where `prod_color` maps to `None` or `null`, the query matches the document where `prod_color` has the value of `null` or `None`. It also matches the two documents where `prod_color` is not defined. Therefore, matching a document where you provide the value of `null` matches two types of scenarios: documents where the field is explicitly `null` and documents where the field is absent.
+
+To match only the absence of a field, we use the special keyword `exists: false`. For example, if `prod_color` maps to `exists: false`, it matches only the two documents where `prod_color` is not defined.
+
+### Matching Embedded Documents
+
+So far, all of our matching has been on top-level fields in a document. To match fields in an embedded document, consider this first attempt: matching `prod_manufacturer` by listing all four of the embedded fields. This matches the two products made by "Gizmo Works." However, if you provide only one of those fields in the embedded document, it matches nothing.
+
+If you use dot notation, such as `prod_manufacturer.man_name` set to the value "Gizmo Works," it correctly finds the two documents made by "Gizmo Works."
+
+### Matching Arrays
+
+When working with arrays, you can try to match `prod_color` to "red" and "blue." This matches the document where `prod_color` is exactly "red" and "blue." 
+
+Alternatively, using the special keyword `$all` with "red" and "blue" returns two matches: the document where `prod_color` is exactly "red" and "blue," and the document where `prod_color` is "red," "blue," and "black." The difference is that the first query attempts to match when `prod_color` is exactly "red" and "blue," while the second query matches any document where `prod_color` contains all of the listed values—"red" and "blue"—regardless of order.
+
+### Understanding the Matching Logic
+
+In the document provided as an argument to `find`, every key-value pair listed must match the target document exactly. If you provide a key and a value, that specific key and value must exist in the target. This is why, when looking for an embedded document, we needed to specify all of the sub-document fields to ensure the search document matched the target exactly.
+
+Conversely, we do not need every key-value pair in the target document to be matched. We do not have to list every key-value pair that is in the target document. The matching is essentially one-way: whatever you list in the search document must match, but you do not have to match everything in the target. If there is a key-value pair in the target document that you have not listed, the match is still valid.
+
+We will look at other features of querying, such as aggregation and joining, which are not part of the `find` method in MongoDB, in a later session.

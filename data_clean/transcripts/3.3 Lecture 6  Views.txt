@@ -1,0 +1,36 @@
+### Introduction to Views
+We have previously introduced common table expressions (CTEs) and temporary tables, which are two binding forms for naming results for later use. In this video, we introduce a related concept known as views. 
+
+A view is created by executing a query. Unlike a table, which stores data, a view stores the query itself. When you have multiple tables containing data, you may perform a query that joins this data and performs computations. A view allows you to name this result set. Each time you refer to the view, the system recomputes the results based on the underlying data.
+
+### Reading and Writing to Views
+You can both read from and write to a view. Reading is the most common use case; you simply execute a `SELECT` statement on the view to retrieve and use the results.
+
+Writing to a view—via `INSERT` or `UPDATE`—is more complex. Because a view may involve joins or complex computations, SQL implementations typically restrict write operations. Generally, you can only write to a view if it is based on a single table without complex computations, effectively allowing the system to undo the attribute reordering to determine where the data should be written. It is significantly more difficult to perform these operations if the view involves joins or complex logic.
+
+### SQL Syntax for Views
+The syntax for creating a view is similar to creating a table. You specify the query that the view should execute. Variations include:
+*   **Create or Replace View:** Updates an existing view or creates it if it does not yet exist.
+*   **Drop View:** Removes the view when it is no longer needed.
+
+### Scenarios for Using Views
+There are several scenarios where views are beneficial:
+
+*   **Focusing on Specific Data:** Views allow you to partition data access. For example, in a doctor's office, you might create one view for medical staff that selects only medical data, and another view for administrative staff that selects only contact and billing information.
+*   **Simplifying Data Manipulation:** If multiple queries perform the same data manipulation or computation, you can encapsulate that logic within a view and build subsequent queries on top of it.
+*   **Providing an Interface:** Views act as an interface between queries and underlying tables. If the underlying table structure changes, you can update the view to maintain the original data layout. This allows existing queries to continue functioning without modification, providing an unchanging interface.
+*   **Importing and Exporting Data:** Views can model the format of an external file. When exporting, a view can pull data from tables and format it to match the file structure. While this can also be used for importing, it requires writing to a view, which is subject to the aforementioned restrictions and is generally less useful.
+
+### Potential Problems and Materialized Views
+A primary consideration is that a view does not store data; it recomputes the query whenever it is accessed. If the underlying data changes, the view must recompute the query to reflect the current state. Because you do not have control over when this computation occurs, it can be expensive if the underlying query is complex.
+
+To address this, there is a concept known as **materialized views**, which are a hybrid of views and tables. A materialized view stores the actual results of the query. This provides the advantage of allowing you to control when the query is re-evaluated to refresh the results.
+
+### Refreshing Materialized Views
+The syntax for refreshing materialized views varies by implementation:
+*   **PostgreSQL:** Uses the command `REFRESH MATERIALIZED VIEW [view_name]`.
+*   **Oracle:** Offers multiple options, making the process more complex.
+*   **SQL Server:** These are referred to as "indexed views" and follow different syntax.
+*   **MySQL:** Does not support materialized views.
+
+We now have four tools—CTEs, temporary tables, views, and materialized views—that are similar and often used interchangeably, despite being distinct. It is important to evaluate the specific requirements of your use case to determine which tool is most appropriate.

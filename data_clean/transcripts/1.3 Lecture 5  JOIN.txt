@@ -1,0 +1,33 @@
+Our previous SQL examples have only involved one table at a time. We would like to be able to join our tables together using inner joins and cross joins. How do we do that in SQL?
+
+As a first example, let's look for all product names whose manufacturer is in the state of Texas. There are a few things in that relational calculus query that I want you to notice. First, it doesn't specify what kind of join operation we're going to use. Is it an inner join? Is it a cross join? Similarly, it doesn't specify whether those two conditions are join conditions or filter conditions. Thirdly, while I've listed the tables in a particular order because I had to write them down, do I really want the product condition to come before the manufacturer condition? What order do I need to specify them in the join operation? Let's try this out and actually use an inner join first.
+
+### Inner Join Example
+
+We start by selecting `p.prod_name`. Let's try using the `product` table first, and then perform an `INNER JOIN` on the `manufacturer` table as `m`. An `INNER JOIN` requires a join condition.
+
+Which of these is a join condition? If you look at these, the first one corresponds to the foreign key relationship. Another way to think about it is that of those two conditions, it's the only one that relates the two tables. The condition `m.man_state = 'Texas'` is about one table; it's not about how the two tables relate. So, we'll use the first condition as our join condition and the other one as a filter condition, placing it in the `WHERE` clause.
+
+When that query runs, we find that Gizmo and Powergizmo are both made in Texas.
+
+### Inner Join Symmetry
+
+I pointed out that there's a question about what ordering we want to use for the tables. Let's try the other order. I want the query to be the same, except I'm going to change the ordering of the `manufacturer` and `product` tables in the join. Running that, you can see we get the same result. This is because an `INNER JOIN` is symmetric; you can join them in any order and you will get the same results.
+
+### Cross Join Example
+
+Now let's consider a `CROSS JOIN` for this same query. How can we use a `CROSS JOIN` to solve the problem? We start off similarly, but a `CROSS JOIN` does not have a join condition. This means we are forced to use both of these conditions as filter conditions in the `WHERE` clause. We still get the same result.
+
+A `CROSS JOIN` is also symmetric, so I could swap the order of the `product` and `manufacturer` tables in this query, and it would still give us the same result.
+
+### Cross Join Appropriateness
+
+However, the bigger question I would like to ask is whether a `CROSS JOIN` is even appropriate in this example. The answer is no. Our first condition, that `prod_manufacturer` is equal to `man_name`, is a join condition. It's telling you how to join these two tables. A `CROSS JOIN` does not have a join condition, whereas an `INNER JOIN` does. Therefore, we should be using an `INNER JOIN` so we can distinguish the join condition from the filter condition.
+
+### Summary and Best Practices
+
+In summary, you should always choose the semantically best join operation. In this case, it's an `INNER JOIN`. It is usually an `INNER JOIN`; `CROSS JOIN`s are much less commonly used.
+
+You should distinguish between join and filter conditions based upon their semantics. A join condition tells you how to join the tables. A filter condition specifies that you want the rows that satisfy a particular property.
+
+When writing queries, you can choose the order of your tables. `INNER JOIN`s are symmetric. If you have a list of `INNER JOIN`s on multiple tables, you can put them in whatever order you want. Similarly, `CROSS JOIN`s are also symmetric. If you have multiple `CROSS JOIN`s, put them in the order that you choose.

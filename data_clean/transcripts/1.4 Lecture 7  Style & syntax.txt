@@ -1,0 +1,98 @@
+## SQL Code Style and Syntactic Details
+
+This video will cover code style issues and syntactic details in SQL. We will begin with two common areas of debate: the indentation of clauses and the capitalization of keywords.
+
+### Indentation and Capitalization
+
+There are various styles for indenting clauses and aligning arguments. For example, the `INNER JOIN` clause, which is not technically a clause itself, is often indented. Similarly, the connectors in a `WHERE` clause can be placed in different positions.
+
+The most important principle is **consistency**. Choose a style that makes your code readable and adhere to it. Your company may also dictate a specific style guide.
+
+### Avoiding Implicit Syntactic Defaults
+
+It is crucial to avoid relying on implicit syntactic defaults. For instance, the `INNER` keyword in `INNER JOIN` is not strictly necessary, as `JOIN` defaults to `INNER JOIN`. However, explicitly including `INNER` improves clarity.
+
+Similarly, while the `AS` keyword for renaming is optional, using it makes the renaming operation explicit and clearer.
+
+### Explicit Joins
+
+Avoid implicit joins, which are an older SQL style. Always write out your joins explicitly.
+
+**Old-style implicit join:**
+Tables are listed in the `FROM` clause separated by commas. This implies a `CROSS JOIN`. The join condition is then listed as a filter condition in the `WHERE` clause.
+
+This approach has two main problems:
+1.  The join operation is implicit.
+2.  The join condition is treated as a filter condition, which is semantically incorrect.
+
+**Explicit join:**
+Explicitly state the join type (e.g., `INNER JOIN`) and the join condition. This makes the join operation clear and separates it from filter conditions.
+
+### Explicit Attribute Selection
+
+Instead of using `SELECT *`, list out all the relevant attributes. This ensures that the query's behavior is not affected by changes in the table's column order.
+
+**Example:**
+```sql
+SELECT attribute1, attribute2, attribute3
+FROM your_table;
+```
+
+This is particularly important for `INSERT INTO` statements. Listing the attributes you are inserting into makes the statement robust against changes in column order.
+
+**Exceptions to using `SELECT *`:**
+*   **Limited Screen Space:** When presenting examples on a screen with limited space, and the attributes themselves are not the focus.
+*   **`EXISTS` Subqueries:** When the subquery is used with `EXISTS`, the specific data produced is irrelevant; only the existence of rows matters.
+
+### Renaming and Aliases
+
+Always use the `AS` keyword when renaming tables or columns for clarity.
+
+**Example with renaming:**
+```sql
+SELECT t1.columnA, t2.columnB
+FROM table1 AS t1
+JOIN table2 AS t2 ON t1.id = t2.fk_id;
+```
+
+**Example without renaming (less clear):**
+```sql
+SELECT table1.columnA, table2.columnB
+FROM table1
+JOIN table2 ON table1.id = table2.fk_id;
+```
+
+When reading code later, clear table aliases make it immediately obvious which table attributes refer to.
+
+Avoid using the full table name when renaming, as it leads to verbose and longer queries. In situations where you need to rename the same table multiple times, explicit renaming becomes essential.
+
+### Naming Conventions
+
+*   **Consistency:** Pick a naming scheme and stick to it.
+*   **Meaningful Names:** Ensure all names are meaningful, not just short aliases within a single query.
+*   **Foreign Key Clarity:** Make foreign key relationships clear in your naming scheme. For example, using the same word for a primary key and its corresponding foreign key can indicate the relationship.
+*   **Avoid Reusing Names:** Do not reuse the same attribute name in multiple tables unless it's part of a consistent naming scheme.
+*   **Name Length:** Avoid excessively long names that make code unreadable.
+*   **Special Names:** Do not use names that require quoting (e.g., names with spaces or reserved keywords).
+
+### Table Design Conventions
+
+*   **Primary Key First:** Place primary key attributes as the first attributes in a table definition.
+
+### SQL Syntax Gotchas
+
+*   **String Literals:** Use single quotes (`'`) for strings, not double quotes (`"`).
+*   **Equality Test:** Use a single equals sign (`=`) for equality comparison, not `==`.
+
+### Copying Code and Text Editors
+
+Be cautious when copying code from the web or using text editors like Microsoft Word.
+
+*   **Non-ASCII Characters:** Editors may introduce non-ASCII characters that are invisible but cause SQL to fail.
+*   **Fancy Quotes:** Word processors often convert standard quotation marks into "smart" or "fancy" quotes that SQL and other programming languages do not recognize.
+
+Always use a code editor that is designed for writing code, ensuring that single quotes are rendered as standard single quotes.
+
+### Style Guides
+
+Numerous style guides exist. Individual companies often provide their own. Two recommended style guides are known for their clarity and explanations of why certain styles are preferred.

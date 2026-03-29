@@ -1,0 +1,31 @@
+### Introduction to Referential Integrity and Foreign Keys
+
+We've previously talked about the mechanics of changing data in our database. We skipped over one of the consequences of doing so. In this video, we're going to look at this issue. In this example on the screen, I have our standard example of product and manufacturer. In particular, there is a foreign key where `prod_manufacturer` references `man_name`.
+
+The question is: what if we change some of the existing data in `man_name`? This can potentially break the referential integrity constraint, the foreign key relationship.
+
+### Handling Data Changes: RESTRICT vs. CASCADE
+
+What are we going to do? There are really two main options, although SQL supports more than this.
+
+Either we can simply say no, you can't do it. It's an error to try to change `man_name` data. There's the keyword `RESTRICT` for doing that, as we'll see in an upcoming example, and this is the default.
+
+Another option is that we can cascade the changes, meaning that any changes in the `man_name` data are propagated back to the `prod_manufacturer` data as well to ensure consistency.
+
+### Defining Tables with ON UPDATE/DELETE CASCADE
+
+Now, we need to define our sample tables and data. This will largely be our standard example for product and manufacturers, except I have now changed the definition of the foreign key relationship slightly. As we can see here, the foreign key definition is basically as it has been in previous examples: `prod_manufacturer` is referencing `man_name`.
+
+What's different is this next line for the two operations of `UPDATE` and `DELETE` — the two operations that can modify the data in `man_name`. We can specify what happens when we try to do that. By default, it will `RESTRICT` it; it won't allow it. But here, I'm going to say that for both of these operations, we want the changes to `CASCADE`.
+
+### Demonstrating Cascading Deletes
+
+Let's see this in action. We need to create our data, and to look ahead for our examples, notice that GizmoWorks makes the PowerGizmo.
+
+To see cascading in action, let's delete the manufacturer GizmoWorks. You can see here that this is the new table for a manufacturer, and GizmoWorks is no longer in the table. As a side note, you can also see that SQL reported back 'one rows affected, two rows affected'. You can see here, the manufacturer now has only two rows. The 'one row affected' is actually because it also cascaded the changes back to the product table.
+
+### Verification and Implications
+
+Let's verify that. Let's look at the product table, and you can see that PowerGizmo, which used to be manufactured by GizmoWorks, is no longer in that table. The `DELETE` operation cascaded back to the product table. Any reference of GizmoWorks was also deleted.
+
+If we had a larger example and some other table referenced a product name, the cascading could propagate back to that other table as well. Cascading goes as far as the reference chain goes. Cascading changes make sense, but it is also dangerous. You are changing or deleting a lot of data. You really need to think about if you want to do that. From a bigger picture perspective, for every foreign key relationship, you really need to think about what you want to have happen when the data changes.

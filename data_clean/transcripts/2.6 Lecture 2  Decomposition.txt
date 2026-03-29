@@ -1,0 +1,33 @@
+### Decomposition Algorithms and Normal Forms
+
+For each normal form, we want a decomposition algorithm that puts tables into that normal form. There might be multiple decomposition algorithms for the same normal form, and they do not necessarily have to result in the same tables as long as they meet the normal form conditions. However, there are two properties we want to hold for any such decomposition algorithm: the decomposition must be lossless join and dependency preserving.
+
+### Lossless Join Decomposition
+
+Any decomposition algorithm takes a table and subdivides it into two tables where the attributes are divided into three disjoint sets:
+*   **Set A:** All attributes shared between the two decomposed tables.
+*   **Sets B and C:** Attributes that are not shared.
+
+Once we decompose into two tables, we want to perform a join operation to retrieve the original table with exactly the same data. Specifically, we use a natural join, which joins on all common attributes (attribute set A). If the join produces the original table, the decomposition algorithm is considered a lossless join.
+
+A decomposition is lossless when the natural join of AB and AC equals ABC. A theorem states that this holds when A functionally determines either B or C. The intuition is that this condition forces a one-to-many relationship between the two decomposed tables. On the "many" side of this relationship, each tuple relates to just one tuple in the other table, allowing the original data to be recreated.
+
+#### Example of Lossy Decomposition
+Consider a decomposition where "category" is the shared information, with "price" in one table and "name" in the other. When joining these tables, we perform a combination of all rows. If there are multiple rows for a category, the join produces a Cartesian product of those rows, losing the association between name and price.
+
+#### BCNF and Lossless Joins
+BCNF decomposition is a lossless join. This is because the algorithm breaks tables into AD and AN (where A is the key), with the guarantee that there is a functional dependency A → D, where D represents the attributes that functionally depend upon A.
+
+### Dependency Preservation
+
+BCNF decomposition does not always satisfy the property of dependency preservation. Consider a set of data with two functional dependencies where one dependency is violated because the determinant is not a super key. We can decompose the data into two tables: one containing "name" and "category," and the other containing "name" and "company."
+
+The problem arises with the functional dependency where "category" and "company" determine "name." Because "category" and "company" are now in separate tables, there is no way to enforce this functional dependency because the data is non-local. Primary key and foreign key constraints cannot enforce this property. While the join remains lossless, the functional dependency information is lost.
+
+### Addressing Dependency Loss
+
+There are three ways to handle the loss of functional dependencies:
+
+1.  **Acceptance:** Accept that the loss of dependency preservation is an acceptable trade-off for achieving the first property (lossless join).
+2.  **Enforcement:** Attempt to enforce the functional dependencies. This requires joining the tables every time the data is updated to verify the dependency. This is computationally expensive and generally avoided.
+3.  **Alternative Normal Forms:** Change the decomposition strategy to ensure functional dependencies are not lost. This often involves keeping data in a single table rather than subdividing it, which implies the need for a different normal form. This provides the motivation for the Third Normal Form (3NF) as an alternative to the Boyce-Codd Normal Form (BCNF).

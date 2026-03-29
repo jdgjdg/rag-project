@@ -1,0 +1,67 @@
+### SQL Window Computations
+
+We will explore the third form of SQL computation: windows. We will use a time series data example, along with a second dataset where the time series is broken into groups. Thinking of these as bank accounts, the groups represent separate accounts, allowing us to track two accounts simultaneously.
+
+### Running Totals with Windows
+
+A running total requires calculating the sum from the beginning of the data up to the current value. To define "the beginning," the data must be ordered, primarily by date, using the ID to break ties.
+
+To implement this, we select the date and ID to visualize the ordering. We use the `SUM` function on the value column, followed by the `OVER` keyword. Within `OVER`, we use `ORDER BY` to specify the sorting criteria: `d_date` and `d_id`.
+
+```sql
+SELECT d_date, d_id, SUM(value) OVER (ORDER BY d_date, d_id)
+FROM time_series;
+```
+
+In this output, the running total accumulates: the first value is 20, the second is 20 + 10 = 30, and so on. While the default window frame is from the beginning to the current row, we can be explicit using the following syntax:
+
+```sql
+RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
+```
+
+### Moving Averages
+
+A moving average smooths out data by calculating the average of *n* values. There are two common approaches to selecting these values:
+
+1.  **Financial approach:** Average the *n* previous values, as current and future data are often unavailable or irrelevant.
+2.  **Scientific approach:** Average the surrounding values, including the current row.
+
+To calculate a two-value moving average of preceding values, we use the `ROWS` clause:
+
+```sql
+AVG(value) OVER (ORDER BY d_date, d_id ROWS BETWEEN 2 PRECEDING AND 1 PRECEDING)
+```
+
+If there are no preceding values (e.g., the first row), the result is `NULL`. For the second row, it averages the one preceding value.
+
+### Rows vs. Range
+
+*   **`ROWS`**: Counts the exact number of rows back. It is generally more intuitive and commonly used.
+*   **`RANGE`**: Used when ordering allows for ties. If there is a tie, `RANGE` includes all rows involved in that tie in the computation, whereas `ROWS` breaks ties arbitrarily based on the implementation. `RANGE` is often used implicitly when no frame is specified.
+
+### Enumerating Rows
+
+To enumerate rows (1, 2, 3, 4), we can use special aggregation functions:
+
+*   **`ROW_NUMBER()`**: Assigns a unique number to each row. If there is a tie in the ordering, it assigns an arbitrary order to the tied rows.
+*   **`RANK()`**: Used when you want to account for ties in the ranking. If values are tied, they receive the same rank.
+
+### Partitioning Data
+
+When working with multiple groups (e.g., separate bank accounts), we must keep the calculations separate. We use the `PARTITION BY` clause, which functions similarly to `GROUP BY`, to separate the data into distinct groups before performing the window computation.
+
+```sql
+SUM(value) OVER (PARTITION BY d_group ORDER BY d_date, d_id)
+```
+
+This ensures the running total resets or calculates independently for each group, regardless of the order of the groups in the dataset.
+
+### Summary of Window Computations
+
+A window computation consists of two main parts:
+
+1.  **Aggregation:** The function being performed (e.g., `SUM`, `ROW_NUMBER`).
+2.  **Window Definition:**
+    *   **`PARTITION BY`**: Groups the data.
+    *   **`ORDER BY`**: Defines the sequence for the calculation.
+    *   **Frame**: Defines the start and end points (the default is `UNBOUNDED PRECEDING` to `CURRENT ROW`).

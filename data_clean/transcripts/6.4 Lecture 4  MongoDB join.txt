@@ -1,0 +1,43 @@
+### MongoDB Aggregation Joins
+
+As mentioned previously, MongoDB de-emphasizes joins, but when they are necessary, they are performed as part of the aggregation pipeline. This section explores how to execute a join.
+
+To demonstrate this, we use sample data consisting of two separate collections: products and manufacturers. By keeping these in separate collections, we are able to join them. The manufacturers collection contains manufacturer IDs that are easy to reference, and the products collection utilizes these references.
+
+### The Lookup Stage
+Joins in MongoDB are part of the aggregation pipeline. We match a document in the collection being aggregated with relevant documents in another collection. Because a match in the second collection may result in multiple documents, the join operation produces an array. When the join is performed, this array becomes a value in the resulting document, containing the embedded documents from the joined collection.
+
+This operation functions as a left join because it always uses the documents in the primary collection and matches them with any and all documents from the secondary collection.
+
+When configuring the `$lookup` stage:
+*   **`from`**: Maps to the name of the collection being joined.
+*   **`localField`**: The field in the primary collection used for the join (e.g., `prod_manufacturer`).
+*   **`foreignField`**: The field in the secondary collection used for the join.
+
+Note that you can only specify one field for each of these; the relationship must be an equality between these two fields. The resulting field containing the array of embedded documents is named according to the `as` parameter. 
+
+As an aside, note that the keywords within the `$lookup` stage and the field names being referenced are not preceded by dollar signs. While this appears to be an inconsistency in MongoDB syntax, it is the required format.
+
+### Handling Results and Unwinding
+In our example, products like "gizmo" match with "gizmo works," and "power gizmo" also matches with "gizmo works." Since each product has at most one manufacturer, the resulting array contains at most one embedded document. For a product like "vaporware," which has no related manufacturer, the operation still creates an array, but it remains empty.
+
+Because the result is an array, the `$lookup` stage is often followed by an `$unwind` stage. This removes the array structure, resulting in a product with a single manufacturer as an embedded field, which allows for further operations. 
+
+When we unwind the `prod_man_docs` field:
+*   The field becomes a single document rather than an array.
+*   Since each product had at most one manufacturer, no objects are duplicated.
+*   "Vaporware" no longer appears as a document because it had no manufacturer; when unwinding an empty array, there is no value to correspond to, so no document is produced.
+
+### Joining in the Opposite Direction
+Joins can also be performed in the opposite direction—joining the manufacturers collection with the products collection. This remains a left join, but because left joins are not symmetric, the results differ. 
+
+In this scenario, a manufacturer can have multiple products. Consequently, the manufacturer document receives an array of embedded documents representing those multiple products. For example, "gizmo works" results in an array containing both "gizmo" and "power gizmo," while "widgets are us" and "hyper" receive arrays containing only one product. "Vaporware" does not appear because it has no associated manufacturer.
+
+Similarly, we can unwind this result. The output will show the manufacturer "gizmo works" with "gizmo," followed by the manufacturer "gizmo works" with "power gizmo," and so on.
+
+### Summary of Join Behavior
+The join direction determines how the embedding occurs. In the second example, where manufacturers were joined with products, the results contained manufacturers with embedded products. 
+
+It is important to note that once you unwind the results, it eliminates what were previously considered "dangling tuples." In the case of "vaporware," the document was removed entirely once the results were unwound. 
+
+Finally, while the `$lookup` stage can be followed by additional aggregation pipeline steps, it is also possible to nest additional aggregation pipelines within the `$lookup` stage itself, allowing for multiple stages within the join operation. This effectively corresponds to performing a sub-query during the join.

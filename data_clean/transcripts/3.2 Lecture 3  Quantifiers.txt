@@ -1,0 +1,51 @@
+### Introduction to Relational Calculus and SQL Quantification
+SQL is based, at least in part, on relational calculus, which is essentially first-order logic, specifically using quantifiers such as "for all" and "there exists." We can utilize quantification in SQL using our standard product and manufacturer example. In this variation, we include a manufacturer named "Make Nothing," which, as the name implies, produces no products.
+
+### Using `EXISTS` to Find Manufacturers
+Our first question is: which manufacturers actually make something? We can solve this using a `JOIN` or an `IN` clause, as seen previously, or we can restate it using quantification. The logical statement is: find the manufacturer names where the entity is a manufacturer and there exists some product that this manufacturer is associated with.
+
+To translate this into an SQL query:
+```sql
+SELECT m.man_name 
+FROM manufacturer AS m 
+WHERE EXISTS (
+    SELECT * 
+    FROM product AS p 
+    WHERE p.man_name = m.man_name
+);
+```
+In this subquery, we use `SELECT *` because we are not interested in specific attributes; we only care whether or not any record exists that satisfies the condition. This is considered good style because it signals that the specific attributes selected are irrelevant, allowing the system to optimize the query.
+
+When executing this query, the system evaluates the subquery for each manufacturer. Under a naive interpretation, as soon as the system finds one product that matches the manufacturer, it can stop searching and confirm that the manufacturer should be included in the results.
+
+### Using `NOT EXISTS`
+To find which manufacturers do not make anything, we can negate the `EXISTS` condition:
+```sql
+SELECT m.man_name 
+FROM manufacturer AS m 
+WHERE NOT EXISTS (
+    SELECT * 
+    FROM product AS p 
+    WHERE p.man_name = m.man_name
+);
+```
+This query returns the "Make Nothing" manufacturer. In this case, the subquery execution logic differs: if the system finds a match, it knows the manufacturer should not be in the results and moves to the next one. If it completes the pass through all products without finding a match, only then can it conclude that the manufacturer should be included in the results.
+
+### Logical Equivalences and the `FOR ALL` Quantifier
+From logic, we know that "there exists" can be substituted for "for all" by swapping negations. The equivalence rules are:
+1. `NOT EXISTS x such that R holds on x` is the same as `FOR ALL x, R does not hold on x`.
+2. `NOT FOR ALL x, R holds on x` is the same as `EXISTS x such that R does not hold on x`.
+
+SQL does not have a built-in `FOR ALL` operator, partly because it is not frequently useful in standard database operations. For example, finding a manufacturer that makes "all products" is rarely a practical query. However, if you do need to emulate `FOR ALL`, you can use the equivalence rules by using `NOT EXISTS` and negating the predicate within the subquery.
+
+For example, to find manufacturers that make all products:
+```sql
+SELECT m.man_name 
+FROM manufacturer AS m 
+WHERE NOT EXISTS (
+    SELECT * 
+    FROM product AS p 
+    WHERE p.man_name != m.man_name
+);
+```
+In summary, SQL provides `EXISTS` and `NOT EXISTS` for subqueries. Because there is no native `FOR ALL` operator, it must be emulated using `NOT EXISTS` combined with a negated predicate within the subquery.

@@ -1,0 +1,50 @@
+### Query Plan Cost Estimation and Size Estimation
+Estimating the cost of a query plan requires knowing how much data each operation processes. This process is known as size estimation. We must estimate the amount of data in each table used, as well as the data in each intermediate result throughout the computation.
+
+### Size Statistics per Table
+To base these estimates on, we maintain several forms of statistics. Size-based statistics are derived from the table structure:
+*   **Number of tuples:** The total count of rows in a table.
+*   **Number of blocks:** The total number of storage blocks a table occupies.
+*   **Size per tuple:** The length of a tuple in bytes.
+*   **Blocking factor:** The number of tuples that fit into a single block.
+
+The number of tuples and the number of blocks are related. Assuming there is no fragmentation, the equation to relate the number of blocks to the number of tuples is:
+*Number of blocks = ceil(Number of tuples / Blocking factor)*
+
+For this analysis, we ignore variable-length types like text, as their arbitrary length complicates standard analysis.
+
+### Estimating Output Size for Operations
+We estimate the size of the output relative to the input, focusing first on the number of tuples.
+
+*   **Cross Product:** Every tuple of R matches with every tuple of S, resulting in a product of the sizes.
+*   **Joins:** If joining on a foreign key, we utilize referential integrity. Each tuple in R matches at most one tuple in S. If the join condition is not based on a foreign key, the result can be as large as a cross product.
+*   **Outer Join:** Each R joins with at most one S, and each S joins with at most one R. The result includes all tuples from R regardless of whether they match an S.
+*   **Anti-Join:** This returns tuples in R that do not match any tuple in S. At worst, the result size is equal to the number of tuples in R.
+*   **Multi-set Operations:**
+    *   **Union:** The sizes are added together.
+    *   **Intersection:** The size is approximately the minimum of the two inputs.
+    *   **Subtraction:** The result depends on how many elements in S match elements in R.
+
+### Estimating Block Sizes for Joins
+To estimate the number of blocks in a joined table (XY), we use the following algebraic derivation:
+*Number of blocks in XY = (Length of XY / Block size) * Number of tuples in XY*
+
+This can be expanded using input statistics:
+*Number of blocks in XY = ( (Length of X / Block size) + (Length of Y / Block size) ) * Number of tuples in XY*
+*Number of blocks in XY = ( (Blocks of X / Tuples of X) + (Blocks of Y / Tuples of Y) ) * Number of tuples in XY*
+
+### Value Statistics
+Value statistics provide information about the data stored within attributes to help estimate the selectivity of conditions. Common statistics include:
+*   **Number of distinct values.**
+*   **Minimum and maximum values.**
+*   **Histograms:** Summaries of value distributions.
+
+There is a trade-off between the accuracy provided by these statistics and the overhead required to calculate, store, and maintain them.
+
+### Histograms
+Histograms store counts of attribute values. Because storing a count for every individual value is space-intensive, compact representations are often used:
+*   **Equi-width Histograms:** Values are grouped into boxes of equal width, and the count for each box is stored.
+*   **Equi-depth Histograms:** Values are grouped into boxes of varying widths such that the counts within each box are approximately equal. This provides better estimates but requires more metadata to track box boundaries.
+
+### Maintenance and System Implementation
+Statistics must be updated to remain accurate. If updates are infrequent, statistics can become stale, leading to poor query plans. Systems often automate this process, though manual control is sometimes available. For example, in PostgreSQL, the `ANALYZE` command allows users to control update frequency, and metadata can be viewed directly in system tables such as `PG_STATS`.

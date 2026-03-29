@@ -1,0 +1,45 @@
+### Introduction to Locking
+Locking is an approach used to control access to resources, such as memory locations, during concurrency. The basic concept involves obtaining a lock on an object before use to ensure exclusive access. Once the process is finished, the lock is released, allowing other processes or threads to access the resource.
+
+### Types of Locks
+To refine this approach, we utilize both write and read locks:
+*   **Exclusive Lock (X-lock):** This is obtained before writing to an object. It ensures that no other process has access to the object, meaning no other process can read or write to it.
+*   **Shared Lock (S-lock):** This is used when a process only needs to read an object. It allows multiple threads or processes to access and read the same object simultaneously. However, an S-lock prevents any other process from obtaining an exclusive lock on that object.
+
+### Lock Granularity
+The size or granularity of the objects being locked can vary:
+*   **Individual Cell:** The intersection of a row and a table (a single memory location).
+*   **Row:** A single row of a table.
+*   **Table:** An entire table.
+*   **Database:** The entire database.
+
+Locking an entire database is only appropriate if writes are rare; otherwise, frequent locking prevents concurrency. As the size of the locked object decreases, concurrency increases because one process can lock a specific cell while others access different cells or rows. However, using more locks increases system overhead. Typically, databases like PostgreSQL use a combination of row and table locks.
+
+### Two-Phase Locking (2PL)
+There are various protocols for obtaining and releasing locks. A common approach used in databases, including PostgreSQL, is the two-phase locking protocol. In this approach, locks are obtained before the appropriate operation, but they are only released when the entire transaction completes. 
+
+This protocol provides several benefits:
+*   **Conflict Serializability:** It guarantees conflict serializability, which is a desirable property.
+*   **Implementation:** It is conceptually straightforward to implement.
+*   **Transparency:** The locking process is transparent to the general database programmer, occurring behind the scenes.
+
+The theorem for two-phase locking states that it only allows schedules with acyclic conflict graphs, which ensures serializability. If a conflict exists between transactions $T_i$ and $T_j$, $T_i$ will not release its locks until the end of the transaction. Therefore, $T_j$ must wait for $T_i$ to complete. If the schedule is allowed by 2PL, there cannot be a conflict from $T_j$ to $T_i$, meaning there is no cycle in the conflict graph.
+
+### Deadlock
+Deadlock occurs when two or more transactions are waiting on each other to release locks. For example, if Transaction 1 holds an S-lock on A and tries to get an X-lock on B, while Transaction 2 holds an S-lock on B and tries to get an X-lock on A, both transactions will wait indefinitely.
+
+To manage deadlock, there are two general strategies:
+1.  **Prevention:** Designing the system so that deadlock never occurs.
+2.  **Detection and Resolution:** Allowing deadlock to occur, detecting it, and resolving it.
+
+A common detection method uses a "wait-for" graph, where each transaction is a node and edges represent waiting dependencies. If a cycle exists in the wait-for graph, a deadlock is present. To resolve the deadlock, the system aborts one of the transactions, forcing it to undo its operations.
+
+### Additional Lock Types and Isolation
+Beyond basic read and write locks, other types include:
+*   **Range Locks:** Hold a lock on a range of data (e.g., a query condition like 20-40).
+*   **Update Locks:** Specialized locks for operations that involve both reading and writing.
+*   **Schema Locks:** Used when modifying the structure of a table to prevent concurrent data access.
+
+While standard locking is transparent, PostgreSQL also allows for user-controlled locks. Furthermore, locking protocols are used to implement different isolation levels. For instance, the "serializable" isolation level utilizes read, write, and range locks to ensure maximum safety, while lower isolation levels may use fewer locks or different release timings.
+
+In summary, locks are the standard mechanism for managing concurrent access to resources in databases and other concurrent systems. Understanding the trade-off between concurrency and overhead is essential for effective database design.

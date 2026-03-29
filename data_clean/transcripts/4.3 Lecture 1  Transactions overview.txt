@@ -1,0 +1,26 @@
+### Introduction to Transactions
+In this video, I want to introduce transactions, which we will be discussing for a while. Before getting into transactions themselves, I want to introduce some problems that we want to address.
+
+### The Problem of Concurrency: Double Booking
+Let’s say that both Joe and Sue are trying to buy tickets on the depicted airplane. They both go to the website and try to access the system at the same time. Joe happens to click a little bit earlier and sees the available seats. Then, Sue does the same thing; Sue makes her choice more quickly, chooses 15F, and gets back a confirmation that the seat is available. 
+
+Before Sue actually completes the purchase, Joe sees that 15F is available, chooses it, and gets back a confirmation that it is indeed available. Joe then buys the seat because it is available. Meanwhile, according to Sue’s web browser, the seat is also available, so she buys that seat as well. We end up with a seat double-booked, which is not only inconvenient for our two passengers, but it also means that we are ending up in an inconsistent state. Our two concurrent users have been conflicting with the seat. If we change this to make our last two steps atomic—meaning that they act as one step—we can avoid this whole problem so that only one of the passengers can actually get the seat confirmed and bought.
+
+### The Problem of Failure: Incomplete Transfers
+In another example, let’s say we have someone paying someone else via Venmo. Money gets transferred out of the first person’s account, but before it gets to the second person’s account, something bad happens. For example, someone digs up the internet cable to the receiving bank’s institution, or the bank’s computers lose power. The transaction is not complete, and our users are unhappy because we have an inconsistent state. We would like the first person’s withdrawal to be rolled back so that it essentially did not happen. If the entire transfer of money had been an atomic transaction—both the withdrawal and the deposit combined—we would have avoided this problem, and the rollback would be automatic.
+
+### The Problem of Durability: Lost Deposits
+Consider someone depositing money into their account using checks at an ATM. Unfortunately, before the money actually gets credited to their account, something bad happens to interrupt this process, and their balance reverts to whatever it was before the deposit. The deposit information is lost and was not durable.
+
+### The ACID Properties
+In these examples, I mentioned some of the ACID properties that were being broken. We want these properties to always be held:
+
+*   **Atomicity:** This means we have "all or nothing" execution. If any part of what we call a transaction gets interrupted, we want to automatically roll that back so that it looks like absolutely nothing got executed in the transaction.
+*   **Consistency:** This means that we are always in a valid state, where all of our constraints and data integrity conditions are being met.
+*   **Isolation:** This means that concurrent users cannot appear to conflict with each other; their actions do not interfere.
+*   **Durability:** This means that once data has been recorded, it is permanent and we do not lose our data.
+
+### Transactions in Modern Systems
+This goes beyond just database issues; concerns about concurrency and recovering from failure are important in any modern system. What I am saying about databases, at least in part, applies to other systems outside of databases as well. 
+
+First, any individual statement is a transaction, even if that statement is very complicated. Next, we can explicitly create a transaction with "begin" and "commit" statements, with everything inside of them becoming part of that transaction. In future videos, we will be examining the consequences of using transactions and the ideas behind implementing them.

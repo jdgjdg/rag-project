@@ -1,0 +1,43 @@
+## Introduction to Relational Calculus
+
+One of the main things we want to do with a database is find the data we care about. For that, we want to query the database. The mathematical foundations of querying come from two ideas: the relational calculus and the relational algebra. We will be looking at the relational calculus here. Both the relational calculus and the relational algebra contain the seeds of what we will see when we turn to the particular programming language called SQL. The relational calculus, or more specifically the tuple relational calculus, is based upon logic.
+
+## Example 1: Simple Product Query
+
+Let's walk through this example. We want the set of some resulting values. What data are we interested in? We want the resulting data, specifically the product name of product tuples. We will be looking at the `product` relationship and tuples P within the `product` relationship.
+
+What else has to be true about a tuple? It must not only be a tuple of the product, but its price must be at least 20. This rules out several items. We also want the product manufacturer to equal Gizmo Works. This rules out other items and leaves one value. The resulting value is the product name of this tuple: Power Gizmo. This is the entire set, the entire result.
+
+## Example 2: Query with Joins and Calculations
+
+What about this slightly more complicated example? Once again, we want the set of things. This time, we want to look at `Prod price` of things called P. Once we get that value, we want to multiply it by the Houston sales tax value, 8.25%. We want to find Ps that are products; products have `prod price`. We are also interested in Ms that are manufacturers.
+
+What this means is we are looking over all the different product tuples. P can range over the products, and we want to find an existing M that ranges over the manufacturers. We want cases where the `prod_manufacturer` is equal to the `man_name`. We are interested in only some combinations of P and M. For example, we are interested in the combination of this product with this M because `prod manufacturer` is equal to `man name`. However, we are not interested in the combination of this product with this M, because the `product manufacturer` does not line up with the `man name`; it does not satisfy this equality.
+
+The next condition is that `Man City` must be equal to Houston. We are not interested in other cities or states; we are only interested in `Man state` equal to Texas. Fortunately, this happens to be true for all cities named Houston in our data. We are only interested in these two Ps. They each match up with this particular M that satisfied the conditions. Thus, we are interested in these two `prod prices`. The set consists of 19.99 multiplied by the tax rate, along with 39.99 multiplied by the tax rate. Whatever those two values end up being are the result of this query.
+
+## Example 3: Quantification - Manufacturers Without Products
+
+As another example, we can find all manufacturer names such that there does not exist a product corresponding to that manufacturer. In other words, all manufacturers that do not have a product. This illustrates that we can use any form of quantification embedded in our logic statement.
+
+## Example 4: Complex Quantification - Manufacturers with Exactly One Product
+
+For another example, we want to combine the previous ideas to find all manufacturers that have exactly one product. How are we going to do this? We start with curly braces and want to find the manufacturer, specifically the `man name` of manufacturer M.
+
+What else? We want to state that they have at least one product. We will use the idea from our first example and state that there exists a P1. However, we also want to state that there does not exist a P2, meaning there is no other product. Product P1 and product P2. Of course, they each need to be products of the manufacturer. We want to state that `p1.prod_man` (manufacturer) is equal to the manufacturer's `man_name`. The same applies to product P2. We also want to state that P1 is not the same as P2. Combining these ideas allows us to build this up.
+
+## Notation Details and Rules
+
+Some key general points: All such formulas will specify what pieces we actually want, what kind of thing we are quantifying or describing (e.g., a manufacturer), and then usually include some quantification with logical statements. In more complex examples, we can have even more quantification embedded. However, for most examples, one layer of quantification is sufficient.
+
+After these examples, let's now turn to some details of the notation where students sometimes have trouble. For the set former notation, we want the set of certain things such that some condition holds. What things do we want? These will be either attributes or functions on those attributes, such as performing a computation.
+
+Furthermore, while `product P` is traditionally written as another relation, other sources also write this as P is an element of `product`. P is a tuple; it is an element of the relation.
+
+For quantification, there are a couple of important details to review. All variables must be quantified. Think of this like a programming language where all variables must be declared with their type. Something similar happens here: all of our variables (e.g., P and M in these examples) must be quantified.
+
+What can be confusing is that with the set former notation, variables on the left-hand side are implicitly quantified. What does the set former notation mean? It means we want all of the `p prod price` times tax, such that some condition holds. Notice the word "all" there. That is implicit universal quantification for items on the left-hand side. For those on the right-hand side in the condition, we need to explicitly quantify them. Here is the explicit quantification of M, and here is the explicit quantification of P in that example. In contrast, variables on the left-hand side are implicitly quantified.
+
+Furthermore, the type of each variable needs to be shown. For example, `product` in `product P` and `manufacture M`. Furthermore, the quantification can be moved around for variables that are different from the quantifier. In this example, this quantification could be moved after `product P` because P is not M. Similarly, we could move that back out, quantifying P before discussing `manufacture M`. Again, for different variables, the order is irrelevant.
+
+This combination of logic features is the relational calculus and embodies many of the features that we will see later in SQL.

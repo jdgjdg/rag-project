@@ -1,0 +1,16 @@
+### Error Checking in Combined Database and Application Architectures
+
+#### Application-Side Error Checking
+Error checking should be implemented on the application side, specifically within the user interfaces, which should include comprehensive input validation. Additionally, the application must handle any errors raised by the database. This is a critical security issue; as discussed regarding SQL injection, failing to handle these errors may result in the end user seeing database-generated error messages that expose internal implementation details. Furthermore, the application can typically provide superior feedback to the user because it allows for better formatting and possesses more context regarding the user’s current state.
+
+#### Database-Side Error Checking
+On the database side, certain errors are more appropriate and easier to verify when the system has access to the complete dataset. For example, referential integrity requires access to other tables and their associated data; this is handled natively by foreign keys. Furthermore, because the database is responsible for the integrity of the data, it cannot rely solely on the application to perform all necessary checks. Consequently, checks are often duplicated within the database to ensure data consistency.
+
+#### Mechanisms for Database Error Checking
+To implement error checking on the database side, the following mechanisms are used:
+*   **Constraints:** These serve as the primary method for enforcing data integrity.
+*   **Triggers:** These are also an important tool for automated validation.
+*   **Imperative Code:** Within stored procedures or scripts, developers use traditional conditionals and exception handling.
+*   **Logging:** Logging is used to register system events, allowing administrators to identify and investigate issues within those logs.
+
+Ultimately, if the question is where to perform error checking, the answer is everywhere.

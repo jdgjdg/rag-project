@@ -1,0 +1,29 @@
+### Logging for Auditing Purposes
+
+I have previously described transaction logging and mentioned that logging is also done for other purposes. Now, let us look at logging for auditing purposes. In an audit log, the idea is to record every important action, such as who accessed what, from where, and when.
+
+#### Examples of Audit Logging
+If you are working with medical data, you might want to record which doctor accessed a patient's health information, from what terminal, and at what time. However, you might not require a similar audit log for a patient's contact information or address. 
+
+If you are addressing security issues, you are concerned with every detail: what file or record was accessed, where the user was logging in from, when the event occurred, and what username was used. Like a transaction log, this information is written to stable storage so that it can be reviewed later if necessary.
+
+#### Reasons for Audit Logging
+There are two main reasons for maintaining an audit log:
+
+1.  **Compliance:** There are a variety of regulations that dictate how data can be used, who can access it, and for what purposes. Examples include FERPA (which controls student data), HIPAA (which controls health data), and GDPR (the European Union regulations on data privacy). You must keep track of what happened with your information to remain compliant.
+2.  **Security:** If a breach occurs and files are lost, you can review the audit logs to detect who performed the action, where the cyber attackers originated, and how they gained access to the system. You might also actively monitor logs to detect a security breach while it is in progress.
+
+#### Audit Logs vs. Transaction Logs
+It is important to emphasize that an audit log is not the same as a transaction log; they serve different purposes. While an audit log is durable—written to disk—it is not necessarily atomic. These will be stored as different files on the disk.
+
+#### Implementation Methods
+There are several ways to track audit information:
+
+*   **Explicit Implementation:** You can implement logging in the database code using triggers or API functions. The audit information can be stored in tables or written to a data file.
+*   **Implicit Implementation:** Audit log creation can be handled implicitly by the database or through an extension. Many database auditing extensions allow this to happen automatically. You do not have to write the code yourself, but you must specify what data to log and when to log it; the database system then handles the details.
+
+In PostgreSQL, there is no built-in functionality to automatically create audit logs. However, there are a number of extensions available that can be plugged into the server system. Alternatively, you can implement it yourself using a trigger. 
+
+For example, a simplified trigger—similar to those seen earlier in the course—can be configured so that every time an insert or update occurs on a particular table, the trigger executes. The trigger timestamps the data and records who performed the update. This data can be sent to a file or a separate table. 
+
+In summary, the purpose of audit logs is similar to, but distinct from, transaction logs. It is a necessary practice if you are concerned with compliance or security.

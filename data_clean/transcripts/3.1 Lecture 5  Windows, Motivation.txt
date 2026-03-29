@@ -1,0 +1,17 @@
+### Introduction to SQL Windows
+The third form of computation in SQL is windows. Before introducing windows, it is helpful to examine an example that motivates why they are necessary. We will use time series data, which represents values associated with specific points in time. While this can be interpreted as bank accounts with deposits and withdrawals, these numbers could represent any data. Time series data is significant in fields such as healthcare, where it is used for EKG data; there are even database systems specialized for such data.
+
+### The Running Total Problem
+Our first example involves working with running totals. If the data represents deposits and withdrawals, a running total provides the current bank balance at any point in time by summing all previous values. Before windows were added to SQL, calculating a running total was a standard puzzle for students.
+
+### Calculating Running Totals Without Windows
+To calculate a running total without windows, the first approach is to join the table with itself. Each row in the data joins with all previous rows from the same table. This is a complex join, distinct from most joins previously discussed.
+
+To define "prior" data, the intuitive approach is that a prior date is earlier than the current date. To handle ties where multiple entries occur on the same date, we use an arbitrary ordering based on a unique identifier. If entries share the same date, "prior" means an earlier ID. 
+
+When performing this join, we include the current row itself because a running total requires summing all previous values plus the current value. For example, an entry with ID 2 on 5-15 matches with the previous entry on 5-12 and with itself, but it does not match with other entries on 5-15 that have a higher ID. Consequently, ID 3 matches with IDs 1, 2, and 3, and ID 4 matches with 1, 2, 3, and 4.
+
+### Computation and Performance
+Once the join is established, we perform the computation by grouping by the identifier and summing the associated values for each group. This process generates the running total.
+
+A significant problem with this approach is its inefficiency. If there are *n* elements in the original data, the complexity of joining with all previous values is proportional to *n* squared over two. Intuitively, calculating a running total should only require linear or order *n* time, as one would simply list the data and add values sequentially. Because this join-based approach takes quadratic time, it is both inefficient and overly complicated. We will see how to solve this problem more simply using windows.

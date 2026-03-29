@@ -1,0 +1,46 @@
+### Anomalies in Concurrent Schedules
+
+Anomalies in concurrent schedules are situations involving undesirable concurrent behavior. While these are analogous to design anomalies that should generally be avoided, we may choose to allow them to increase concurrency. This represents a practical versus theoretical trade-off.
+
+#### Dirty Read (Read Uncommitted)
+A dirty read occurs when a schedule begins with a write to location A. A second transaction then reads and writes to location A and commits, while the first transaction aborts. Because the first transaction aborted, the write to A should never have occurred. However, the second transaction read the uncommitted value and used it to calculate a new value. Consequently, the value stored in A is dependent upon data that should have been ignored. This anomaly is caused by a read-write conflict.
+
+**When are dirty reads acceptable?**
+*   **Low probability of concurrent writes:** If the likelihood of a concurrent update is extremely low, such as in a software application generating a pull-down menu list, the risk may be negligible.
+*   **Redo capability:** If the read operation can be easily repeated, such as in an airplane seat picker or a web search where results may change due to database updates, the inconsistency is often acceptable.
+*   **Tolerance for minor inconsistencies:** In applications performing statistical analysis on large datasets, having one incorrect data point out of a million is often preferable to the overhead of recomputing the entire dataset.
+
+**When are dirty reads unacceptable?**
+*   **Updates based on dirty data:** If dirty data is used to update the database, it can trigger a cascading effect of errors.
+*   **High-stakes data:** In financial systems, such as banking, where every cent must be accounted for, dirty reads can lead to incorrect balances. For example, if a withdrawal is aborted but a second transaction uses the dirty data to perform further operations, the final account balance may remain incorrectly negative.
+
+#### Unrepeatable Read
+An unrepeatable read occurs when a transaction reads a value, a second transaction updates that value and commits, and the first transaction reads the value again. The first transaction expects the same value as before to maintain serial behavior, but instead receives the updated value. This is caused by a read-write conflict.
+
+**When are unrepeatable reads acceptable?**
+*   **Dynamic pricing:** Reloading a webpage and seeing a price change is a common, accepted practice in e-commerce.
+*   **Inventory changes:** Discovering an item is out of stock after initially seeing it available is a standard, albeit frustrating, real-world scenario.
+
+#### Phantom Read
+A phantom read is similar to an unrepeatable read but involves queries rather than single locations. A transaction selects a set of data, a second transaction inserts or deletes rows in the table, and the first transaction performs the same select again. The first transaction receives an inconsistent set of data compared to the initial read.
+
+**Difference between Unrepeatable Reads and Phantom Reads:**
+*   **Unrepeatable Read:** Existing records are updated.
+*   **Phantom Read:** Records are added or deleted, changing the number of rows in the table.
+
+**When are phantom reads acceptable?**
+*   **Dynamic availability:** In scenarios like course enrollment or product catalogs, it is common for availability to change while a user is browsing, as other users add or remove items from the system.
+
+#### Inconsistent Read
+An inconsistent read occurs when a transaction writes to location A, a second transaction reads A and another value (B) to calculate a result for a third location (C), and the first transaction then writes to B. The value of C becomes inconsistent because it depends on the initial state of A but the updated state of B, effectively using a set of values that never existed simultaneously in a serial execution. This is caused by a read-write conflict.
+
+#### Lost Update
+A lost update occurs when two transactions perform blind writes (writes not dependent on previous values) to the same locations. If transaction one writes to A, transaction two writes to B and commits, and then transaction one writes to B and commits, the final state of the database does not reflect the serial execution of either transaction. This is caused by a write-write conflict.
+
+### Summary of Anomalies and Serializability
+In principle, conflicts and anomalies are not inherently bad; they serve as warning labels. A conflict indicates that a system must be used carefully, while an anomaly acts as a confirmation that specific behaviors are being allowed. For example, in social media feeds, it is generally acceptable to miss new posts (phantom read), see deleted posts (phantom read), or see old versions of posts (dirty read).
+
+*   **Anomaly Serializable:** A schedule that is free of anomalies.
+*   **Conflict Serializable:** If a schedule is conflict serializable, it is also anomaly serializable, but the reverse is not necessarily true. 
+
+While anomalies are useful for categorizing serializability issues, they are not the primary method for checking for serializability. In general, these anomalies are conditions that developers aim to avoid.

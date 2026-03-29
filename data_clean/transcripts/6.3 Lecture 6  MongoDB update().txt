@@ -1,0 +1,29 @@
+### Updating Documents in a Collection
+
+We have seen how to insert documents into a collection; now we will examine how to modify the data within those documents. The `update` method is used for this purpose, and it requires two arguments. The first argument is the match criteria, which functions identically to the `find` method by specifying the document or documents you want to match. The second argument is a specification of how those matched documents should be updated.
+
+In our first example, we want to match all documents with the `prod_name` "Gizmo" and update them. We will set the `prod_name` to "Gizmo Plus" and change the `prod_price` to 20. After executing this update and running a `find` operation, we can see that the documents now have the `prod_name` "Gizmo Plus" and a `prod_price` of 20, while all other existing data remains unchanged.
+
+### Modifying Values with Operators
+
+We can also perform operations such as incrementing values. For instance, if we look for documents with a `prod_price` of 10, we can use an operator to increment the `prod_price` by 3, changing the value to 13. Verifying this confirms that the "Widget" product price is now 13, while the "Gizmo" product price remains at the value set in the previous example.
+
+There are several other keywords available for updates:
+*   **`unset`**: Removes a field from documents.
+*   **`pop` and `push`**: Treat an array value as a stack, allowing you to add or remove values from the array.
+*   **`add_to_set`**: Treats an array as a set, adding values to that set.
+*   **`pull` and `pull_all`**: Remove elements from an array.
+
+For embedded documents, you can use dot notation to change specific fields within the embedded structure.
+
+### Upsert Operations
+
+Beyond the standard `update` method, you can use `update_many` or `update_one` to perform "upsert" operations, a concept previously described in the context of relational databases. An upsert occurs when the search criteria in the first argument do not match any existing documents; in this case, the system inserts the search document as a new entry.
+
+For example, if we use `update_many` to look for a `prod_name` of "no such product"—which matches nothing—and set the `prod_price` to 10, we must provide a third argument: the boolean `true`. This specifies that an upsert should be performed. If this third argument is omitted, it defaults to `false`, and no upsert will occur. Because no existing document was found in this instance, the system created a new document containing both the `prod_name` and the `prod_price`.
+
+### Deleting Documents
+
+To remove documents entirely, you can use the `delete_many` or `delete_one` methods. These methods follow the same logic as updates, where you specify the document criteria you are searching for. For example, we can delete the newly upserted document with the `prod_name` "no such product," and it will be removed from the collection.
+
+In summary, once documents are created, they can be managed by updating, upserting, and deleting them as needed.

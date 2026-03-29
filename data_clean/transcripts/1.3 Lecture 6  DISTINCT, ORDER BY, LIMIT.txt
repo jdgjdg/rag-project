@@ -1,0 +1,52 @@
+# Introduction to SQL Keywords
+
+In this video, we're going to look at the use of a few more keywords in SQL queries. We're going to be using our standard products and manufacturer tables and data.
+
+# Avoiding Duplicate Data
+
+Our first set of examples will focus on avoiding duplicate data. Remember, on the theoretical side, relations are sets; we don't have duplicates. But tables are multisets; they allow duplicate data. So, how can we eliminate duplicates when we want to?
+
+To start off, let me just run this simple query as a starting point and point out that if we just get the `prod_manufacturer`, we have some duplicates. How can we modify that query to avoid duplicates? I'm just going to copy that and modify it slightly. What I want is for all of the manufacturers to be distinct. By adding that keyword, I get the same data except without duplicates. Notice that it's in a different order, but that's completely irrelevant. We haven't tried to put things in any particular order, so that's fine.
+
+# Ordering Data
+
+Now we might want to put data in some particular order. Again, relations are unordered; tables allow ordering. Specifically, what if we want to order them in the way specified on the screen here? It's a complicated way: first, we want all of the prices in decreasing order, but if there are ties, then we want the manufacturers to be in alphabetical order.
+
+I didn't specify what data we actually wanted to see, so I'll go ahead and show all of it. I just want the price and the manufacturer. Both of those are in the products table, so I'll just use the product table. What I want to do now is to use the `ORDER BY` clause, which is sorting them. It's ordering them by however we will specify.
+
+The first way I want things ordered is by the `prod_price`, and I want those in decreasing order, or descending (simply `DESC` as an abbreviation). When there's a tie, I want them to be sorted on the manufacturer, `p.prod_manufacturer`. I want those in ascending alphabetical ordering. For ascending, that's the default, so I don't need to type anything.
+
+Here's the result. The `prod_price` is in descending order. Notice that `null` gets put first. When there is a tie here on Gizmo and Widget, both being $10, you notice that GizmoWorks comes before WidgetsRUs.
+
+# Sorting on Computation Results
+
+We can also sort on computation results, as I'll illustrate with this query. For this query, I'll note that I also defined and loaded data for purchases, with a very simple notion of price and quantity data. In particular, I'm showing in the results the item name. Then I'm multiplying each item's price and quantity to come up with that particular item's total. I want to have the results sorted by those totals, as you can see in this result. You can see that not only is it computing the total, but it is actually sorting on that data as well. By default, ordering is always in ascending order.
+
+# Picking a Subset of Results
+
+As a last set of examples, I want to look at the problem of trying to pick a subset of our results. There are several reasons why we might want to do this. Maybe the results that we have are just too big, and we only want to see a sampling of them. Or maybe we only want to see the "best" results in some sense.
+
+Specifically, I'm going to break this down into three categories:
+1.  An arbitrary subset: whatever set the system picks for us.
+2.  A top subset: the "best" ones in some sense.
+3.  A truly random subset: where each time we run it, we get a different random subset, and it's statistically randomized.
+
+We're only going to look at the first two of these. The third of these we'll look at later in the course.
+
+## Arbitrary Subsets with `LIMIT`
+
+For an arbitrary subset, we can simply use the `LIMIT` keyword. If I want two results, I can simply say `LIMIT 2`, and it will show me two results, two tuples of data of whatever shape I requested.
+
+## Top Subsets with `ORDER BY` and `LIMIT`
+
+If I want the top or the "best" subset, I need to specify what I mean by "being the best." In other words, I need to specify how we're going to order the data. So, we're going to use `ORDER BY` to sort the data and then `LIMIT` to pick the top values, as in this example here.
+
+I'm sorting by the `prod_price`, which by default means in ascending order. Then I pick the top two, which means the cheapest two in this case. Executing that, we see that we get the two products that are each $10.
+
+## SQL `LIMIT` Keyword Variations
+
+A little side note: this is PostgreSQL, and some other variants of SQL use other ways for doing the `LIMIT`. Some of them use a `TOP` keyword, and some of them also use something known as `KEYNUM` to pick things. I'm not going to go into those details; look those up if you are working with different versions of SQL.
+
+# Conclusion
+
+This is the end of our exploration of SQL syntax for now. In the next module, we will get into more advanced queries and more advanced computation within queries.

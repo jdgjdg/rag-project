@@ -1,0 +1,40 @@
+## Limitations of ERDs
+
+I've discussed what we can do with ERD relationship diagrams for database design and provided examples. Now, let's examine what ERDs cannot do, focusing on practical limitations rather than theoretical ones.
+
+### Workarounds for Certain Restrictions
+
+Some restrictions can be overcome by creating more complex diagrams to represent the same idea.
+
+*   **Cardinality Restrictions:** For example, if a relation requires a minimum of two and a maximum of many, this can be implemented by using two one-to-n relationships instead of a single complex one.
+*   **Key Attributes of Relationships:** ERDs do not offer flexibility in defining the key attribute of a relationship. The key of a relationship is defined as the cross product of the keys of the related entity sets. To add a new key to a relationship, you can replace the relationship with an entity set and then create relationships from this new entity set to the other original entity sets. This former relationship, now an entity set, can have key fields added to it. This is similar to how many-to-many relationships can be implemented either as a relationship or as an entity set.
+*   **Superclasses and Subclasses:** When dealing with superclasses and subclasses, ERDs only support equality or unions of subclasses, not intersections. While intersections rarely arise, if needed, you can create entity sets representing these intersections and then union them into the larger, original entity sets.
+
+### Unresolvable Issues in ERDs
+
+Some issues cannot be easily resolved within the ERD model itself.
+
+*   **Cycles and Data Inconsistencies:** ERDs with cycles can lead to data inconsistencies. Consider this example:
+    *   A person can hire one mechanic.
+    *   A person can own one brand of car.
+    *   A mechanic can service one brand of car.
+
+    A problematic scenario arises if PAM owns only a BMW, hires Mike as her only mechanic, but Mike services only Buicks. The ERD does not capture the dependency between PAM's car ownership and her mechanic choice. These relationships are modeled independently, allowing for inconsistent data.
+
+*   **Ambiguity in Symmetric Relationships:** In a simple diagram where a person can have a friend who is another person, the ERD is unclear about the intended symmetry of the "friend" relationship (i.e., mutual friends). The ERD can only implement a non-symmetric version, allowing for one-sided friendships regardless of intent.
+
+## Addressing ERD Limitations in Implementation
+
+When an ERD cannot precisely model desired semantics, these issues can be addressed during the SQL implementation phase. Additional restrictions can be enforced using various techniques, which will be introduced later in the course:
+
+*   **User-Defined Constraints:** These can be added within SQL data definitions.
+*   **Triggers:** These are also part of SQL.
+*   **Functions:** Functions can be created to check conditions, either within SQL or in an application calling the database.
+*   **API Requirements:** The API that interacts with the database can add requirements for create, read, update, or delete operations. These can be implemented in SQL or within the application.
+
+**Big Picture Approach:**
+
+When you cannot model your requirements exactly with ERDs:
+
+1.  **Choose the Simplest, Most Accurate ERD:** Select an ERD that allows all desired semantics and properties.
+2.  **Add Additional Restrictions:** Implement any missing restrictions through the additional techniques mentioned above during your database implementation.

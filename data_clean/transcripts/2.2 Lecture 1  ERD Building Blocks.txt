@@ -1,0 +1,35 @@
+## Entity Relationship Diagrams: The Basics
+
+This video will cover the fundamental building blocks of entity relationship diagrams (ERDs).
+
+### Building Blocks of ERDs
+
+There are three primary components to ERDs:
+
+1.  **Entity Sets:** These represent finite sets of individual entities or data items. Each entity, such as a course, can be viewed as a mapping from its attributes to specific values for that entity. The primary key is notated for each entity set, and its value must be unique among all entities in that set.
+
+2.  **Relationships:** These represent connections between entity sets. Formally, a relationship is a subset of the cross product of those entity sets. The primary key of a relationship is the cross product of the corresponding related entity sets.
+
+3.  **Attributes:** These elaborate on the entity set or relation to which they are connected.
+
+### ERDs vs. SQL
+
+It is important to distinguish ERDs from SQL. While it may be tempting to equate entity sets with tables, they are distinct concepts. Similarly, relationships are not tables.
+
+The implementation of ERDs into SQL will address how entity sets and relationships map to tables, but they are not the same. A key difference is that while both ERDs and SQL describe primary keys as part of attributes, ERDs do not include descriptions of foreign keys, whereas SQL does.
+
+### Combining ERD Elements
+
+ERDs can combine multiple entity sets and relationships in various ways.
+
+**Example 1:** A diagram showing three entity sets and three relationships illustrates the general principle of combining many entity sets and relationships in arbitrary ways. Notation on the edges between relationships and entity sets will be discussed in an upcoming video.
+
+**Example 2:** Multiple relationships can exist between the same entity sets, as each relationship can have a different meaning. For instance, a person can be employed by a company or own stock in a company; these are distinct relationships with different underlying meanings.
+
+**Example 3:** A relationship can relate an entity set to itself. An example is a relationship between the "person" entity set and itself, indicating whether a pair of people are friends. This is familiar to users of social media platforms.
+
+**Example 4:** While relationships most commonly connect two entity sets, they can also involve more than two. A ternary relationship, for example, involves three entity sets. A "purchase" can be represented as a combination of a person, a store, and a product.
+
+### Future Topics and ERD History
+
+Future videos will provide more ERD examples and introduce additional features. The ERDs discussed will technically be enhanced ERDs, as some features were not present in the original presentation. ERDs have been in practice for over 30 years and are considered to strike a balance between generality, practicality, and usability.

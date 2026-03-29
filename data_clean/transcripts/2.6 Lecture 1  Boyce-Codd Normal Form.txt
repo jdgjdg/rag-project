@@ -1,0 +1,35 @@
+### Boyce-Codd Normal Form (BCNF) and Normalization Algorithm
+
+Boyce-Codd Normal Form (BCNF) occupies a middle position in the normalization hierarchy and is a commonly used standard. The basic normalization algorithm involves identifying "bad" or undesirable functional dependencies and decomposing the table into sub-tables based on those dependencies.
+
+#### Defining Bad Functional Dependencies
+To define a bad functional dependency, we refer to Chris Date’s description of BCNF: "Each attribute must represent a fact about the key, the whole key, and nothing but the key." In formal terms, each attribute must be a fact about the entirety of the key or a super key.
+
+If we ignore trivial functional dependencies (such as A → A), which contain no information, we can categorize functional dependencies as follows:
+*   **Good Functional Dependencies:** Those that functionally determine the entire relation. In these cases, the left-hand side is a super key.
+*   **Bad Functional Dependencies:** Any dependency where the left-hand side (X) functionally determines something less than the entire set of attributes in the relation.
+
+A relation R is in BCNF if, for every functional dependency, it is either trivial or the left-hand side is a super key (i.e., A → R).
+
+#### The Decomposition Process
+To normalize a relation, follow this two-step process:
+1.  Identify the functional dependencies that hold for the specific instance of the data.
+2.  Determine which dependencies are "bad" because they do not satisfy the BCNF property.
+
+For example, consider a table containing Name, Social Security Number (SSN), City, and Phone. If Name, SSN, and City are functionally determined by Name, but Phone is not, then Name → {Name, SSN, City} is a bad functional dependency because it does not determine the entire relation (it excludes Phone). To resolve this, the table must be decomposed using the bad functional dependency. One table is created from the left and right-hand sides of the dependency, and the other is created from the left-hand side and all remaining attributes. This process is repeated until no bad functional dependencies remain.
+
+#### The Recursive BCNF Algorithm
+The BCNF decomposition algorithm can be expressed recursively:
+1.  **Find a bad functional dependency:** Identify a dependency where the left-hand side (A) is non-trivial and is not a super key. If no such dependency exists, the process is complete.
+2.  **Decompose:** If a bad dependency is found, split the attributes into two sets: those functionally determined by A and those that are not.
+3.  **Create new tables:** Form two tables where the attribute set A is present in both. The remaining attributes are distributed based on whether they are functionally determined by A.
+4.  **Recurse:** Apply the decomposition algorithm to these two new tables.
+
+#### Example and Analysis
+Starting with a relation and its functional dependencies, we identify a non-trivial, non-super key dependency to decompose the table. We repeat this process for each resulting sub-table until we reach simple tables where no further bad functional dependencies exist.
+
+Once the decomposition is finalized, we identify the keys for the new relations:
+*   For each new table, simplify the functional dependencies to include only those relevant to the attributes present in that specific relation.
+*   Analyze the relationships between the new tables. Often, attributes in one table will act as foreign keys referencing the primary keys of other tables, creating a chain of entity sets.
+
+Finally, we must evaluate whether the decomposition is "good" and compare these results against other normal forms.

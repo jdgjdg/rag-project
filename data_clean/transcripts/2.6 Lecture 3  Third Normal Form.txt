@@ -1,0 +1,25 @@
+### Third Normal Form (3NF) Definition
+BCNF and third normal form are very similar. A relation is in third normal form if, for every functional dependency, one of the following conditions is met:
+*   The functional dependency is trivial.
+*   The left-hand side is a superkey.
+*   Every element of the right-hand side is part of some key.
+
+Note that the third condition does not require the element to be part of a specific key, but rather part of *some* key. While this definition is not the original, it is equivalent and highlights the similarity to the definition of Boyce-Codd Normal Form (BCNF). These definitions refer to all functional dependencies, including those that are derivable, not just those explicitly provided with the relation.
+
+### Properties of 3NF
+Third normal form decomposition is a lossless join, satisfying the first property of normalization. This is because 3NF is a weakening of BCNF; if BCNF does not require a table to be broken down, 3NF will not either, as it allows for an additional condition. If you decompose a relation into sub-tables, you still maintain the functional dependencies for those tables. Furthermore, 3NF satisfies the second property of normalization: it does not lose dependency information.
+
+### Comparison with BCNF
+In BCNF, a functional dependency must be decomposed if the left-hand side is not a superkey. In 3NF, we allow additional functional dependencies if the right-hand side is part of some key, even if the left-hand side is not a superkey. This means that a table that would be decomposed in BCNF might not be decomposed in 3NF. 
+
+While 3NF preserves dependencies, it is a weaker form than BCNF, meaning it allows for additional redundancies or anomalies. For example, in a table containing product names, companies, and categories, 3NF might allow data to be repeated across rows. This can lead to insertion anomalies, such as needing to include a placeholder for a company when adding a new product category, even if the manufacturing information is unknown. In BCNF, these sets of information would be separated into distinct tables.
+
+### Summary of Differences
+*   **Lossless Join:** Both BCNF and 3NF satisfy the lossless join property.
+*   **Dependency Preservation:** BCNF can lose dependency information, whereas 3NF cannot.
+*   **Redundancy:** 3NF allows for more redundancy than BCNF.
+*   **Complexity:** The 3NF decomposition algorithm is more complicated than the BCNF algorithm.
+
+An intuitive way to distinguish the two is to consider the role of attributes. In 3NF, the requirement that attributes describe the key applies only to non-key attributes. In BCNF, every attribute must support the key. 
+
+Both BCNF and 3NF are used commonly in practice and produce similar results in terms of decomposing tables. While this course focuses on BCNF, both forms are encountered frequently in real-world applications.

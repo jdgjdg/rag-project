@@ -1,0 +1,56 @@
+### Introduction and Roadmap
+As a first step in understanding Boyce-Codd and Third Normal Forms, we need to look at functional dependencies. There are a number of things we are going to do with functional dependencies, so here is a roadmap for this discussion:
+1. Define the notion of functional dependence.
+2. Define closures to find all functional dependencies.
+3. Define super keys to determine what should actually be a key. This will be the same definition as used previously, but stated more formally.
+4. Apply these definitions to our two normal forms.
+5. Glimpse at what lies beyond BCNF.
+
+### Defining Functional Dependency
+The functional dependence $A \to B$ (A implies B) means that if you know the value of $A$, then you know the value of $B$. This means that whenever $A$ is the same, $B$ must be the same. Understanding functional dependence properties tells us more about the semantics of our database and how we can change the design of our database without changing those semantics. Our overall design goal is to ensure that the functional dependencies correspond to our desired semantics of the database.
+
+To define functional dependencies formally, let $A$ and $B$ be sets of attributes and $R$ be a relation. We define that set $A$ functionally determines set $B$ (written $A \to B$, or $A$ implies $B$) holds on a particular relation $R$ if and only if for all valid pairs of tuples $t_1$ and $t_2$ in our relation, if the values of those two tuples are the same on attribute set $A$, then those two tuples must also have the same values for the set $B$ of attributes. When this holds, we say that $A \to B$ is a functional dependency.
+
+### Illustrating Functional Dependencies
+Consider a table with the attributes "First Name," "Last Name," "Spouse," and "Child." In this example, $A$ is the set {First, Last} and $B$ is the set {Spouse, Child}. We are asserting that {First, Last} $\to$ {Spouse, Child}. There may be other attributes in this table not mentioned here, such as a primary key.
+
+Consider the following tuples:
+*   One tuple indicates Fred Flintstone, whose spouse is Wilma and whose child is Pebbles.
+*   If there is another tuple with Fred Flintstone, in order for this functional dependence to hold, it must also have Wilma and Pebbles.
+*   Another tuple has Barney Rubble with Buddy and bam.
+*   If there is another row that also has Barney Rubble, for the functional dependence to hold, we must have Buddy and bam there as well.
+
+Whenever we have other tuples that are the same in the $A$ columns, they must agree in the $B$ columns as well.
+
+### Evaluating Functional Dependencies in Data
+Consider an example with the functional dependency: Position $\to$ Phone. Note that each of these is a set of attributes on the left and right-hand side of the arrow. To determine if this holds, we look at the data:
+*   Every time "clerk" is in the position, we have the same phone number.
+*   Every time "sales rep" is in the position, we have the same phone number.
+*   Every time "lawyer" is in the position, we have the same phone number.
+In this case, the functional dependency holds.
+
+Now consider the functional dependency: Phone $\to$ Position. If we look at the data and find that for a specific phone number, there are different positions, then this functional dependency does not hold.
+
+### Identifying Multiple Dependencies
+In a given dataset, we can identify several functional dependencies that hold on the instance:
+*   **$A \to C$**: When we have $A_1$, $C$ is always the same. For the other value of $A$, 3 implies 5.
+*   **$C \to A$**: In this instance, $C$ also implies $A$. Note that this symmetry does not always apply.
+*   **$D \to A$**: Whenever $D$ is 3, $A$ is 1. Whenever $D$ is 1, $A$ is 3. Whenever $D$ is 5, $A$ is 1.
+*   **$D \to C$**: Because $D \to A$ and $A \to C$, then $D \to C$ via transitivity.
+*   **$D \to \{A, C\}$**: This notation means the set $D$ implies the set of $A$ and $C$.
+
+### Empty Sets and Trivial Dependencies
+The definition of a functional dependency allows its left-hand side and its right-hand side to be empty.
+*   **$\emptyset \to A$**: This means that given no information, we know the values of $A$. In other words, those attributes are constants. We typically do not store constants in the database; they are usually part of the application program.
+*   **$A \to \emptyset$**: This means that given the values of $A$, we know the values of no attributes. This is a true statement, but it is a useless statement. This is an example of what we call a trivial functional dependency.
+
+### Obtaining and Using Functional Dependencies
+How are functional dependencies normally obtained and used? We are primarily interested in when functional dependencies hold on all instances of a relation, not just one provided set of data. We cannot simply enumerate all instances and check every single one. These functional dependencies must come from requirements analysis—understanding what must hold within the data by consulting with the client.
+
+There are several questions we want to answer regarding how functional dependencies and relations work together:
+*   Given a set of functional dependencies $F$, what other functional dependencies actually hold on our data?
+*   Which of the functional dependencies in $F$ actually hold on a specific relation?
+*   Does the relation satisfy all of those functional dependencies?
+*   What are our keys, and can those functional dependencies help us determine them?
+*   Is a relation $R$ in a normal form?
+*   How do functional dependencies tell us whether $R$ is in a normal form or how we can put $R$ into a normal form?

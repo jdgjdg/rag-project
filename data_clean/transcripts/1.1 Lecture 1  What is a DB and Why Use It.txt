@@ -1,0 +1,49 @@
+## Introduction: What is a Database?
+
+This is a database class, so a natural question is: what is a database and why would we even want to use one? This video is all about answering those two questions.
+
+An initial issue is that the word 'database' actually gets used for two different things that we should differentiate. First, the database is really just the data itself; it's a collection of data. Second, there's a Database Management System or DBMS, which is the software for managing a database or actually multiple databases.
+
+Because 'DBMS' or 'Database Management System' is a mouthful, we often get lazy and call that software a 'database' as well, or the combination of those a 'database'. But really, the database itself is just the data.
+
+## Core Goals of a Database
+
+So, why should we even use a database? I'm going to describe three core goals, starting with preserving your data.
+
+### 1. Preserving Your Data
+
+This seems fairly obvious, but let me give you some more details. Our data is critically important; that's why we're using a database to start with. We want to preserve our data even in the face of many bad things that might potentially happen. For example, we might have an inexperienced user accidentally do something silly, a user that intentionally wants to destroy your data, someone trying to attack our database, or maybe somebody just pulls the plug on our computer. In any of these events, we want our data to be preserved. We want to protect our data from outside influences and undo unwanted changes.
+
+### 2. Flexible Search and Computation
+
+Second, we want flexible search and computation. We're going to have tons and tons of data. We don't want just a simple keyword search for our data because that's not precise enough. We want to be able to search for just the few pieces of data that we really care about and be able to describe complicated searches looking for a specific thing. Once we have our data, we want to do whatever sorts of computation we're interested in, such as machine learning to understand new things. We might just want to do simple things like computing taxes on retail sales, or we might want to do all kinds of analyses for how our business is doing.
+
+### 3. Independence
+
+Third, we want independence. This is a more theoretical and nebulous idea. We want our database system to be independent from the system we're implementing it on, what sort of hardware, and how many users are going to be using it. We want it separate from the application language that we might build applications on top of our database. It should be independent of the searches that you actually want to execute on your data, and independent of the design for your particular database and how you're going to structure the data. We want the flexibility to treat each of these things independently.
+
+Of course, in all of this, we also want usability and speed. We want this to be an actually useful tool that is going to get the job done.
+
+## Database System Architecture
+
+A database system is traditionally server-based. Here, our database system is our server, and we'll have multiple clients. In this case, I have desktop computers, some tablets, and kiosks, such as an ATM for example. Each of the clients is going to send some sort of request in our SQL language, which we'll be looking into. The server will then send back responses, hopefully our data, error messages, or whatever sort of response is relevant.
+
+Our typical client requests are operations like modifying the data or, of course, searching the data.
+
+A session is when a client logs in to the server and starts doing something. They'll probably do some sort of authentication, stating they have the ability to access this, that it's their account, and that they have the privileges to do this. They then perform some operations. The session lasts until they log out and stop using it. Whatever the client does during that session, we want the data to persist after that session. A simple example: you go to the ATM, you withdraw some money from your bank. When you leave the ATM, you still want the bank to actually know what your correct bank account is, especially if you made a deposit; you want them to remember that.
+
+## Limitations of Simple Data Storage Tools
+
+A natural question is: why not use other familiar tools like plain old text files or spreadsheets? Many people are used to them for holding data, and in some sense, they are databases because a database is simply a collection of data. However, they are very limited tools. In a text document, when you're searching, all you can do are simple keyword searches. If you have tons of data and multiple people trying to access one text file simultaneously, a text file on, say, Windows doesn't understand how to have multiple people edit it at the same time. It's also not going to give us any of the other tools we want, such as preserving data in the case of power failures or similar events.
+
+An Excel file or other spreadsheet, together with its program, is more powerful. You can do all sorts of computation in your favorite spreadsheet program. You have neat tools for analysis like pivot tables. With modern cloud-based systems, you can actually have multiple people editing the file simultaneously. But still, these spreadsheets are limited; they are not able to handle billions of records and everything that's going on with, say, Amazon.com. Do you think they run their entire business on a single spreadsheet? Trust me, they don't. You have probably encountered many of the limitations of what you can do with spreadsheets already. So, we want to move beyond simple tools like these to full databases.
+
+## Overview of Database Types
+
+There are many kinds of tools, starting with simple data storage tools like flat text files and spreadsheets. But we're going to look at many different options. This is a quick survey of what the world looks like.
+
+In particular, traditional databases are known as relational databases, and they fall into two camps. We'll talk about these more later on. We're going to focus on what's known as transactional databases. There are also some systems which combine both the transactional databases that we're going to focus on along with analytical databases; there are applications that do both.
+
+There's a whole other type of database system that has become popular called NoSQL, which really means 'not only SQL'. We'll talk about these more later in the course. NoSQL databases subdivide into several different categories based upon how the data is stored and the ways we organize the data. We're going to focus on a document-style database towards the end of the course.
+
+There are also cluster computing frameworks which overlap both relational and NoSQL. There are more ideas of databases out there, but I've described the most common. I've described this at a fairly simplified level. In reality, various individual applications and software packages actually combine ideas from multiple of these categories to give you more power. As I said, you'll be focusing on transactional databases and somewhat document databases later in this course.

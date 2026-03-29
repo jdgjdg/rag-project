@@ -1,0 +1,21 @@
+### SQL Injection Overview
+SQL injection has a well-deserved reputation as a common way to attack a database. It is necessary to explain what it is and how to address it. Consider example code consisting of three parts: the system prompts the user to enter a student ID, which is a string that is simply concatenated to a query, and that query is handed off to the SQL database to be executed. The problem is that there is no checking on the student ID; therefore, the string can be manipulated to make the query perform actions other than simply plugging in a particular student ID.
+
+### Common SQL Injection Strategies
+These examples fit into general categories that apply in many situations:
+
+*   **Satisfying Clauses:** Since the query contains a `WHERE` clause, an attacker can attempt to satisfy it. By inputting an `OR TRUE` condition, the attacker can force the query to return all student names.
+*   **Exposing Implementation:** An attacker may attempt to expose the database implementation. If the query uses an attribute name and the query fails, the error message may indicate that the attribute name is invalid. Furthermore, if the code displays the database error message, it may reveal the entire query, exposing other attributes in the table. If the query passes, the attacker confirms the attribute name is valid.
+*   **Data Exfiltration:** An attacker can retrieve information beyond simple student names. By using a `UNION` operator, an attacker can combine the original query with a new query to select sensitive data, such as IDs and passwords from the table. While this requires knowing or guessing the names of attributes and tables, an attacker can figure out the underlying implementation through trial and error.
+*   **Destructive Behavior:** An attacker can attempt to cause destructive behavior. By inputting a student ID that ends the statement and follows it with a command to `DROP` the table, the attacker can delete all data.
+
+### Prevention and Mitigation
+To prevent SQL injection, consider the following approaches:
+
+*   **Constructing Valid SQL:** Use ORM-style libraries, which require developers to go through the library to construct SQL, ensuring the resulting queries are valid.
+*   **Input Validation:** Validate the input before it is placed into a string. For example, if an input is expected to be a number, verify that it is a number in base ten with no decimals or extra characters.
+*   **Parameterized APIs:** Use parameterized APIs to limit how strings are built. In Java, for example, you can use question marks as placeholders for parameters. Because Java is type-safe and statically typed, it type-checks these placeholders. If a parameter is declared as an integer, the system verifies that the input is an integer, preventing the injection of arbitrary strings that could represent other SQL operations.
+*   **Error Handling:** Do not expose the database structure in query results. Catch and handle all database exceptions. Instead of displaying raw database error messages, the application should catch the exception and display a generic message, such as "Sorry, you did something wrong. Please enter your data again."
+*   **Privilege Management:** Limit the potential impact of bad SQL by setting appropriate database privileges. Even if malicious SQL is executed, the application should not have the privilege to access or drop sensitive tables. Alternatively, use an API that restricts access to specific public views or functions, ensuring that users can only perform actions permitted by those views or functions.
+
+In summary, you must place controls over any instance where users or application code construct SQL queries to ensure that those queries are valid and cannot be used to perform unauthorized or destructive actions.

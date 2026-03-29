@@ -1,0 +1,29 @@
+### Overview of NoSQL Models
+Previously, I introduced the most common NoSQL models; let's dive in and look at more details about them. As a reminder, there are four standard types of NoSQL models: key-value stores, column stores, document databases, and graph databases. Before I get into more details, remember that each database system is unique, and there is variation within each of these models.
+
+### Key-Value Stores
+A key-value store is simply a mapping between keys and values where each key is unique. We can frequently mimic tables by constructing keys as a combination. If you want to think of a customer table where one of the attributes is a last name, you could construct a key to be the string "cust1_Lname." That would essentially map to customer number one's last name. However, this is a single key. 
+
+This is a traditional mapping similar to a HashMap in Java or a dictionary in Python. It is effective for looking things up when you know the keys. If you do not know what key you are looking for, it is not as useful, and frequently there is no way to get from a value to the corresponding key. These types of storage are usually very simple and fast—simple because you are supporting the fast lookup of a hash table, and fast because you are only performing simple operations. They usually do not support fancier features, such as complex queries or user-defined functions.
+
+### Column Stores
+A column store, at least initially, looks somewhat like a relational database, but it changes some of the terminology. A "ColumnFamily" is the primary container. A row features a key and a set of columns. Each column consists of a name, a value, and a timestamp. 
+
+Note that when I say a column here, it is not a column in the sense that the same column applies to all rows. For example, while email addresses might exist in each row, gender might only be in two rows, and age might only be in one. Each of these is still called a column. A relatively unique feature of this approach is that we typically have a timestamp for each key-value pair, indicating when it was last updated.
+
+### Document Databases
+You can think of a document database as a collection of key-value pairs. If you are familiar with XML (a generalization of HTML) or JSON (a way of representing objects), you can think of this as analogous to a single table row. Each document corresponds to a row in a table, except that you are allowing heterogeneous data. Not every document will have the same key-value pairs. 
+
+Traditionally, documents in the same group generally have a similar set of key-value pairs, but not necessarily the same ones. You can think of this as a table row where some rows have different columns. Furthermore, these documents are allowed to be hierarchical, meaning the value in a key-value pair can be another sub-document—which is itself another set of key-value pairs—and you can embed those documents hierarchically. This is how you would think of XML, where you get a hierarchy of elements embedded within other documents. This model is the most similar to a relational data model, except that it is heterogeneous and does not typically allow many-to-many relationships. Essentially, you allow one-to-many relationships, but there is typically no equivalent to a junction table.
+
+### Graph Databases
+A graph database is a collection of nodes and edges. You can have labels on the nodes and edges, and those labels are essentially key-value pairs. For example, you could have a set of employees where the edges represent management relationships and the nodes represent the employees. The nodes could be labeled with names and salaries. You might have other nodes representing projects, with edges between them indicating who works on what project.
+
+Uses for graph databases include machine learning or data mining—looking at a graph to identify patterns. This includes recommendations based on patterns in relations, such as, "If you liked this item you bought, you might also be interested in this related item." Supply chains are also very naturally represented as graph relationships, where each node is a supplier and the edges represent what they supply.
+
+### Multi-Model Systems and Implementation
+If you need multiple data models, you can use multiple databases simultaneously, which has become fairly common in big systems. In these projects, each database system has its role: one might be a key-value system, another a relational system, and another a different model. You can also have a single database system that supports multiple models; many traditional relational systems are actually multi-modal these days.
+
+Implementations vary tremendously, but I want to repeat a few important points. These systems are typically distributed in clusters, meaning they are horizontally scalable—you just add more processors to your cluster. We typically, but not always, have a relaxed consistency model. While some NoSQL models do support ACID-type consistency, they were traditionally associated with more relaxed consistency models. 
+
+We have four different data models in NoSQL databases plus our traditional relational model. You should be thinking about which model or models fit your data usage best.

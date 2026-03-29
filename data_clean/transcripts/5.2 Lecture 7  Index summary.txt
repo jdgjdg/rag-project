@@ -1,0 +1,14 @@
+### Summary of Indexing Strategies
+
+At the end of our discussion on indices, I would like to summarize the most important points that you should keep in mind.
+
+#### When to Use Specific Indices
+*   **B+ Trees:** These are a good general-purpose choice. They are almost always a viable option, though not necessarily the best option in every scenario.
+*   **Hash Tables:** These are particularly effective for equality tests, but they are not useful for other types of tests. Additionally, they carry a potential risk of performance degradation due to data skew and bucket overflow.
+*   **Spatial Indices:** These are useful for geographical information systems, though we are excluding them from the scope of this course.
+*   **Bitmap Indices:** These are effective when you have a relatively low number of distinct values in at least some of your attributes.
+
+#### Considerations Regarding Index Overhead
+You should be mindful that indices add overhead; therefore, you should not add them indiscriminately. Each index introduces overhead that will speed up certain queries while slowing down your other CRUD (Create, Read, Update, Delete) operations.
+
+Furthermore, building an index requires time. If the time required to build an index is too long and you have already begun executing the subsequent query, you are guaranteed not to be using that index. Keep all of these ideas in mind when you are programming in SQL.

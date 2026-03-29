@@ -1,0 +1,89 @@
+# Introduction to SQL Queries
+
+It's time to get our hands dirty and start working with SQL syntax. We will start with the very basics of SQL queries, focusing on the SELECT, FROM, and WHERE clauses. For this video, I will be using Jupyter Notebook in a special presentation mode. I encourage you to go to the same notebook and follow along with the steps demonstrated in this video.
+
+## Connecting to the Database
+
+Our first step for using Jupyter Notebook is always connecting to our database. I will only show this in the current video, as these steps will be omitted from later notebook videos.
+
+The first part involves defining some syntactic extensions. The second step is connecting to the database. This first step defines a bit of syntax. When connecting to the database, you must specify the database name, password, username, and computer name.
+
+Information on how to connect to the database for classes will be provided in supplementary materials. For now, I will run this, as the presentation is running off my own computer.
+
+## Defining Tables and Sample Data
+
+To make writing queries useful, we need some data. At the beginning of each video, we will define the tables we are working with and some sample data.
+
+We haven't covered the SQL syntax for this, so I won't go into the details of these definitions. We will be working with the same product and manufacturer example seen in other videos. After running it, notice that it acknowledges successful execution and shows the number of rows in each table.
+
+## First Query: SELECT, FROM, WHERE
+
+Our first query is defined via relational calculus: we want all product names for products P where the product price is greater than 15. What is the equivalent SQL syntax? Let's type that in.
+
+We will use SELECT, FROM, and WHERE clauses. FROM specifies where we are getting the data; in this case, from the product table. We will rename it simply as 'p', as in the relational calculus query. The condition is that the product price (prod_price) should be greater than 15. The desired result is all of the product names (prod_names).
+
+Let's see what happens.
+
+## Handling Type Mismatch Errors
+
+We have an error. Interpreting such error messages is a skill you will need to develop. I will help you with that.
+
+The error message states: 'operator does not exist: money > integer'. prod_price was defined as an attribute of type 'money'. 15 is clearly an integer, and the 'greater than' operator cannot compare 'money' and 'integer' types.
+
+To fix this, I will cast 15 to 'money'. This syntax casts the integer to 'money'. This fixes the problem, performs the comparison, and provides the results.
+
+## Retrieving Multiple Attributes
+
+Consider an example to retrieve all product names and prices. I will SELECT prod_name and prod_price FROM product AS P. In this case, I want all products, so a WHERE clause is not needed. This retrieves all data, but only for the two specified attributes.
+
+### NULL Values in Jupyter Notebook
+
+In Jupyter Notebook, NULL values are printed as 'None'. This stems from Jupyter Notebook's Python implementation, where SQL NULL values are passed back to Python. It is represented in Python using Python's 'None' and printed as such.
+
+## Retrieving All Attributes with `SELECT *`
+
+For the next example, to retrieve all attributes for all products (the entire table), I could list all table attributes. Instead, I will use the shorthand '*' which retrieves the entire table.
+
+Using '*' is generally considered bad practice. You should typically list all the attributes you want, in the desired order. Attributes can change, so it's best to be specific about what you need. I am using '*' here partly to demonstrate its existence. I will also use it in various examples to speed up typing or to save space on slides.
+
+## Filtering by Multiple Manufacturers
+
+To find all products made by two specific manufacturers, I will SELECT * FROM product AS p. There are a couple of ways to write this condition.
+
+The first way is: `WHERE p.prod_manufacturer = 'GizmoWorks' OR p.prod_manufacturer = ''`. Always use single quotes, not double quotes. This retrieves the desired products.
+
+### Common Error: Incorrect Boolean Logic
+
+For another version, consider what happens if we write the condition like this (a common student mistake): `p.prod_manufacturer = 'GizmoWorks' OR 'WidgetsAreUs'`. While natural in English, this will result in an error. The error message will appear.
+
+The relevant error message is: 'invalid input syntax for type boolean: "WidgetsAreUs"'. This means 'WidgetsAreUs' is not a Boolean value. The issue is that we are attempting to combine a Boolean result from a comparison with a string using 'OR'. A string is not a Boolean.
+
+### Using the `IN` Operator
+
+We need to write it as before, with a comparison on each side of the OR. The intuition for this example is to find products where the manufacturer is one of several specified values. A different way to express this is using the `IN` operator: `prod_manufacturer IN ('GizmoWorks', 'WidgetsAreUs')`. This yields the same result.
+
+## Filtering by Price Range
+
+Let's find all products within the price range of 20 to 40. We will explore a couple of different versions for this.
+
+`SELECT * FROM product AS P WHERE p.prod_price >= 20 AND p.prod_price <= 40`.
+
+As seen previously, I need to cast 20 and 40 to 'money' type. This retrieves the values. For example, a prod_price of 30 is clearly in that range.
+
+### Using the `BETWEEN...AND` Operator
+
+The second way is to use the `BETWEEN` operator. The syntax is `prod_price BETWEEN 20 AND 40`. This yields the same result. The `BETWEEN...AND` construct is a combined keyword that allows you to specify a range.
+
+## Handling NULL Values with `IS NOT NULL`
+
+To find all products with a defined price, meaning the price is not NULL. The syntax for this is: `SELECT * FROM product AS p WHERE p.prod_price IS NOT NULL`. This checks for a specific condition, not just a value greater than zero; it specifically checks for non-NULL values. This returns the four products that have a value for `prod_price`.
+
+## Pattern Matching with `LIKE`
+
+To find all products named 'widget', which is similar to a previous example. We could simply ask for equality: `p.prod_name = 'Widget'`. Another, very similar, way uses the `LIKE` keyword. I will explain this syntax shortly.
+
+This performs pattern matching. It declares a pattern that will be compared to all product names. Specifically, this pattern (`%Widget%`) means I want the word 'Widget' to be present anywhere within the string, allowing any characters before (`%`) and after (`%`) it. Running this query returns not only 'Widget' but also 'HyperWidget', as 'HYPER' appears before 'Widget'.
+
+## Next Steps
+
+We have now seen several examples using the SELECT, FROM, and WHERE keywords for a query. Next, we will explore how to incorporate simple computations into the SELECT clause.

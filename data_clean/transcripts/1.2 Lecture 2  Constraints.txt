@@ -1,0 +1,27 @@
+Constraints are a tool to enforce properties on data in a database. We have already alluded to three different types of constraints, and we will discuss more.
+
+### Primary Key Constraints
+
+First, we have a primary key constraint. A tuple cannot have a duplicate primary key; it cannot duplicate the primary key of another tuple. In this instance, attempting to add a tuple with a duplicate primary key will be disallowed. In addition, a primary key constraint also dictates that the primary key value cannot be null.
+
+### Candidate Key Constraints
+
+We also have candidate key constraints. Candidate keys are simply keys that cannot be duplicates; they must be unique. Previously, for this example, we considered a phone number as a potential key in this age of ubiquitous cell phones. This would be a unique key, and in the provided data, it is unique. However, note that candidate keys are allowed to be null.
+
+### Foreign Key Constraints
+
+We have also seen that a foreign key constraint dictates that each of these values must correspond to one of those values. However, once again, if 'maker' is not one of the values in the referenced data, that would be disallowed.
+
+In this example, 'state' is a very simple table, serving as a lookup table. It appears uninteresting by itself, having only one attribute, its primary key. In effect, it is just a list of all two-letter state codes in the US. What is interesting here is a foreign key relationship between 'man state' and 'state'. Enforcing referential integrity through this foreign key constraint ensures that all 'state' values in 'man state' are valid entries from the 'state' lookup table. This enforces that all these values are actually one of the legal 50 state codes.
+
+### Not Null Constraints
+
+Moving on to another type of constraint, we can have a not null constraint, which states that an attribute must have a value. In this case, while two columns might be allowed to be null, we could enforce that a product always has a manufacturer, meaning any product must have a manufacturer, and a null value would therefore be disallowed.
+
+### Generic Boolean Constraints (Check Constraints)
+
+A very general notion of a constraint is that we can produce any sort of Boolean relation on a tuple. For example, we might say that 'prod price' must be greater than 0; any price has to be positive. Enforcing that 'prod price' is positive would disallow adding a negative 'prod price'. This is a generic Boolean constraint that can be added to a table. Such constraints apply only to a single tuple of a table at a time, not multiple tuples or multiple tables.
+
+### Default Values
+
+Also related, but a little different from a constraint, is the notion of a default value. In this case, we might specify that the default value for the number of units sold for a product would be 0. If no other information is available, 0 units have been sold so far, but a different value could be entered later. When we start looking at the SQL language, we will see the syntax for declaring each of these kinds of constraints. For now, we are focusing on how these constraints fit within our relational model for any database.

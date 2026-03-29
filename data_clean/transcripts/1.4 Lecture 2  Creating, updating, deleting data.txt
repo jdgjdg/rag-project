@@ -1,0 +1,145 @@
+We have learned how to create tables with desired attributes and constraints. Now, we will explore how to insert and modify data within these tables to prepare for queries. We will apply the same step-by-step approach to define data for our product and manufacturer tables, considering all constraints.
+
+### CRUD Operations: Creating Data
+
+Let's begin with creating data, which means adding new tuples to our tables. It is crucial to remember that any constraints on these tables must be met.
+
+We will discuss four ways to get data into the database, though not all will be covered in this presentation:
+1.  **Explicit List of Data:** Providing data directly.
+2.  **Query-Generated Data:** Creating data from another source using a query and inserting it into the table.
+3.  **File Loading:** Loading data from an external file into our tables.
+4.  **Random Data Generation:** Generating a large amount of test data.
+
+When generating random data, the generation point can vary:
+*   **Application-side:** An application, such as a Java program, generates the data randomly and passes it to the database.
+*   **External Tool:** A tool like Excel can generate data, which is then saved to a file and loaded into the database.
+*   **SQL-side:** Data can also be generated directly within SQL. This requires more advanced SQL tools and will be covered in a different module.
+
+From the database's perspective, data generated in Java is considered an explicit list, as it's handed directly. Data from Excel or other external tools is treated as coming from a file.
+
+### Considerations for Creating Data
+
+When creating data, especially test data, several factors should be considered:
+
+*   **Real Data:** If you are creating real data, its content is dictated by the actual information at hand.
+*   **Test Data:** For test data, it should resemble real data but possess specific properties to effectively test implemented features.
+    *   **Relationships:** Exemplify all relationships between tables (one-to-many, many-to-many).
+    *   **Nulls:** Include null values where possible, as you might have overlooked this possibility when writing queries.
+    *   **Volume:** Have a large amount of data. This can reveal poorly written or slow queries and might accidentally expose special cases you hadn't considered.
+    *   **Special Cases:** Test for any special cases relevant to the queries you've written.
+*   **Expected Output:** Think ahead about what your query outputs should be with the test data. This allows you to verify the results when you run the queries.
+
+### Explicitly Listing Data: `INSERT INTO VALUES`
+
+The first method for getting data into a table is to explicitly list it.
+
+**Example:**
+```sql
+INSERT INTO table_name (attribute1, attribute2)
+VALUES (value1, value2);
+```
+
+It is good practice to explicitly list the attribute names in the `INSERT INTO` statement, matching the order of the values. While not strictly required, this practice ensures your code continues to work even if the table's column order changes or new attributes are added later.
+
+In practice, you might write these statements by hand for small tests. However, more frequently, applications generate these `INSERT` statements as strings and pass them to the database. This is a typical route for applications to add data.
+
+You can also insert `NULL` values using this method.
+
+**Dependencies and Constraints:**
+When inserting data, you must consider dependencies and constraints, especially foreign key relationships. For example, if a table has a foreign key referencing manufacturer names, those manufacturer names must exist in the manufacturer table before they can be inserted into the dependent table.
+
+### Inserting Data from a Query: `INSERT INTO SELECT`
+
+The `INSERT INTO` statement can also be used to populate a table with data derived from a query. This combines the `INSERT INTO` syntax with a `SELECT` query.
+
+**Example:**
+```sql
+INSERT INTO target_table (attribute1, attribute2)
+SELECT source_attribute1, source_attribute2
+FROM source_table
+WHERE condition;
+```
+
+Notice that you don't have to insert data for all attributes; you can specify a subset. The data for these attributes comes directly from the `SELECT` query.
+
+**Handling Conflicts: `ON CONFLICT DO NOTHING`**
+An additional condition, `ON CONFLICT`, can be used. For instance, if `man_name` is a primary key, it must be unique. If an `INSERT` operation attempts to add duplicate data for `man_name`, `ON CONFLICT (man_name) DO NOTHING` instructs the database to simply discard the duplicate data and do nothing. Other actions are possible and will be shown in another example.
+
+When using `INSERT INTO SELECT`, new data is added; existing data is not replaced. If an attribute is not specified in the `INSERT` statement, it will receive a `NULL` value unless a default value is defined for that attribute. For example, if `man_city` is not specified, it gets `NULL`, but if `man_state` has a default value like 'TX', it will receive 'TX'.
+
+### Modifying Existing Data: `UPDATE`
+
+To change existing tuples in a table, we use the `UPDATE` statement.
+
+**Example:**
+```sql
+UPDATE product
+SET price = 20, prod_name = 'Gizmo+'
+WHERE prod_name = 'Gizmo';
+```
+
+This example updates the `product` table. It changes the `price` to 20 and the `prod_name` to 'Gizmo+' specifically for rows where the `prod_name` was 'Gizmo'. After this operation, 'Gizmo' no longer exists; it has been replaced by 'Gizmo+' with a price of 20.
+
+**Updating Based on Current Values:**
+You can also update a column based on its current value. For example, to increase each product's price by 10%:
+
+```sql
+UPDATE product AS newp
+SET prod_price = oldp.prod_price * 1.1
+FROM product AS oldp
+WHERE newp.prod_id = oldp.prod_id;
+```
+
+This approach uses a self-join, effectively treating the table as both an "old" version (`oldp`) and a "new" version (`newp`). It looks at the `prod_price` from the `oldp` (the current value), multiplies it by 1.1, and sets that as the `prod_price` for the `newp` (the updated value). While this syntax might seem complicated, it's a common way to refer to a column's existing value when updating it.
+
+### Upserting Data: `INSERT INTO ON CONFLICT DO UPDATE`
+
+Upserting is a combination of inserting and updating. The idea is to add new tuples if they don't exist, but update them if they do.
+
+Consider student records: if a student is new, add them. If a student already exists in the database, update their record. For matching, you typically use a primary key or a unique identifier like `student_ID`.
+
+**Example:**
+```sql
+INSERT INTO product (prod_name, price, manufacturer_id)
+VALUES ('Gizmo', 20, 101), ('Power Gizmo', 35, 102)
+ON CONFLICT (prod_name) DO UPDATE SET
+    price = EXCLUDED.price,
+    manufacturer_id = EXCLUDED.manufacturer_id;
+```
+
+In this example, we are inserting data. Some product names might already exist, leading to conflicts. The `ON CONFLICT (prod_name)` clause specifies that if a conflict occurs on the `prod_name` (which is assumed to be a unique identifier or primary key for matching), an update should be performed.
+
+The `DO UPDATE SET` clause then specifies how to update the existing row. `EXCLUDED` is a special keyword that refers to the data from the tuple that was attempting to be inserted but caused the conflict. So, `EXCLUDED.price` refers to the `price` value from the incoming data, and `EXCLUDED.manufacturer_id` refers to the `manufacturer_id` from the incoming data. This effectively updates the existing row's `price` and `manufacturer_id` with the values from the conflicting incoming tuple.
+
+This operation successfully adds new data and modifies existing data as intended.
+
+### Deleting Data: `DELETE`
+
+When working with SQL, it's important to distinguish between "deleting" and "dropping."
+*   **Deleting data:** Removes rows from a table, but the table structure itself remains. You can delete some or all data.
+*   **Dropping a table:** Removes the table entirely from the database.
+
+Here, we focus on deleting data.
+
+**Deleting Specific Data:**
+To delete specific rows that match a condition:
+
+```sql
+DELETE FROM product
+WHERE prod_name = 'Old Gizmo';
+```
+
+This statement deletes all rows from the `product` table where the `prod_name` is 'Old Gizmo'.
+
+**Deleting All Data:**
+To delete all data from a table, simply omit the `WHERE` clause:
+
+```sql
+DELETE FROM product;
+```
+
+After running this, the `product` table will contain no data, but the table structure will still exist.
+
+### Next Steps: Data Dependencies
+
+We have covered the syntax for various operations to change data in tables. However, we have overlooked a potential problem: what if the data we are modifying has dependencies, meaning other data relies on it? This will be the focus of our next discussion.

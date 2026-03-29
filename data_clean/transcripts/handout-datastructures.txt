@@ -1,0 +1,46 @@
+### Data Structures: A Quick Review
+
+Many data structures are built on the idea of a node (also referred to as a cell or vertex) that consists of zero or more values and zero or more edges to other nodes. An edge can be directed, meaning it only goes one way, or undirected, meaning it goes both ways. Edges are often implemented in terms of references or pointers.
+
+### Graph
+A graph is a collection of nodes and references. Typically, a node is not allowed to have an edge to itself, nor multiple edges to the same other node.
+
+*   A directed graph has only directed edges, while an undirected graph has only undirected edges.
+*   The two most common search algorithms are depth-first and breadth-first.
+*   A path is a series of nodes and edges such that edge *i* connects node *i* to node *i+1*.
+*   A cycle is a non-empty path that connects a node to itself.
+*   An undirected graph is connected if each node has a path to every other node.
+
+### Tree
+There are many variations on the basic theme of a tree. A tree is a graph such that all nodes are connected and there is no cycle along the edges, assuming the edges are treated as undirected.
+
+*   Search, insertion, and deletion each take linear time.
+*   A node with no non-null references to other nodes is a leaf.
+*   A node with no references from other nodes is a root. There is exactly one root.
+*   A node that is not a leaf or a root is an internal node.
+*   If node P has a reference to node C, then P is the parent of C, and C is a child of P. These notions generalize to ancestors and descendants in the usual way.
+*   A node and all of its descendants form a subtree.
+*   The height of the tree is the maximal distance from the root to any leaf.
+
+### Search Tree
+A search tree is a tree such that each node P has its children ordered by their values, and node P has values indicating the range of values in each of its child subtrees.
+
+*   When searching, the current node’s values indicate which child to search so that no backtracking is needed.
+
+### Balanced Search Tree
+There are many variations on the basic theme of a balanced search tree. A balanced search tree is a search tree that utilizes special algorithms to ensure that the distance from the root to all leaves is roughly equal.
+
+*   Search, insertion, and deletion each take logarithmic time.
+
+### Linked List
+A linked list is a tree such that each node has one edge, except for the last node, which has zero.
+
+*   Search, insertion, and deletion each take linear time.
+
+### Data Structures Not Based Upon References
+
+*   **Array (tuple, record, vector):** A sequence of values indexed by integers. The main variations involve whether the sequence can grow longer or allows mutation.
+    *   Searching an unordered array takes linear time.
+    *   Searching an ordered array takes logarithmic time with binary search.
+*   **Mapping (map, hashmap, dictionary, associative array):** An unordered collection of values indexed by other arbitrary values.
+*   **Set:** An unordered collection of values.

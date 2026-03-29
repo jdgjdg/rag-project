@@ -1,0 +1,40 @@
+### Returning Tables from SQL Functions
+
+To return a table from a function rather than a simple type, you must specify that the function returns a table and define the types of the attributes within that table. 
+
+In the body of the function, you use the `RETURN QUERY` keyword followed by a standard `SELECT` statement. For example, to define a function that takes a salary as an argument and returns a table of all employees with that salary:
+
+```sql
+RETURN QUERY SELECT * FROM employees WHERE salary = input_salary;
+```
+
+Executing this function returns a table containing the result set of the query.
+
+### Dynamic Table Processing and Argument Passing
+
+A second approach allows you to pass a table name as an argument to a function, enabling the function to operate on different tables dynamically. 
+
+To define a function called `squares` that accepts a table name and an attribute name, use the `regclass` type for the table name argument. The `regclass` type verifies that the input is a valid table name rather than an arbitrary string.
+
+Within the function body, use `RETURN QUERY EXECUTE` combined with a string that represents the query. You can build this query string using concatenation (the `||` operator). For example:
+
+```sql
+RETURN QUERY EXECUTE 'SELECT ' || quote_ident(attribute_name) || '^2 AS square FROM ' || table_name;
+```
+
+This approach provides flexibility. You can use the same function to square values in a table `data1` (with an integer attribute `n`) and a table `data2` (with a float attribute `m`).
+
+### Executing Queries Without Returning Results
+
+You can also execute a SQL query built as a string without returning a result set. This is useful for operations like `INSERT`. In this case, the function does not return a table or a value. After executing the string, the function completes, and the side effects (such as data insertion) are visible in subsequent `SELECT` statements.
+
+### Function Overloading
+
+SQL supports function overloading, which allows you to define multiple functions with the same name, provided they have different input types or a different number of arguments. For example, you can define three versions of a function `f`: one accepting a `numeric` input, one accepting an `int` input, and one accepting two inputs (`money` and `text`). The system selects the appropriate function definition based on the arguments provided during the call.
+
+Note the following constraints and best practices regarding overloading:
+*   **Output Types:** You cannot overload functions based solely on different output types.
+*   **Dropping Functions:** If you wish to change a function's input type or output type, you must first drop the existing version. When dropping a function, you must specify the argument types so the system identifies the correct version to remove.
+*   **Verification:** To view defined functions in `psql`, use the `\df` command. 
+
+If you attempt to change the output type of an existing function without dropping the previous version, the system will report that the new definition is not aligned with the existing one and will prevent the creation of an overloaded version.

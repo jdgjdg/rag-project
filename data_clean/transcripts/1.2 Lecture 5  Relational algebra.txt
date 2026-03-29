@@ -1,0 +1,74 @@
+As a reminder, we have the relational calculus and the relational algebra as our two bases for querying relations. Relational calculus is based upon logic. Relational algebra, in contrast, is based upon operations on relations, or tables.
+
+Our first operation is **selection**, where we select tuples where some condition is true on a relation R. For example, if our relation is `product` and our condition is `Prod price` being greater than 20, we can see that two tuples satisfy this condition. These two tuples are selected to be in the result.
+
+Our next operation is **projection**. This simply picks some attributes; it is a listing of the attributes that we want. If we use the `product` relation again and want to pick out the attributes `prod name` and `Prod man`, we throw away `Prod price` and get the result. We are not looking at the values of anything; we are just selecting some of the attributes.
+
+### Joins
+
+What if we have multiple relations or tables and want to join them together? The simplest mathematical way to do that is a **cross product**, a very standard way of combining sets or relations. If we have relation R and relation S, the cross product will form every way of combining each tuple from R with each tuple from S. For example, combining X one with each tuple from S, then F two with each tuple from S, and then Z six with each tuple from S, results in all combinations. This is the most straightforward, simplest way of joining relations mathematically. In practice, however, it is not very useful unless combined with other ideas.
+
+Instead, there is another way of joining things known as the **inner join**. In addition to the join operation, we need a condition. This means we are essentially doing a cross product and then applying this condition. In practice, the inner join is much more useful than the cross join. The condition of the inner join is usually based on a foreign key relationship. It does not have to be, but it usually is. For example, here, one attribute is a foreign key and another is a primary key. The relationship is typical as displayed. Using that condition, we match things up so that GizmoWorks matches, and we get this data, WidgetRUs, Hyper, and so on. Since vaporware does not match up with anything, no such tuple exists in the result.
+
+Another form of join is an **anti join**. This relates to the previous example by asking which products do not match with a manufacturer. As mentioned, vaporware does not actually have a manufacturer, and so this is the product that does not have a manufacturer.
+
+### Name Conflicts in Joins
+
+In these join operations, we can encounter **name conflicts**. In this example, the attribute names have been changed to create a name conflict. Specifically, both the `manufacturer` and `product` relations have an attribute called `name`. When we perform a join, it becomes ambiguous: are there two columns called `name`, or just one?
+
+We need to deal with this possibility of a name conflict. There are two techniques for this:
+
+1.  **Attribute Qualification:** We can add a specification of which table we are referring to for that attribute (e.g., `table.attribute`). This can become cumbersome if the qualified names are referred to far away from the join operations, especially if many other operations follow the joins.
+2.  **Attribute Renaming:** Another way is to rename attributes to eliminate conflicts that might arise later. We can write this as `rename from B to A`. For instance, if we start with the `product` attribute called `name`, we can simply rename it as `P name` so that it will not conflict with the `manufacturer` name.
+
+### Translating Relational Calculus to Relational Algebra
+
+Students usually find it easier to formulate a relational calculus expression than the corresponding relational algebra expression. Let's try translating one here.
+
+We have a relational calculus formula to translate. We start at the top: the desired result is the attribute `M name`. In relational algebra, this means we project out the attribute.
+
+Next, we see `manufacture` and an existential quantifier for some `product` related by a foreign key. This corresponds to a join of `manufacturer` and `product`. The join condition is `p_man` equal to `m_name`. Note that relational algebra does not use variables, so `M` and `P one` are omitted.
+
+Further, we observe a `not exists P two` and a foreign key relationship with the `manufacturer`. `Not exists` corresponds to an **anti join**. So, we perform an anti join with `product`, where `p_man = name` is the relevant condition for the anti join.
+
+However, a problem arises: `p_man` is mentioned twice, but it refers to two different attributes because they originate from two different instances of the `product` table. Often, this is easy to resolve. If we were dealing with different tables, we could use `table_one.p_man` and `table_two.p_man` to distinguish them. But here, both would be `product.p_man`, which does not help.
+
+Therefore, we need to rename one of these attributes. Renaming could be done in several places: before the join, or before the anti join. In this example, the renaming will be done here: `p_man` will be renamed to `p_man1` (referring to `product one`). This change will be applied.
+
+To be explicit, the operations are: joining, then renaming, then performing the anti join.
+
+Finally, there is a condition between the two `p_names`. This requires a filter, which must be applied after the join and anti join so that both attributes are available for comparison. The condition is `p_name1` (the renamed attribute) does not equal `p_name` (the version from the second instance of `product`). Parentheses can be added for clarity. This completes the relational algebra expression corresponding to the relational calculus formula.
+
+The inner join is the most common way to join relations in practice, although the cross join is mathematically simpler. We will discuss other types of joins later.
+
+### Set Operations
+
+There are other types of operations we might want on relations and tables, based on the notion that relations are sets and tables are multisets. Let's examine standard set operations.
+
+You are familiar with **union**. Taking the union of two sets is straightforward. In this case, we are looking at set union because there were duplicates between R and S, and we only have one copy in the result.
+
+**Intersection** is standard set intersection; it identifies and returns the duplicates.
+
+The **set difference** operation is less commonly used. It includes all elements that are in R but not in S. For example, if an element is duplicated, it is removed, and the remaining elements are the result. These are the three most interesting set operations.
+
+### Multiset Operations
+
+How do we think about similar operations on multisets? There are a couple of equivalent ways to conceptualize multisets. One way is to think of it as a list of tuples, allowing duplicates. Another equivalent way is to state, for each tuple, what its count is – how many instances of it exist. We will use this count-based representation for the following discussion.
+
+The easiest way to think of **multiset union** is that it adds the counts of the values. For example, in multiset X, if we have two instances of one tuple and zero of another (which is equivalent to not listing it, but a count is used for clarity), we simply add these counts to get the result.
+
+Similarly, for **multiset intersection**, we take the minimum of the two counts. If we have zero instances of a tuple in one multiset and one in another, the result will have zero. If we have three instances in one and two in another, the intersection will have the minimum, which is two.
+
+For **multiset difference**, we perform subtraction. However, we never want negative numbers of things, as that does not make sense in this context. So, for example, two minus five results in zero, and three minus two results in one. We perform subtraction without ever going below zero. This operation is actually known as **monus**, a common operation on natural numbers.
+
+### Summary of Relational Algebra Features
+
+To summarize the features of relational algebra, we have seen many examples of **projection**, **selection**, and **renaming**, along with **joins**, as operations on relations. There are additional join operations that will be covered later.
+
+We also discussed set operations, though without examples of incorporating them into relational algebra expressions.
+
+There are further features of relational algebra that are very important for SQL but will not be discussed in conjunction with relational algebra at this point to save time. These include:
+*   **Aggregation**: This involves operations like calculating totals, which is very useful.
+*   **Transitive closures**: These are more complex and will be discussed later within SQL, as all these are features within SQL.
+
+To truly be an algebra, we must also describe various **equality rules**. These rules state that a specific sequence of operations produces the same results as another sequence of operations. Such equality rules might be familiar from high school algebra, relating operations like addition, multiplication, and subtraction on numbers. In this context, equality rules help define the desired semantics for queries and are useful for query optimization. We will briefly describe them in that context later.

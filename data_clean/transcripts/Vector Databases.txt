@@ -1,0 +1,11 @@
+### Introduction to Vector Databases
+Vector databases are a specialized form of database used in AI and machine learning. At the core, a vector database stores length-n vectors of floating-point numbers, which are vectors in an n-dimensional space. Each vector represents a data point. Another part of the system stores two hash tables, mapping each direction between a vector and the data it represents. Each of the n dimensions represents one of the features used internally by the AI system to describe the data.
+
+### Data Structure and Constraints
+A vector is a tuple, but there are no primary keys. There is also no notion of foreign keys, nor is there an implication that tables are connected in any way.
+
+### Searching and Indexing
+Searching and indexing are important for efficiency; however, in this context, they are based upon finding a "nearest" match by some measure, rather than finding an exact match or a range. Finding exact nearest neighbors is generally considered too slow. Consequently, this is typically implemented with an approximate nearest neighbors algorithm.
+
+### Approximate Nearest Neighbors Algorithms
+There are multiple algorithms for computing approximate nearest neighbors. One common technique is the use of kd-trees. Kd-trees are balanced trees where each node represents a subset of the overall n-dimensional space.

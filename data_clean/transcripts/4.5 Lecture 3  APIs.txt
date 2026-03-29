@@ -1,0 +1,24 @@
+### The Concept of APIs in SQL
+The basic idea of an API can be understood by looking at Java, where classes contain both public and private methods. Outside users can only access public methods, while those public methods have the authority to access any code or hidden data within the class. We can adapt this model to SQL and databases using two primary approaches: views and functions. In both cases, the view or function acts as the public layer, while the underlying data remains private and inaccessible to outside users.
+
+### Implementing APIs with Views and Functions
+When using views, you make the views public and keep all tables private. Users must access the data through these views; reading from or writing to the views allows them to manipulate the data in the underlying tables. 
+
+When using functions, you make the functions public and grant those functions access to the underlying tables, while preventing outside users from accessing the tables directly.
+
+The trade-off between these two approaches is that views provide a simpler setup, while functions offer greater flexibility and control. Specifically, views can only control access to tables, whereas functions allow you to control access to any object within a database, including triggers and other functions.
+
+Regardless of the chosen API style, you can modify underlying table definitions without changing the API presented to users. While the definition of the view or function may need to be updated to reflect changes in the table, the outside user’s perspective remains consistent. They continue to see the same view name and attributes, or the same function name and parameters, regardless of the changes made to the underlying structure.
+
+### Function Privileges and Security
+By default, a function operates with the same privileges as the calling code. This is not ideal for an API because if a public user calls a public function, the function body would only have the caller's limited privileges, preventing it from accessing restricted or private tables. 
+
+To address this, we can change the default behavior by specifying `security definer`. This ensures the function body operates with the privileges of the person who defined the function, who presumably possesses higher privileges than a general user.
+
+### View Privileges and Security
+Views operate differently than functions by default; they use the view owner's privileges. However, this can be modified if you want the user of the view to operate under their own privileges. You can specify this by using the syntax `security invoker = true`.
+
+### Summary
+In summary, there are two primary tools in SQL that function as an application programming interface (API):
+*   **Views:** A simpler approach for controlling access to tables.
+*   **Functions:** A more complex but flexible approach that allows for control over various database objects.

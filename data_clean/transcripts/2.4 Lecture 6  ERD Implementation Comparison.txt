@@ -1,0 +1,31 @@
+### Introduction
+In previous videos, we looked at design problems and compared possible ER diagram solutions. In this video, we will return to those examples and look at the appropriate implementations to follow up on those comparisons.
+
+### Implementing Visits as an Associative Entity Set
+First, we have the issue of representing patients, doctors, visits, and the tests that a doctor gives a patient during a visit. Let's look at the ER diagrams and their implementations, starting with the implementation where a visit is an associative entity set. 
+
+Since a visit is a many-to-many relationship in this model, the primary key will be a combination of the patient ID and the doctor ID. The test is in a one-to-many relationship; it will have its own ID and a foreign key that refers back to visits. 
+
+The implementation serves as a reminder of the problems cited previously with this representation. Because the primary key is a combination of a patient ID and a doctor ID, a particular patient and doctor can only get together once. We might have more attributes for a visit, but that primary key constraint makes the model unrealistic.
+
+### Alternative Implementation with Unique Visit IDs
+To address the problem of not being able to have multiple visits between the same patient and doctor, we developed an alternative representation. In this version, each entity set has its own ID. Specifically, the visit has its own ID and is related to patients and doctors via one-to-many relationships. 
+
+In this implementation, the visit and test each have their own ID as a primary key. The visit table has foreign keys back to the patient and the doctor, and the test table has a foreign key back to the visit. This allows an arbitrary number of visits between the same patient and doctor, each with its own unique ID.
+
+### Visit and Test as Weak Entity Sets
+Another variation involves making visit and test weak entity sets. This is somewhat similar to the previous example where each doctor and patient have their own ID. In this case, a visit has a partial key, such as an ID or a timestamp. Similarly, the test has its own partial key, such as an ID or timestamp. 
+
+When we implement these, the primary key for a visit will be a combination of its partial key and the patient and doctor IDs, with appropriate foreign keys. Because the test is also a weak entity set, its primary key will be a combination of its own partial key and the primary key of the visit. Therefore, the entire primary key of the visit serves as a foreign key within the test table. 
+
+One pragmatic problem with this approach is that it creates very complicated primary keys, which are relatively inefficient for looking things up. However, it preserves all the semantic properties we are looking for.
+
+### N-ary vs. Binary Relationships in Purchases
+We also had a separate example where we looked at purchases as either an n-ary relationship or as multiple binary relationships. In the n-ary relationship diagram, stores, persons, and products each have their own primary keys. Because the purchase is a many-to-many-to-many relationship, the purchase table has a primary key consisting of the combination of all those related primary keys. 
+
+This means you can have any combination of store, person, and product. For example, a person can go to one store and buy jeans, go to the same store and buy shirts, or go to another store and buy jeans. Someone else can also go to that same store and buy jeans. However, the constraint of this primary key means that once a person has gone to a specific store and bought jeans, they can never buy jeans from that store again.
+
+### Purchase with a Unique ID
+A possible alternative is dividing the relationship so that each purchase has its own ID. We then relate it via many-to-one relationships to each of the other three entities. In this implementation, a purchase has its own unique ID along with foreign keys to the store, person, and product. 
+
+Implementing it this way confirms the semantics: a purchase depends only upon its own ID. This allows any combination of store, person, and product to occur multiple times, each with a distinct ID.

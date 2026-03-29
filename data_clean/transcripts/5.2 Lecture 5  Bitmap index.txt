@@ -1,0 +1,28 @@
+### Bitmap Indices Overview
+The last of our three main types of indices are bitmap indices, which, as the name implies, are based upon bitmaps or bit sets. A bitmap or bit set is a sequence of booleans represented as a sequence of individual bits. These are often packed together and encoded in a single byte or word.
+
+For example, consider a mapping of bits: `true, true, false, true, false, true`. One way of encoding this is to represent `true` as `1` and `false` as `0`. Reading this left to right, the sequence `110101` represents the binary number 53. Alternatively, encoding in the opposite direction—where the 0th bit is true, the 1st bit is true, and so on—results in the binary value 43.
+
+### Structure of a Bitmap Index
+A bitmap index assumes that a table has a specific numbering for its tuples. The index is a collection of bitmaps. For a column like "gender" with two possible values, M and F, there is a bitmap for each value. The M bitmap indicates which rows have an M value, and the F bitmap indicates which rows have an F value. Similarly, for an income level column with five possible values, there would be a bitmap for each value. We store these as columns rather than rows to facilitate access to each bitmap for reuse.
+
+### Querying with Bitmaps
+To perform a query where the condition is `gender = F` AND `income level = 1`, we retrieve the F column bitmap and the IL-1 column bitmap and perform a bitwise AND operation. To combine conditions with OR, we use a bitwise OR operation. To perform a "not equal" comparison, we use bitwise negation, where `1` flips to `0` and `0` flips to `1`. These standard bitwise operations are implemented as machine instructions, making them very fast.
+
+### Space Overhead and Optimization
+The space overhead of a straightforward bitmap index is determined by the number of tuples multiplied by the number of distinct values for an attribute, plus an additional bit if null values are allowed. Because this is multiplicative, it can be expensive if the number of values is high. Consequently, bitmap indices are only used when the number of distinct values of an attribute is relatively low.
+
+If space requirements are too high, we can optimize in two ways:
+1. **Encoding:** We can use an encoding that reduces space to a logarithmic factor of the number of values. While this requires less space, it necessitates using multiple bitmaps during operations, maintaining a similar workload.
+2. **Compression:** We can apply compression algorithms to the bitmaps, which can reduce storage to about half of the original size. This can be done in a way that allows bitmap operations to be performed directly on the compressed form, keeping the operations very fast.
+
+### Handling Deletions
+When deleting a tuple or record from a table, there are two primary approaches for managing the bitmaps:
+1. **Direct Deletion:** Delete the corresponding bit from each bitmap for that table. Because the bitmaps are stored as columns, this requires shifting bits across many different bitmaps, which is potentially expensive.
+2. **Existence Bitmap:** Add an "existence bitmap" column that stores a `1` or `0` for each row, indicating whether that particular tuple still exists. We then check this bitmap to determine if a row should be considered.
+
+### Combining Bitmaps with B+ Trees
+Bitmaps can be combined with B+ trees. Normally, a B+ tree leaf node holds a list of pointers or references to tuples that have a particular attribute value. We can modify this so that the B+ tree leaf nodes store bitmaps instead, indicating which records have which attribute values.
+
+### Summary
+We have examined three distinct kinds of indices: B+ trees, hash indices, and bitmap indices. Each is fundamentally different. A key characteristic of bitmap indices is that they are only used when the number of distinct values for an attribute is relatively low.

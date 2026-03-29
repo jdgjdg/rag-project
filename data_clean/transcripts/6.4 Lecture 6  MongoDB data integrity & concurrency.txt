@@ -1,0 +1,18 @@
+### Motivation for NoSQL and MongoDB Concurrency
+Much of the motivation for using NoSQL databases stems from the different concurrency properties they offer relative to relational databases. To understand how MongoDB functions, we can summarize its core characteristics.
+
+### Constraints and Data Integrity
+MongoDB enforces very few constraints. It requires the primary key, or `_id` field, to be unique, which is guaranteed by construction. If you do not provide an `_id`, it is generated and checked automatically; however, this is limited to a single field. More generally, uniqueness checks are allowed and enforced via the construction of indices. 
+
+There is no notion of foreign keys or referential integrity enforced within the system. Furthermore, there is no notion of triggers, which was a mechanism relational databases used for guaranteeing data integrity.
+
+### Transactions and Isolation
+In MongoDB, transactions are automatic around any action on a single document. Transactions are not allowed for operations that combine actions across multiple documents. Regarding isolation levels, MongoDB supports only the "read uncommitted" isolation level. This is the least restrictive isolation level, allowing for maximum flexibility.
+
+### CAP Theorem and Consistency Models
+When considering whether to use ACID or BASE properties and how they interact with the CAP theorem, MongoDB utilizes BASE properties. It emphasizes Consistency and Partition Tolerance (CP) from the CAP theorem, sacrificing some availability. Additionally, MongoDB employs the causal consistency properties previously described.
+
+### Rationale for Using MongoDB
+One general reason to use MongoDB is that the data model and querying are similar to relational databases but offer more flexibility, which matches document-oriented workflows. While this is a valid reason, it is not sufficient on its own, as relational models can also accommodate flexible schemas, such as allowing nulls for variant records.
+
+The more important reason to use MongoDB is that it provides weaker consistency guarantees and data integrity properties to improve performance and scalability. These notions of data integrity are baked into the implementation of MongoDB relative to relational databases. Consequently, the primary reasons for choosing MongoDB should be the performance benefits derived from these integrity trade-offs, followed by the suitability of the data model for your specific application.

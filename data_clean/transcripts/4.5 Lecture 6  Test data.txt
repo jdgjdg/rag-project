@@ -1,0 +1,19 @@
+### Testing Queries and Functions in Databases
+
+A pragmatic question is how to test queries and functions in a database. This process is often perceived as difficult and tedious; programmers frequently find it boring because they must determine what to test and what the test data should look like. Furthermore, programmers often incorrectly assume they only write correct code, leading them to view testing as a waste of time. However, testing is necessary because code is rarely perfect on the first attempt.
+
+### Testing Frameworks
+Historically, testing frameworks have been a weak spot for databases, but a number of frameworks are now available for commercial use. While this course will not utilize these frameworks due to time constraints, they exist for various types of testing and support different database systems.
+
+### Generating Test Data
+A primary challenge in database testing is acquiring test data. There are several approaches to this:
+
+*   **Manual Generation:** Generating test data by hand is tedious and only practical for small datasets. This method will be used in this course, as most of the examples involve small datasets.
+*   **Programmatic Generation:** In PostgreSQL, test data can be generated using functions such as `generate_series` and `random`. 
+*   **Data Integrity Considerations:** When generating data, one must ensure consistency between multiple tables—specifically regarding referential integrity—as well as adherence to any implicit or explicit constraints within individual tables.
+*   **Defining Typical Data:** A general problem is determining what data is considered typical or expected. This is particularly problematic with text. For example, when generating random names, one must decide if the data should be alphanumeric, arbitrary in length, or structured to resemble actual names in a specific language.
+
+### Using Existing Data
+A better approach is to use existing data, though this assumes such data is available. This is common for applications that have been running for a while, but it presents a challenge for brand-new applications. If existing data is available, one might generate subsets to avoid testing on the entire dataset. Additionally, it is often necessary to anonymize this data to protect sensitive information from programmers and testers.
+
+Ultimately, testing queries and functions in a database is distinct from testing standard application code, and it is essential to carefully consider your testing strategy.

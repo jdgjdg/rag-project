@@ -1,0 +1,58 @@
+## Properties of Relational Database Systems
+
+We will start by looking at some properties desired for relational database systems.
+
+The first is that the system controls the data and operations. A programming language is declarative. The programmer describes the high-level goals of operations, what is to be computed, and how data should be laid out, but the system controls the details and the specific order of operations.
+
+Secondly, data is of critical importance. This might sound completely obvious, but both the system and the programmer must be keenly aware and go to great lengths to protect data from all kinds of issues. This includes consistency errors, bad user input, hardware faults, and security break-ins.
+
+Third, data is highly structured. Each unit is a single relation, but these can be combined in arbitrarily complicated ways, resulting in a very complex overall structure. Furthermore, there is a strong culture of design before implementation; the programmer spends a lot of effort designing this overall complicated structure of where all the data goes. Since the system controls the data, it can enforce the structure being created and all desired consistency properties.
+
+## ACID Properties
+
+Another set of properties are known as the ACID properties, named after the four properties themselves:
+
+*   **Atomicity:** This means all-or-nothing execution. Each piece of a program should act as if all of it executed or none of it executed, even in the face of outside errors. For example, if the system loses power in the middle of execution before everything is complete, it should appear as if none of it executed.
+*   **Consistency:** Data is always in a valid state. We transition from one valid state to another valid state. If anything bad happens, the system remains in a valid state.
+*   **Isolation:** Many users can concurrently access the database without conflicting with each other. For example, with a network of ATMs accessing bank accounts, if thousands or millions of people use ATMs simultaneously, we do not want anyone's bank accounts to become compromised. One user should not accidentally withdraw money from another's account, and another should not accidentally withdraw money from the first's account. Both users would be very upset if that were to happen. We never want any situation like that.
+*   **Durability:** Data is permanent. If the computer loses power, access to data might be lost temporarily because the computer is off. However, once it is on and the database is available, the data is still there; it does not go away.
+
+These are four very strong properties desired for relational databases. They are sometimes relaxed in other database styles. We will discuss them further, especially when we cover fault tolerance, concurrency, and multiple users later in the course.
+
+## Transactional vs. Analytical Databases
+
+Previously, when looking at a map of all databases, the distinction between transactional and analytical databases was mentioned. Let's explain that distinction.
+
+### Transactional Databases (OLTP)
+
+First, let's look at transactional databases, also known as OLTP (Online Transactional Processing). A model for this would be retail sales, like amazon.com.
+
+The goal is to track all data and all CRUD operations: Create, Read, Update, and Delete (or Destroy). For example, when creating a new order on Amazon, reading reviews, updating an order by putting more things in a shopping cart, or deciding to delete or destroy an order.
+
+There are frequent updates to the data. People are constantly making orders, inventory needs to change, and Amazon is always changing prices. They are always adding more products, resulting in many changes to the data.
+
+Furthermore, transactional databases support flexible queries. For example, on Amazon.com, users can type anything into the search bar to find products. Other actions like finding a new product, looking at reviews, or making an order are also different sorts of queries in the database. All these operations need to be performed quickly and easily.
+
+### Analytical Databases (OLAP)
+
+Now, let's contrast that with an analytical database, or OLAP (Online Analytical Processing). Here, the focus is on analyzing sales trends. For example, on a monthly basis, one might look at previous sales to determine what is selling the most, whether to buy more of certain items, or whether to ship them to a particular warehouse. The goal is to analyze historical data.
+
+Data updates are only needed periodically. If data is analyzed monthly, it might only need to be updated monthly.
+
+In this model, predetermined queries are generally used. A list of specific analyses is defined, and the database organization is heavily optimized for these specific queries to make them run as fast as possible. This is because queries might be very complicated and run on millions or billions of pieces of data, needing to complete in seconds, not minutes or days as in the past.
+
+## Merging Styles and Course Focus
+
+The reality is that these two different types form more of a spectrum than two separate camps.
+
+In analytical databases, for example, Amazon analyzing sales trends would not want to do so on a monthly basis. They want to analyze sales on an hourly or minute-by-minute basis. They want to analyze how sales are performing in real-time, based on constant data changes (e.g., Amazon's frequent price changes).
+
+They also want to be able to perform any analysis they can think of. If a new way to analyze data is conceived, they want to implement it without having to go back and re-optimize or reorganize the entire database. This means they also desire flexible queries.
+
+Frequently, the notions of these two different styles have been merging, with analytical databases moving more towards transactional capabilities.
+
+In this course, we will be focusing on the transactional style of database for two reasons:
+1.  It is much more common.
+2.  Transactional databases are often able to support enough of the analysis needed to accomplish most tasks.
+
+However, we will look at analytical-styled specialized databases towards the end of the course.

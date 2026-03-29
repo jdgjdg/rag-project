@@ -1,0 +1,21 @@
+### Overview of Database Security
+
+This discussion provides an overview of database security, categorizing the subject into two primary areas: preventative measures and detection/curative measures.
+
+#### Preventative Measures
+Preventative measures involve actions taken to stop security breaches before they occur. These include:
+
+*   **Access Control and Authentication:** This involves managing access to the computer system, whether through physical access or the ability to log in and perform operations.
+*   **Data Integrity:** Once software interacts with a database, it is essential to ensure data remains consistent with expectations. This is achieved through constraints, triggers, and various techniques used in large-scale application environments.
+*   **Encryption:** While not covered in detail, various forms of encryption are possible. Database disk encryption protects data if the physical disk is accessed by unauthorized parties, though it adds overhead as the system must encrypt and decrypt during read/write operations. Additionally, encryption over the network protects data as it is transferred between the database and clients.
+*   **SQL Injection:** This is a specific mechanism relevant to databases that ensures unauthorized individuals do not gain improper access to the system. It is a critical component of maintaining data integrity.
+
+#### Detection and Curative Measures
+Detection and curative measures involve actions taken after a security incident occurs to identify the issue and mitigate the damage. These include:
+
+*   **Data Storage and Organization:** This involves managing how data is stored to ensure recovery.
+    *   **Backups:** Creating backups allows for the restoration of data if it is lost.
+    *   **Distribution and Replication:** Distributing data across multiple locations ensures that the database remains operational if a single location, such as a data center, experiences a fire or failure. Replication involves maintaining copies of data in multiple places to ensure availability.
+*   **Logging:** While logging is often administered by the database system to undo computations for concurrency purposes, it is also used by users to track reads and writes. Logging allows administrators to review database activity to identify potential problems, such as access from untrusted locations or unexpected behavior from authenticated users.
+
+While there are other notions of security, these categories represent the primary focus for our upcoming detailed discussions.

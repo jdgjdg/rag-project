@@ -1,0 +1,12 @@
+### Summary of SQL Query Syntax and Semantics
+
+We have previously summarized SQL query syntax and semantics, but since then, we have added more features and different kinds of clauses. Let us revisit that summary.
+
+#### Overview of SQL Clauses
+Here is a quick summary of all the clauses we have seen. The computations in the `SELECT` clause now include complicated computations like window functions. Additionally, we have added `GROUP BY` and `HAVING` to the clauses previously discussed.
+
+#### Clause Semantics and Execution Order
+While each individual clause is relatively straightforward and easy to understand, the complexity arises in how they combine. There is a strange oddity regarding the `SELECT` clause, which executes at a midpoint between filtering and sorting. Specifically, we perform grouping and filtering on the groups before we execute our computations, as demonstrated in a number of examples.
+
+#### Illustrative Example
+The design of the language and its complex execution order has always seemed rather strange. However, the following example illustrates that the ordering can use the result of the selection. This query utilizes all of the different clauses we have seen and performs a variation on our running example of multiplying prices and quantities together, grouping them for each of the various items we have.

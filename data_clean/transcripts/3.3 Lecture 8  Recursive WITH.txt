@@ -1,0 +1,54 @@
+### Introduction to Recursive Common Table Expressions
+
+Previously, I introduced common table expressions using the `WITH` keyword. Today, I want to introduce a variant: recursive common table expressions. These are not well-known, and many SQL programmers do not use them. However, they can be useful in very particular cases.
+
+### Example 1: Hierarchical Data (USA Cities)
+
+Our first example involves finding all cities in the USA where the data is set up as a hierarchy. Each area is contained within another area, and each area has a single parent. For example, the "USA" area has a parent of "Earth" (ID 1), and the Earth has no parent. We are not modeling the solar system, the galaxy, or the universe.
+
+In this hierarchy, Washington DC is directly within the USA. Conversely, Houston is modeled lower in the hierarchy: Houston is within Harris County, which is within the Texas state, which is within the USA. Cities can occur at different levels of this hierarchy. Note that I have simplified this model; for instance, I am assuming a city is only in one county, and I have omitted explicit attribute lists in the SQL for brevity.
+
+#### The Solution Approach
+The problem is broken down into two steps:
+1. **Find all areas in the USA:** Start with the USA, then repeatedly add areas that are inside an area already known to be within the USA. We keep adding these to our results until we have all areas within the USA.
+2. **Filter for cities:** From the resulting set of all areas, filter out those that are not cities.
+
+#### Recursive SQL Implementation
+To perform a recursive definition, we add the `RECURSIVE` keyword to the common table expression. Technically, this is an inductive definition, which is a simpler special case of recursion.
+
+Every recursive or inductive definition requires a base case and an inductive case:
+*   **Base Case:** Find the starting point, which is the area named "USA." This is placed into the `USA_area` table.
+*   **Inductive Case:** For any item already in `USA_area`, find areas directly inside it and add them. This walks down the hierarchy to smaller areas until no more areas are found.
+
+The recursive CTE works by taking the union of the base case and the inductive case, repeatedly unioning the results into `USA_area`. You must combine these cases with either `UNION` or `UNION ALL`.
+
+#### Execution Walkthrough
+1. **Base Case:** Find all areas called "USA" (ID 2).
+2. **First Inductive Step:** Find all areas whose parent is 2. This adds IDs 3 and 4.
+3. **Second Inductive Step:** Find all areas whose parent is 2, 3, or 4. This adds ID 5.
+4. **Third Inductive Step:** Find all areas whose parent is 2, 3, 4, or 5. This adds ID 6 (Houston).
+5. **Termination:** The next iteration finds no new areas, so the recursion stops.
+6. **Final Selection:** The main query selects only the rows from the final set that are cities.
+
+### Example 2: Fibonacci Numbers
+
+A typical standard recursion example is finding Fibonacci numbers. We build a table called `fib` with fields `num`, `F1`, and `F2`.
+
+*   **Base Case:** Initially, we insert `0, 0, 1`.
+*   **Inductive Case:** We increase the `num` value, move `F2` into the `F1` position, and set the new `F2` as the sum of the previous `F1` and `F2`.
+*   **Stopping Mechanism:** We include a condition where `num < 20` to prevent infinite recursion.
+
+The third attribute (`num`) acts as a mechanism to generate the desired numbers.
+
+### Implementation Details and Best Practices
+
+Recursive CTEs provide a usable mechanism to query hierarchical data, which traditional database programmers previously avoided. Common use cases for hierarchical data include management structures, corporate ownership, or tracking recruitment in a Ponzi scheme.
+
+#### Implementation Restrictions
+Different SQL implementations have varying restrictions:
+*   **Base Cases:** In PostgreSQL, you are allowed one or more base cases that do not depend on the table being defined. These must be listed before the inductive case.
+*   **Inductive Case:** You are only allowed one inductive case.
+*   **Recursion Limit:** You can only mention the table being defined exactly once within the common table expression. If your logic requires conditional inclusion, you must restructure the code to maintain this single reference.
+*   **Union vs. Union All:** `UNION` removes duplicates, while `UNION ALL` does not. If you do not need to remove duplicates, `UNION ALL` may be more efficient, as it avoids the overhead of removing duplicates during every iteration. You can instead remove duplicates at the end of the process.
+
+If you are using hierarchical data in your database, recursive CTEs are the best and easiest tool for writing queries on that data.

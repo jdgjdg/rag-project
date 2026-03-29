@@ -1,0 +1,51 @@
+## Importing Data into a Database
+
+This lecture discusses methods for importing data from external files, such as text files or spreadsheets, into a database. The process operates within a server-client model, where the database server and the client are distinct entities, even if physically located on the same machine.
+
+### File Location and Access
+
+A key consideration is the location of the data file:
+
+*   **File on the Database Server:** If the file resides on the database server, questions arise about how it got there. As a client, direct access to the server's file system may be restricted. Even if the file is present, the client needs to know its path and how to access it.
+*   **File on the Client Computer:** If the file is on the client, the challenge becomes how the database server, a separate computer, can access it. This might involve transmitting the entire file.
+
+### Example Scenario: Comma Separated Values (CSV)
+
+For this example, we will assume a plain text file formatted as comma-separated values (CSV). The goal is to populate a database table with this data. We will also assume that the target table has already been created with only headings, and no data.
+
+### Database Commands for Data Import
+
+The commands used for data import are specific to the database system.
+
+#### For Files on the Database Server (PostgreSQL Specific)
+
+If the data file is already on the database server, the `COPY` SQL command is used.
+
+```sql
+COPY table_name FROM '/path/to/your/file.csv' WITH (FORMAT CSV, HEADER);
+```
+
+*   `table_name`: The name of the target table.
+*   `/path/to/your/file.csv`: The absolute path to the data file on the server.
+*   `FORMAT CSV`: Specifies that the file is in CSV format.
+*   `HEADER`: Indicates that the file contains a header row.
+
+**Permissions:** Executing the `COPY` command requires superuser privileges, such as being logged in as the `postgres` user. This is because the command assumes permission to access files on the server. Additionally, the server application itself must have permission to access the specified file.
+
+#### For Files on the Client Computer (PSQL Specific)
+
+When the data file is on the client computer, a different command is used: `\copy`.
+
+```bash
+\copy table_name FROM '/path/to/your/file.csv' WITH (FORMAT CSV, HEADER);
+```
+
+*   `\copy`: This is not a standard SQL command but a directive understood by the `psql` client application.
+*   `table_name`: The name of the target table.
+*   `/path/to/your/file.csv`: The path to the data file on the client machine.
+*   `FORMAT CSV`: Specifies that the file is in CSV format.
+*   `HEADER`: Indicates that the file contains a header row.
+
+**Usage:** This command must be typed directly into the `psql` interactive terminal. `psql` will then transmit the file from the client to the server and load it into the appropriate table.
+
+An upcoming video will further detail the use of `psql`, including this data import functionality as an example.

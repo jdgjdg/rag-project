@@ -1,0 +1,38 @@
+### Introduction to Aggregation in MongoDB
+We have previously explored how to use `find` in MongoDB to retrieve data. To perform computations on that data, we use aggregation. As with previous examples, we connect to the database using a sample dataset consisting of products and manufacturers. This dataset includes additional fields: `quantity`, which allows for multiplication with `price` to perform basic computations, and `shapes`, which serves as a field for grouping.
+
+### Simple Counting
+The first form of aggregation is a special case used to count the number of returned documents. This is analogous to the `COUNT(*)` function in SQL. The `countDocuments` method takes a query document as an argument, performs the search, and returns the count of the results.
+
+### MapReduce
+MapReduce is a general method for computing results in a parallel fashion, commonly used across various NoSQL databases. The process requires a map function and a reduce function, which are applied in stages. While this tool is available, it requires the use of JavaScript for the map and reduce functions.
+
+### The Aggregate Method
+The `aggregate` method is the primary tool for general aggregation. It processes data through a sequence of stages, where each stage performs a specific transformation. The method accepts an array of these stages.
+
+Many of the available aggregation stages correspond to SQL clauses:
+*   **Matching:** Filtering data.
+*   **Projection:** Selecting specific fields.
+*   **Lookup:** Performing joins (to be discussed in a separate session).
+*   **Grouping, Sorting, and Limiting:** Standard data manipulation operations.
+*   **Unwinding:** A specific MongoDB operation for handling arrays.
+
+Aggregation is the closest MongoDB equivalent to a general SQL `SELECT` clause. However, unlike SQL, where the order of clauses is strictly defined by semantics, aggregation stages can be ordered as needed. You may also use the same stage type multiple times within a single pipeline.
+
+### Pipeline Examples
+#### Matching and Projection
+A `match` stage functions similarly to a `find` operation, filtering documents based on a provided criteria. Following a match, a `project` stage can be used to calculate new values. For example, one can calculate a `totalValue` by multiplying `price` and `quantity`. 
+
+Note that the `_id` field is included by default in projections unless explicitly excluded. When using `project`, only the specified fields are passed to the next stage. Therefore, if a field is required for a later stage, it must be included in the projection.
+
+#### Grouping
+The `group` stage organizes data based on a specified key. When grouping, the `_id` field is set to the field you are grouping by. You can also specify additional fields to compute, such as the sum of `totalValue`. 
+
+*   **Grouping by embedded documents:** You can group by fields within embedded documents using dot notation (e.g., `manufacturer.name`).
+*   **Grouping all documents:** To aggregate over an entire collection, use `null` as the `_id` value in the `group` stage.
+
+#### Unwinding Arrays
+The `unwind` stage is used when a field contains an array of values. It takes each value in the array and creates a separate document for each, effectively duplicating the original document for every element in the array. This results in a larger number of output documents. For instance, if you have a `prodColor` array, `unwind` will create a unique document for every color listed in that array, allowing for subsequent operations like counting the frequency of each color.
+
+### Best Practices for Pipeline Development
+When building an aggregation pipeline, it is best to develop it one stage at a time. After defining each stage, verify that it produces the expected results and that the resulting document structure contains the necessary fields for the subsequent stage. This incremental approach ensures that the pipeline functions correctly as it grows in complexity.

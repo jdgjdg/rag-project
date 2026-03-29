@@ -1,0 +1,41 @@
+# Database Migration
+
+When a database is already in production and in use by users, and a new feature requires changes to the table structure, adding new attributes, and modifying queries, the process of changing the structure of a live database is known as database migration. This overview will focus on the issues involved without deep dives into the subject.
+
+## General Process
+
+The general process for changing schemas involves:
+1.  Creating new tables or new versions of existing structures.
+2.  Creating new queries that utilize these new tables.
+3.  Copying or computing data from the old tables into the new tables.
+4.  Switching to use the new tables and queries.
+5.  Decommissioning the old tables.
+
+## Challenges with Live Data
+
+This process can be complicated by new data arriving during the migration. Copying or computing data, and switching to new definitions, can take substantial time, especially with millions or billions of data points potentially distributed across multiple database servers. In some cases, the copying process alone can take days, during which new data may be generated.
+
+## Traditional Migration Approaches
+
+There are three traditional ways to handle database migration:
+
+### 1. Shut Down Service
+
+The oldest method involves shutting down the entire service. This ensures no new data is introduced during the copying process. While straightforward and safe from a technical standpoint, users often dislike service downtime, especially for 24/7 global services.
+
+### 2. Locking
+
+This approach involves shutting down only the specific pieces of the service or database that interfere with the changes. For example, if data is being copied into a particular table, access to that table might be locked, allowing only the migration process to use it. Once the copying is complete, the lock is released, and other tables can be locked sequentially. This allows users to access the rest of the service, making it a better, though more complex, option than a full shutdown. Proper locking implementation is crucial.
+
+### 3. Invisible Migration
+
+The most desirable approach is to make the entire migration process invisible to users. A simple version of this involves:
+
+*   **Shadow Tables:** Create new, unactivated versions of the tables that shadow the live, old versions.
+*   **Triggers:** Implement triggers on the old tables. These triggers forward any new data received by the old table to the corresponding new (shadow) table. This ensures that new data is reflected in both the old and new versions simultaneously.
+*   **Data Copying:** Copy existing data from the old tables to the new shadow tables.
+*   **Renaming:** Once the new tables are populated and up-to-date, simply rename them. This instantly makes the new tables active and available for use. The data that arrived during the copying process has already been forwarded and reflected in the shadow tables.
+
+Variations of this approach exist, allowing for phased rollouts where some users see the new version while others see the old version, facilitating A/B testing.
+
+Many modern database systems now offer support for online schema changes using processes similar to these, sometimes requiring add-on services. While not always easy, this functionality significantly improves the user experience.

@@ -1,0 +1,22 @@
+### Query Plan Evaluation
+In principle, once we have our query plan, evaluating it is simple. Because we understand the mathematical operators, the plan is just a mathematical expression that we evaluate. In practice, however, it is more difficult because we require efficiency. We will discuss several ways to make this more efficient than a simple evaluation of the mathematical expression.
+
+### Data Transfer Between Operations
+The first aspect to consider is transferring data from one part of the calculation to the next. Consider a tree structure where one operation, such as a filter, passes data to another operation, such as a join. 
+
+#### Materialization
+The most obvious approach is to complete the child operation and send the entire dataset to the parent for the next operation. If the dataset is small, this is not a problem. However, our usual assumption in databases is that datasets are huge and do not necessarily fit in available physical memory. Therefore, this approach does not work in general.
+
+#### Disk-Based Intermediate Storage
+A second approach is to have the child operation write the data to the disk upon completion. The parent operation then starts and reads the data from the disk as needed. If the parent needs the data multiple times, it can read it multiple times. While this is simple, it is very expensive because reading and writing to disk is costly. Because this method works in general, it is considered the default operation in literature.
+
+### Pipelining
+To avoid reading and writing to disk, we can run operations concurrently. While this is harder to implement, from a high-level cost perspective, we can execute the filter and the join concurrently. As the child operation outputs data, it sends a small amount at a time to the next operation. This is known as pipelining. 
+
+Because we are only sending a small amount of data at a time, we do not need to store large amounts of data in memory, thereby avoiding disk I/O. However, this is only feasible if the parent operation uses the data only once—processing it, using it, and discarding it to make room for the next incoming data. If the parent needs to store all the data at once, we revert to the previous disk-based methods.
+
+### Operation Combination
+Another possibility is to combine two operations into one. For example, when performing a join, we can apply a filter at the same time. We examine the data, perform the filter check, and if it passes, we proceed with the join. This is the simplest and best option when feasible. It generally only works if one of the operations is simple, such as a filter; attempting to combine two joins is too complicated.
+
+### Implications for Cost Modeling
+When we describe the costs of various operations in later examples, we must account for whether we are reading and writing data to the disk. You must understand which parts of the cost formulas to include or exclude depending on the specific implementation circumstances.

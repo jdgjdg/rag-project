@@ -1,0 +1,36 @@
+### Introduction to Subqueries
+In most programming languages, you can have a loop within a loop or a function defined within another function. Similarly, in SQL, we can have queries defined within other queries. This lecture explores the use of subqueries. 
+
+For this example, we will work with complex data involving sales, quotas, and actual sales data divided into regions and salespeople. Our primary objective is to compare actual sales data to the quota. The dataset consists of three tables with multiple foreign keys. 
+
+A query always returns a table of results. One use of a subquery is to act as a table. However, in special cases—such as when aggregating data or using `LIMIT 1`—a subquery may return only a single result. In these instances, the result can be used as a single scalar value.
+
+### Subqueries as Scalar Values
+Our first examples involve using a subquery as a single value. For each region, we want to compare the total actual sales to the total quota. 
+
+In the provided query, we select three items: the `region_id`, the total sales, and the total quota. Each of these totals is computed via a subquery that sums the data, resulting in a single total value for each of the three regions.
+
+#### Correlated Subqueries
+These subqueries are known as correlated subqueries, meaning each subquery is dependent upon the outer query. Specifically, the outer query defines `R` (the region), and `R` is used within the inner query. 
+
+There are two main consequences of this:
+1. **Testing:** Testing these subqueries is more difficult. You cannot simply copy the subquery as a standalone query and run it because it lacks the definition of `R` provided by the outer query.
+2. **Execution:** A common way to think about the semantics of these queries is that the subqueries are executed for every single tuple of `R`. While the actual implementation may differ, this is a useful mental model for understanding the execution.
+
+#### Filtering with Subqueries
+As a variation, we can use the query to perform the comparison for us. We want to identify regions where the total sales are below the total quota. We place the two subqueries in our `WHERE` clause to compare the total sales against the total quota. By selecting the `region_id` and the `region_name`, we can identify that only region two (Dallas) has sales lower than its quota.
+
+### Subqueries as Tables
+Subqueries can also be used as tables. To solve the same problem—showing total actual sales and total quotas for each region—we can use a different approach. 
+
+The basic idea is to create one table containing all sales information and another table containing all quota information. We then join these two tables on the condition that they share the same region, and select the three pieces of information for each region.
+
+When using a subquery in the `FROM` or `JOIN` clauses, the subquery must be assigned a name (an alias). We must rename the subquery to provide this identifier. 
+
+#### Improving Query Readability
+There is a more efficient way to handle aliases. Rather than renaming individual fields within the `SELECT` statement, we can rename both the table and its attributes simultaneously. This cleans up the subquery significantly.
+
+While it might be tempting to combine subqueries that share the same `GROUP BY` clause, it is often difficult because they may operate on different tables. In this example, one subquery joins `sale` with `person`, while the other works only with `person`, making them difficult to combine.
+
+### Conclusion
+Subqueries allow us to perform complex operations within our queries. However, they can also make queries larger and harder to understand. Future lessons will explore ways to write these queries more cleanly and understandably.

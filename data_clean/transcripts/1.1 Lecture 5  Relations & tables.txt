@@ -1,0 +1,61 @@
+## The Relational Model
+
+We've talked about the relational model and its goals. The relational model is the basis of the most common type of database, and the type we will use for most of this course. Let's look at what this relational model is.
+
+To start, we will have multiple relations. There are no pointers between the relations. Instead, connections are made via repeated data. In this example, data in the product relation is repeated in the manufacturer relation, allowing us to connect the two.
+
+### Why Multiple Relations? Addressing Redundancy and Inconsistency
+
+This begs the question: can we just use one table and be done with it, as in this example? Why do we want two relations? There is a problem with repeated data. Not only is the data repeated, leading to redundant data, but this also presents two issues. First, it takes up more space; I had to type it out twice. Second, it creates an opportunity for inconsistency. For example, I might have misspelled "Houston" one of these times. Is there a "Houston, Texas" without a first 'o'? Is this someplace else? Or is that the correct spelling, not H-O-U? From just the data, you don't know. This is part of the problem with inconsistent data.
+
+If you have two tables, you can see that the same data is listed only once, and presumably, it was entered correctly that one time.
+
+### Relation vs. Table: Key Distinctions
+
+There are two closely related notions: a relation and a table. These are often discussed as if they are the same, but they are not. I want to clarify the distinction.
+
+#### Mathematical vs. Implementation
+
+A relation is part of the model, part of the theory, whereas a table is part of the implementation. I might draw them the same way, which contributes to potential confusion, but they are different things.
+
+#### Duplicates (Set vs. Multi-set)
+
+In a relation, we are talking mathematically. There will not be any duplicates. You can think of it as a set; any relation is mathematically a set. A table, however, allows duplicates. You can think of it as a multi-set. A multi-set is a mathematical term for a set that allows duplicates.
+
+#### Order (Unordered vs. Ordered)
+
+Thirdly, a relation is a set, and sets are unordered. A relation is always unordered. I might draw it in a particular order because I have to write it down, but conceptually, it is not in any particular order. A table, however, allows us to order the data. We can sort it in a particular way that we want. Technically, it's not actually a multi-set because multi-sets are also unordered. However, we will proceed with the simplification that it is a multi-set that allows ordering.
+
+### Components of Relations and Tables
+
+Next, let's look at the pieces of relations and tables.
+
+#### Attributes (Columns/Fields)
+
+First, we have an attribute. Here, I have three attributes. They are also called columns or fields. This leads to an important aside regarding terminology. Unfortunately, in the database world, terminology is a nightmare. As in this example, there are multiple terms for the same concept. You will also see the same term used for different concepts, depending on the book or author you are reading. It is annoying. I will try to be consistent and, for example, call this an attribute.
+
+An attribute is one of these columns. It has a heading, which is simply the attribute name. It also has a type. In this first example, it's a string. The second is a notion of money, and the third is also a notion of text or a string. The number of attributes, in this case, three, is known as the arity or the degree of the overall relation or table.
+
+#### Tuples (Rows/Records)
+
+A tuple, also known as a row or a record, is a single entry in the table or relation. Each tuple is also unordered. I might write the product name before the product price before the product manufacturer, but in principle, they are unordered. The proper way to think of it is that a particular tuple is a mapping between the attribute name and its particular value. For example, the heading 'product price' maps to its particular value. The number of tuples, or how many tuples are present overall, is simply the size of the relation or table.
+
+#### Cells (Fields)
+
+Next, a cell or a field. Note that we have now encountered two different notions of 'field.' A cell is simply one of these boxes. However, we often describe this not using those terms, but simply by saying it's the value of some attribute in a particular tuple. This is just another way of describing the same thing.
+
+### Schema and Instance
+
+#### Relation/Table Schema
+
+Next, we have a relation or table schema, which is a description of the overall structure. It describes the name of the relation or table, the names of the attributes, and the types of the attributes. Sometimes we include the types, and sometimes we do not. These are descriptions of the schema in a textual form.
+
+#### Instance/Realization
+
+Lastly, we have the notion of an instance or a realization of a relation or table. This refers to a particular set of tuples, such as the five tuples of data I typed. This is one particular instance of the product relation. Over time, I might add more data, delete data, or change prices, and that would constitute a different instance of the product relation. The important thing to remember is that our data changes over time. Students often forget this detail. Naturally, in any instance, the types of the data must match the types specified in the schema.
+
+### Mathematical Definition of a Relation
+
+Let's briefly turn to the mathematical definition of what a relation is. I will explain this notation. A relation is defined over a set of columns, or attributes. It is a subset of what is called a cross product of several sets. What matters is that we have a set per column containing all possible values for that column. So, in the first column, values come from the first set; in the second column, values come from the second set, and so on. Furthermore, we call this set of all possible tuples the domain. We then say the relation is the set of tuples for which the relation is deemed true. These are the basic concepts of individual relations.
+
+Next, we will start looking at more concepts of the relational model as a whole and how everything works together.

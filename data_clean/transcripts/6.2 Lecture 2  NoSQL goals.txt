@@ -1,0 +1,43 @@
+### Goals of NoSQL Databases
+
+NoSQL databases have varied goals because each system is different and possesses specialized objectives. However, the big picture goals for NoSQL-style databases can be categorized into four areas: scalability, cost, flexibility, and availability.
+
+### Scalability
+Scalability is the ability to handle varying workloads, typically by building a database across clusters. There are two primary notions of scalability:
+
+*   **Vertical Scaling:** This is the traditional approach in the relational database world. It involves purchasing a larger, more expensive, and better server. While this is a simple approach—if you have the budget, you plug it in and it functions like any other server—it is limited by the maximum capacity of a single computer. Because it is a single system, it avoids the complications of networking issues.
+*   **Horizontal Scaling:** This is what is typically meant by scalability in the context of NoSQL. It involves using a cluster and adding more commodity hardware as needed. In the long run, this tends to be cheaper because individual processors are inexpensive. It is potentially unbounded, allowing for the addition of as many processors as desired. However, this introduces the complexity of managing the networking between the processors in the system.
+
+### Cost
+In the relational database market, Oracle is the dominant system and is very expensive. While academia often utilizes open-source software, Oracle dominates the business world. Beyond the cost of the software and support, Oracle provides a massive set of add-ons for managing HR, customer relations, and supply chains—tools that the business world requires.
+
+In contrast, NoSQL databases are almost exclusively open-source. While you generally pay for support, the ecosystem of add-ons is not as extensive or fully featured as the Oracle environment. Therefore, if cost is the primary concern, NoSQL often wins.
+
+The landscape is more complex when considering other relational options. Microsoft SQL Server is popular and, while expensive, is significantly less costly than Oracle (often in the tens of thousands of dollars per server rather than fifty thousand). There are also open-source relational options. 
+
+Companies often choose expensive systems like Oracle over free alternatives like PostgreSQL for several reasons:
+*   **Performance:** Oracle’s performance is often twice as fast as PostgreSQL or MySQL.
+*   **Business Tools:** The availability of integrated business tools is a major factor.
+*   **Switching Costs:** Once a company is locked into a specific toolset, the switching costs are high. Modifying processes and training staff to use new software is a significant burden.
+*   **SQL Standardization:** SQL is not 100% interchangeable across different systems. 
+
+When people discuss Oracle, they are not simply talking about the database; they are referring to the entire suite of tools surrounding it.
+
+### Flexibility
+Relational databases offer a flexible system through entity-relationship modeling, which is a powerful tool. However, this requires a significant upfront investment in the data modeling process. Once the structure—the tables and their attributes—is defined, it is generally static and difficult to change. Furthermore, the relational side is almost exclusively locked into using SQL.
+
+NoSQL databases also offer flexible models that represent data in various ways, but with much less emphasis on upfront data modeling. The structure is dynamic and can be determined as the project progresses, which aligns with the agile approach adopted by many companies. Regarding language, NoSQL databases are frequently set up to use a library of method calls that integrate into various programming languages, offering greater flexibility.
+
+### Availability
+Availability refers to the system’s ability to always respond to requests and ensure the hardware remains operational. 
+
+*   **Relational Databases:** Traditionally, these rely on a single-processor system, creating a single point of failure. If that server goes down, the system is unavailable. To mitigate this, one must replicate the database to other hardware.
+*   **NoSQL Databases:** These are generally distributed systems with built-in fault tolerance. Because they may consist of thousands of nodes, individual node failure is expected and handled by the system. The remaining nodes continue the computation. Data is distributed with replication within the cluster, and additional systems are used in case the entire cluster fails. 
+
+Additionally, NoSQL systems often involve using multiple data sources simultaneously rather than relying on a single database.
+
+### Summary of NoSQL Characteristics
+NoSQL databases are generally characterized by the following:
+*   **Distributed Architecture:** They operate on clusters of computers, which facilitates asynchronous operations where each node responds to actions as they are completed.
+*   **Prioritization:** There is an emphasis on performance over consistency, reads over writes, and analyzing data over transactions.
+*   **Flexible Data Models:** While they are flexible, they still impose their own specific data models. If a use case does not fit the model, the system may not be the appropriate choice.

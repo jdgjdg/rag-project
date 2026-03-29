@@ -1,0 +1,19 @@
+**SQL Syntax and Relational Calculus**
+
+First, let's look at the syntax we've covered so far. We've seen five different clause types: select, from, where, orderBy, and limit. Within the from clause, we can have joins, either cross joins or inner joins.
+
+We can describe this syntax using relational calculus, where we perform computations by looking at appropriate tables and applying join and filter conditions.
+
+**SQL Semantics and Operation Order**
+
+If we summarize the semantics, we want to look at the order of these operations. We start by getting and joining data from all relevant tables. Then, we filter the rows according to the where clause. Next, we move to the select clause and perform computations, including eliminating duplicates if needed. After that, we go back down to the orderBy clause, and finally, the limit clause.
+
+Frankly, this ordering seems weird. If you've had problems understanding SQL so far, it's very likely stemming from this sequencing where the select clause comes somewhere in the middle.
+
+**Illustrating Operation Order**
+
+One way to illustrate this order is through an example. In the select clause, we can use renaming for one of our computations. Then, we can use that name in our orderBy clause to sort results. However, if you tried to use 'total' here, it wouldn't work; it would give an error message. This is one indication of the ordering of these operations.
+
+**Future Topics**
+
+We will later revisit the syntax and semantics as we add more features to our understanding.

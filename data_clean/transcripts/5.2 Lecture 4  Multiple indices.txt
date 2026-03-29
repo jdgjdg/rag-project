@@ -1,0 +1,30 @@
+### Indices for Multiple Attributes
+
+Previously, I put off discussing indices in relation to queries involving multiple attributes. Let us now address this. Consider an example where we are searching for the conjunction of two properties involving two different attributes of the same table. If this search is sufficiently common, we want indices to handle it. There are multiple strategies for dealing with this.
+
+### Single-Attribute Indexing Strategies
+The simplest and most straightforward strategy is to have an index on only one of the attributes. We look for all values supporting part of the condition, and of the tuples that satisfy that, we perform a linear search for the rest of the condition.
+
+Another strategy is to have an index for each attribute. For each query, we decide whether to use the index on the first attribute and perform a linear search on the second, or vice versa. Alternatively, we can index both attributes and take the intersection of those results. Each of these approaches takes different amounts of time depending on how many values are expected to satisfy each condition.
+
+### Lexicographic Ordering
+The standard way to order pairs of data is a notion called lexicographic order. When we have a pair, the first pair is less than the second if the first element is less than the second. If the first elements are equal, we compare the second elements. We give priority to elements earlier in the tuple. Consequently, having an index on a pair of attributes in one order is different from having it in the reverse order, as it changes how the attributes are prioritized in the index.
+
+### Consequences of Index Ordering
+Consider an index created with `jobCode` first and `performanceRating` second. The data is ordered by `jobCode` first, and within the same `jobCode` value, the `performanceRating` is ordered.
+
+*   **Conjunction of Equalities:** This is efficient for queries with a conjunction of two equalities, as it can quickly index to the appropriate value.
+*   **Equality and Range:** If you have an equality in the first attribute and a range in the second (e.g., `jobCode = 2` and `performanceRating = 5`), the index can scan backwards until the `jobCode` is no longer 2. Because of the ordering, it can satisfy this range.
+*   **Range on the First Attribute:** This index does not help if you perform a range query on the first attribute (e.g., `jobCode < 2` and `performanceRating = 5`). The values for `performanceRating = 5` are scattered throughout the index, and the index cannot find these distributed locations.
+
+### Selecting the Most Selective Column
+A subtle point is that you should pick the leftmost, first-ordered column to be the most selective one. "Most selective" means that if you know the value of that attribute, you significantly reduce the amount of data to search. For example, if a `jobCode` has only two potential values, knowing the `jobCode` cuts the data in half. If a `performanceRating` has five different values, knowing that value cuts the data to 20% of the original. In this case, the `performanceRating` is more restrictive, suggesting that, following this rule of thumb, the attributes should be in the opposite order. However, this must be balanced against which kinds of queries you are trying to make efficient.
+
+### Disjunctions
+Creating an index built upon the conjunction of attributes does not help when working with a query that is a disjunction. In such cases, an index would not be used.
+
+### Grid Indexing
+The next strategy is grid indexing. The idea is to consider $n$ attributes as an $n$-dimensional grid in space. This is often used for geographical data, where we have two dimensions in space and multiple dimensions for different types or layers of data. There are numerous implementations for this, but Geographical Information Systems (GIS) are a separate and specialized topic. GIS databases make different trade-offs and frequently use different languages for querying. However, many relational databases have a GIS-specialized component within their ecosystem to work alongside relational data.
+
+### Bitmap Indexing
+The fifth strategy is to use a bitmap index, which will be covered in a separate video. Overall, there are multiple approaches for using indices on queries with multiple attributes. In practice, both the optimizer and the user will employ a combination of these strategies.

@@ -1,0 +1,55 @@
+## Introduction to Foreign Keys
+
+We've previously looked at keys within a single relation or a table. Now we will examine the notion of a foreign key and how it relates tables together.
+
+## Relational Model and Relationships
+
+In the relational data model, as a reminder, we have multiple relations. There are no pointers between these tables. Instead, connections are established via repeated data. Our data is repeated here.
+
+We will discuss multiple kinds of relationships. This should already be familiar from a course in discrete math, but it is a good time to review.
+
+We can have one-to-one relationships, where each piece of data in one relation is related to exactly one piece of data in another, and vice versa. We can have one-to-many relationships, where each piece of data in one relation can be related to many in another. 'Many' means zero or more; it is essentially a shorthand for any number. In this case, each piece of data in the 'many' side is related to one piece of data in the 'one' side. We can have many-to-one relationships, which is simply the reverse of one-to-many. Then there are many-to-many relationships, where each piece of data in one relation can be related to multiple in another, and vice versa. Again, 'many' is just a shorthand for any number. Not everything has to be related; for example, 'b' could be related to zero things.
+
+In practice, we will largely ignore one-to-one relationships. As previously noted, many-to-one is simply the reverse of one-to-many. Therefore, we will focus our attention on one-to-many and many-to-many relationships.
+
+## Defining Foreign Keys
+
+Returning to our two example tables, we define a foreign key as the attribute(s) that refer to a key in another table. Let's look at our example.
+
+Note that `prod_name` and `man_name` have been underlined and designated as the primary keys in these two tables. Here is our key in this table, and this is our foreign key that refers to it. So, this is a foreign key, and this is our primary key. The foreign key is the attribute set that refers to a key. It does not have to be a primary key, but it typically is. As an aside, the foreign key itself is not actually a key. The `prod_manufacturer` attribute is not a key within the product table.
+
+## Referential Integrity
+
+Along with this foreign key relationship, we also have the notion of referential integrity. This simply states that we enforce that every value in the foreign key must be one of the values in the referenced primary key. For example, if a value in this table's foreign key is changed, it must change to one of the existing values in the primary key. Similarly, if a new value is added to the foreign key, it must correspond to an existing primary key value. If it does not, the system will prevent the operation.
+
+## The Role of NULL
+
+You will notice that there is a special value called `NULL` that we will discuss further. However, it is important to note now that `NULL` is essentially the lack of a value. It is a special case and an exception to what was just stated. `NULL` is not present in the referenced primary key, but this is acceptable. This is because `NULL` is not actually a value, so it does not fall under the rule that 'each of these values has to be one of these values.'
+
+## Foreign Keys vs. Pointers
+
+It is important to reiterate that there are no pointers in the relational model. Even though an arrow might be drawn for illustration, there is no actual arrow in the table. A foreign key repeats data, as opposed to a pointer which points to a memory location. We do not use pointers because they are difficult to maintain when data changes, as the pointer changes based on the data's location, not the data itself.
+
+Furthermore, pointers are unidirectional. While we discuss the foreign key referencing the primary key, if you find information in the primary key, you can also find all instances in the foreign key. Thus, repeating the data allows for bidirectional navigation.
+
+## Encoding Many-to-Many Relationships
+
+Earlier, it was stated that we would focus on two kinds of relationships: one-to-many and many-to-many. However, a many-to-many relationship can be encoded using one-to-many relationships. As a result, we only need to pay attention to one-to-many.
+
+How is this accomplished? Here is an example of a many-to-many relationship. This can also be represented as two one-to-many relationships and a new table.
+
+This representation conveys the same data. For example, from value '1a', you can get to 'a'. From '2', you can get to 'a' and 'c'. '1' gets to 'a', '2' gets to 'a' and 'c'. '3' gets to nothing, which is the same as the original representation. '4' gets to 'a' and 'c', also the same. These paths can be followed backwards as well. Thus, it represents the same information in a different way. This additional table is known as a junction table because it forms a junction between the two main tables.
+
+With this method of encoding a many-to-many relationship, we can manage with only one-to-many relationships. This is typically how the relational model is built into systems.
+
+## Junction Table Example
+
+Let's look at an example. We have products, and stores that sell these products. Some products are in some stores, and some stores have some products.
+
+For instance, the product 'Gizmo' is sold in Store 1 and Store 3, which are Houston and Dallas. 'Power Gizmo' is sold in Store ID 2, which is Austin. Similarly, for 'Widgets', these examples demonstrate that a product like 'Gizmo' can be sold in many stores. Conversely, a store like the Houston store can sell many products, such as 'Gizmo' and 'Widget', as shown in the junction table.
+
+In the junction table, both attributes together form a key. Why? There is repetition in the product name because products are sold in multiple stores. There is also repetition in the IDs (e.g., '1' appears multiple times) because stores sell multiple products. Therefore, the combination of both attributes is required to form the primary key.
+
+## Database Schemas
+
+We have previously mentioned schemas. Finally, let's discuss a database schema, which is not just a schema for a single relation or table, but a schema for the entire database. This simply shows all the schemas for the individual relations or tables. Additionally, we want to describe any other constraints. We underline primary keys, but what about the foreign keys we've described? There are many ways to represent this. The simplest is to indicate the relationship and draw an arrow. This is one of many representations of a foreign key constraint within a database schema.

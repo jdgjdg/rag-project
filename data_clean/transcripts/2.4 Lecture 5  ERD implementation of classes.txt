@@ -1,0 +1,40 @@
+### Implementing ER Diagrams: Classes and Categories in SQL
+
+In this lesson, we continue exploring how to implement Entity-Relationship (ER) diagrams into SQL tables, focusing specifically on the concepts of classes and categories. There are several fundamental problems to address when mapping these structures. ER diagrams can express complex constraints that SQL cannot easily replicate. For example, a diagram may include a constraint where the superclass is equal to the union of its subclasses, or a constraint where the subclasses are disjoint.
+
+Furthermore, we must address the issue of inheritance. In these models, an entity may exist in multiple entity sets, and its attributes are distributed among those sets. Additionally, attributes within a single entity set can vary for different entities. For instance, the attributes of various road vehicles vary depending on whether those vehicles are cars, trucks, or bicycles. While PostgreSQL allows a limited form of inheritance, it is not standard SQL and is generally not suitable for our purposes, so we will ignore it in this course.
+
+Dealing with these issues is one of the primary weaknesses of the relational model; it is often a matter of trying to fit a square peg into a round hole. Consequently, we must make a tradeoff between semantic accuracy and simplicity/efficiency.
+
+### Strategy 1: Semantic Accuracy via One-to-One Relationships
+
+The first approach is the most semantically accurate. For nodes representing a union—whether an overlapping union, a disjoint union of subclasses, or a union of superclasses—we replace that node in the diagram with a one-to-one relationship. This often involves a minimum cardinality on one side of the relationship.
+
+In this model, we must explicitly carry the primary key to each relevant entity set because every entity set requires a primary key, and we are no longer relying on inheritance to provide the primary key from the superclass. For example, in a "Road Vehicle" hierarchy, the `Road Vehicle` entity set would contain only the common attributes, while `Car`, `Truck`, and `Bicycle` would contain their specific attributes. 
+
+The main drawback of this strategy is efficiency. To retrieve all attributes of a particular entity, queries must perform numerous joins between the superclass and subclass tables.
+
+### Strategy 2: Simplicity via Hierarchy Collapsing
+
+The second strategy relaxes the goal of semantic accuracy in favor of simplicity. This involves collapsing the inheritance hierarchy into a smaller number of entity sets and tables. There are several ways to achieve this:
+
+1.  **Implementing the Superclass Only:** We might choose to implement only the `Employee` table and move all attributes from the subclasses up into that single table.
+2.  **Implementing Subclasses Only:** We might implement only the subclass tables. In this case, there is no `Employee` table because all entities are represented in the subclass tables. In some examples, an entity might appear in multiple tables if they fulfill multiple roles (e.g., an employee who is both "salaried" and an "engineer").
+3.  **Hybrid Implementation:** We might implement a mix of superclasses and subclasses depending on the specific hierarchy, such as including an `Engineering Manager` table within a larger hierarchy.
+
+When collapsing a hierarchy, attributes from the removed entity sets must be moved to the remaining sets. Similarly, any relationships connected to a removed entity set must be moved to the remaining entity sets. While this results in fewer tables and fewer joins, it has its own efficiency challenges. The remaining tables become larger, containing more data and more attributes, which means more data is moved during operations.
+
+### Disadvantages of the Simplistic Approach
+
+There are several specific disadvantages to the simplistic method of implementing hierarchies:
+
+*   **Data Duplication:** In an overlapping union, if we choose to implement only the subclasses, we must move the superclass attributes down into each subclass. If an entity belongs to multiple subclasses, its attributes will be listed multiple times (once in each table). Furthermore, any relationships connected to the original superclass must be duplicated for each subclass.
+*   **Additional Type Attributes:** If we implement only the superclass and move subclass attributes up, we need additional attributes to indicate which subclass an entity belongs to (e.g., a boolean flag or a type code). These attributes tell the system whether the specific subclass data is relevant for a given row.
+*   **Increased Null Values:** Collapsing a hierarchy often leads to a high number of null values. If a product is neither a "Software Product" nor an "Educational Product," but those attributes have been moved into the main `Product` table, those fields will be null for that entry. This essentially takes up space without providing information.
+
+### Summary of Approaches
+
+To summarize, because SQL and the relational model do not natively support superclasses and subclasses, we have two primary choices:
+
+1.  **The Relationship Approach:** Redo all superclass and subclass relationships as standard one-to-one relationships. This is the most semantically accurate approximation of the ER model, but it results in complex queries with many joins.
+2.  **The Simplification Approach:** Eliminate the hierarchy by removing either the superclasses or the subclasses. Attributes and relationships from the removed sets must migrate to the remaining sets. This approach is less semantically accurate but simpler and results in fewer joins. In practice, this is the more common approach.

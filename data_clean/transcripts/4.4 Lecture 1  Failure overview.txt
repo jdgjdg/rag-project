@@ -1,0 +1,16 @@
+### Motivations for Transactions
+There are two main motivations for transactions: concurrency and recovery from failures. In the event of a failure, the database must maintain both atomicity and durability, which are two of the four ACID properties.
+
+### Types of Failures
+Failures can be categorized in several ways. One type of failure involves receiving bad data. However, our focus here is primarily on transaction-related failures, such as transactions being aborted. This occurs when a user decides to cancel a transaction, such as at an ATM, or when a condition arises that requires a transaction to be rolled back. 
+
+Additionally, we must consider hardware and system failures. Examples include the power being cut to the entire system or mechanical disk drive failure due to excessive usage.
+
+### Solutions for Failure Recovery
+For failures involving bad data, we have already examined solutions using constraints, triggers, and other programming techniques. 
+
+For transaction-related failures, our focus will be on the use of logs. Other strategies we have discussed previously include:
+*   **Data Replication:** Arranging multiple disks in a RAID configuration, replicating storage offsite, or replicating the database locally or offsite.
+*   **Snapshot Archiving:** This is essentially version control applied to databases, where all data is timestamped and tracked to record when changes occurred and what the previous versions were.
+
+We will specifically focus on logs as a method to implement transaction aborts and rollbacks.

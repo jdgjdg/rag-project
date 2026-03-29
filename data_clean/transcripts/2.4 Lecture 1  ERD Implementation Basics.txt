@@ -1,0 +1,54 @@
+## Translating ER Diagrams to SQL Table Definitions
+
+You have spent considerable time creating an ER diagram. The next step is to translate this diagram into SQL table definitions.
+
+### Entity Sets to Tables
+
+Each entity set in the ER diagram will translate into a table.
+
+#### Instructor Table
+
+The `instructor` entity set translates directly into a table with its attributes. The `name` attribute is the primary key.
+
+#### Course Table
+
+The `course` entity set includes its four primary attributes. Additionally, it incorporates three more attributes related to the `is_in` relationship. This is because `is_in` is a many-to-one relationship, meaning each course is associated with one specific room. Therefore, the attributes representing the room's time slot, number, and building are included in the `course` table. In this example, the combination of `room_number` and `building` serves as the primary key for the room. Attributes of the `is_in` relationship, such as the time slot and the number and building of the room, are included here. If there were other non-key attributes of the room, like the number of seats, they would not be included in the `course` table.
+
+#### Room Table
+
+The `room` entity set will have a table listing its `number` and `building`. If there were an attribute like `number_of_seats`, it would be included here as a non-primary key attribute.
+
+#### Teaches Table (Many-to-Many Relationship)
+
+For any many-to-many relationship, such as `teaches`, a separate table is created. This is often referred to as a junction table. Its primary key is a combination of the primary keys of the two related tables. The `teaches` table also has its own attribute that is not part of the primary key.
+
+### Database Schema and Constraints
+
+When listing a database schema, it is important to include not only the individual table schemas with attribute names and primary keys but also other constraints, particularly foreign keys.
+
+*   The `course` table includes a foreign key referencing the primary key of the `room` table.
+*   The `teaches` table includes foreign keys referencing the primary keys of both the `course` and `instructor` tables.
+
+This constitutes the database schema for the given ER diagram.
+
+#### Attribute Placement Clarification
+
+A common point of confusion is determining where attributes related to a relationship should be placed. For a many-to-one relationship, where each instance of entity A is related to at most one instance of entity B, and each instance of entity B can be related to multiple instances of entity A:
+
+*   Information about entity B (e.g., room details) can be placed in the table for entity A (e.g., `course`) because there is only one such piece of information for each A.
+*   Information about entity A cannot be placed in the table for entity B because there could be multiple instances of A related to a single instance of B.
+
+Therefore, attributes like `room_number` and `building` are placed in the `course` table, and the corresponding foreign key is included there.
+
+#### Primary Keys and Cardinality in Junction Tables
+
+For a junction table like `teaches`, where the primary key is a composite of the primary keys of the related entity sets, it might seem that this forces a minimum cardinality of one for the relationships. However, this is not the case.
+
+*   If a course exists but is not currently being taught, its `course_number` will simply not appear in the `teaches` table. This does not force the course to be taught.
+*   Similarly, if an instructor is not teaching any courses, they will not appear in the `teaches` table.
+
+The primary key constraint only ensures that the combination of foreign keys is unique and not null. It does not enforce a minimum cardinality of one for the relationships themselves.
+
+### Next Steps
+
+The next logical step would be to translate these database schemas into SQL table definitions. While this process is straightforward, the focus will now shift to continuing with more examples of translating ER diagrams into schemas.

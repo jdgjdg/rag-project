@@ -1,0 +1,47 @@
+## Modelling Process: Common Mistakes and Best Practices
+
+When modelling a process, it is crucial to consider the attributes involved. Several common mistakes are made during this process, and understanding them can help avoid similar pitfalls.
+
+### Avoiding Redundant Data
+
+One key principle is to identify data that can be calculated from other existing data. Storing data that can be derived is a form of redundancy, which should be avoided in database design.
+
+**Examples:**
+
+*   **Game Scores:** If you have the game teams and their scores, you can determine the winner by comparing the scores. There is no need to store a separate "winner" attribute.
+*   **Subordinate Counts:** If you know who is managing whom, you can count the number of subordinates for each manager. Storing the "number of subordinates" directly is redundant.
+*   **Purchase Totals and Taxes:** Given the items in a purchase, their prices, quantities, the purchase location (which implies a tax rate), and the date (as tax rates can change), you can calculate the tax amount and the total purchase price.
+
+### Avoiding Regularly Updated Data
+
+Data that requires frequent updates can introduce complexity and potential for errors.
+
+**Example: Age**
+
+Storing a person's age is problematic because it changes annually. For a large organization with thousands of employees, this means hundreds of people have birthdays daily, necessitating a constant update process.
+
+A better solution is to store the birthdate. Age can then be calculated by determining the difference between the current date and the birthdate. Storing both birthdate and age would be redundant.
+
+**Example: Batting Averages**
+
+Batting averages change with every at-bat or game.
+
+*   **End of Season:** Storing the batting average at the end of a season is acceptable as it will not change further.
+*   **Mid-Season:** For applications used during the season, storing the batting record at the end of each game might suffice.
+*   **Real-time Applications:** If the application needs to display the most up-to-date batting average during a game, it requires tracking every at-bat and pitch to perform real-time calculations.
+
+The appropriate method depends on the specific application's requirements.
+
+### Grouping and Ungrouping Data
+
+Deciding whether to group or ungroup data into specific attributes is another important consideration.
+
+**Examples:**
+
+*   **Game Scores:** Storing a game score like "47 to 14" as a single string is inefficient if you need to perform calculations, such as totaling offensive points over a season. It is better to store the scores as two separate numerical attributes.
+*   **Height:** While Americans might express height as "six foot four," it represents a single measurement. Storing it as a single value (e.g., in inches or centimeters) is more appropriate.
+*   **Addresses:** An address can be broken down into components (street number, street name, city, state, zip code). The level of detail required depends on the application.
+    *   **Mailing Labels:** For simple mailing purposes, storing the full address as a single unit or breaking it down into city, state, and zip code might be sufficient.
+    *   **Logistics and Delivery:** For delivery services like FedEx or UPS, it is beneficial to separate the street number from the street name to facilitate route optimization and delivery sequencing.
+
+The decision of how to group or ungroup data should be based on the intended use of the data within the application.

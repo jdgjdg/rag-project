@@ -1,0 +1,23 @@
+## Introduction to Relational Languages
+
+As previously motivated, we want our database system to use the relational model and a declarative language. We are going to introduce two candidate languages: the relational calculus and the relational algebra. Historically, these two were merged into the first versions of SQL (the Structured Query Language), along with what was then considered a modern COBOL syntax. We will follow this historical path and first introduce the relational calculus and relational algebra, and then later, SQL (the Structured Query Language).
+
+## Relational Calculus
+
+Relational calculus is based upon a combination of sets and logic where the logic is used to specify conditions on those sets. In the relational calculus, we use what is known as a set former notation.
+
+As a simple example to get us started: I want all of the people's names such that P represents a person and the person's age is greater than 18. In other words, I want to find all of the adult names.
+
+Here is a more complex example. Do not worry about the details here; we will get to those later, but I want to point out some of the things that we can see at this point. The result is that we want to pick out the names and the prices. These are two attributes where P is the product table. We are also going to be talking about a manufacture table here, and we are going to be relating the product manufacture and the manufacturer name tables. We want to check where those are equal and pairing things up. Then we have some condition on the state; we are specifically looking at Texas. Exactly what these other parts are going to do, we will discuss later.
+
+## Relational Algebra
+
+Relational algebra has some similarities. It still talks about relations as sets, but it uses different syntax and different concepts behind it. What is this whole algebra thing? Let me remind you that an algebra on numbers should be familiar to you from high school. For example, we have something like x + 3 - x * y. This is an expression in numeric algebra. In particular, we have variables, such as x and y. We have values such as 3. We have operations such as addition, subtraction, and multiplication that work on these numbers.
+
+Then we also have equivalence properties. If you remember, you also learned about things like commutativity and associativity, which describe when expressions are saying the same thing. For example, knowing that x + y is the same thing as y + x.
+
+When we move to a relational algebra, what is that? We will have operations. Our data will be the relations (the sets), and our operations will include the ability to filter or test tuples that meet some condition. We will be able to join two tables into a bigger table, and we will have various set operations. We will have some other operations in addition to this. We will also have equality properties, such as commutativity and associativity.
+
+## Importance and Application
+
+In practice, why are these important? First, the core of SQL that we will be using on real databases is a combination of relational calculus and relational algebra. Second, later in the course, when we look at query optimization, the ideas are based upon implementing our queries as relational algebra and using the equality properties to see what is equivalent but also faster.

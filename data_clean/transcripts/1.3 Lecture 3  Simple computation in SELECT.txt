@@ -1,0 +1,31 @@
+# Computation in SELECT Clauses
+
+Continuing our focus on the `SELECT`, `FROM`, and `WHERE` clauses of queries, we can also allow simple computation in the `SELECT` clause, as we will see in this video. As always, we need to define our sample tables and data. We will be using our standard `Product` and `Manufacturer` tables for this.
+
+## Basic Computation Example: Multiplication
+
+As a starting example of computation in our `SELECT` clause, we will use an example from relational calculus, very similar to what we have seen before. Previously, we had everything in this query except for the multiplication by 12. If we want a dozen items, it will cost 12 times as much. How do we achieve this? We use our `SELECT`, `FROM`, and `WHERE` clauses as before; nothing is new with that part.
+
+Here, we simply want to specify `P.prod_price` and perform our computation. As in most languages, multiplication is represented by the asterisk (`*`). Note that the asterisk now has two different meanings that we have seen.
+
+Notice that the resulting column name is essentially unknown; it is something made up. We always want to rename columns when performing computations. Just as we renamed the table here as `P`, we want to use `AS` to rename the column. We can name it `prod_dozen_price`. This way, we have a clear name for our computed column.
+
+## Built-in Functions: CONCAT and UPPER
+
+Let's continue with more examples. In this provided example, I am using two built-in functions: `CONCAT`, which performs string concatenation, and `UPPER`, which converts a string to all uppercase.
+
+In this example, we can see that it has concatenated the product name with a literal string. Remember to use single quotes around literal strings. The literal string is `, MADE BY `. In particular, remember the space at the end of the literal string because we want a space between the word 'BY' and the product manufacturer name. If you want a space there, you need to include it yourself.
+
+Then, as indicated, the manufacturer name is converted to all uppercase. Note that for 'Vaporware', since its `product_manufacturer` is `NULL` (it does not have a manufacturer), we essentially get no result; it prints out as an empty string.
+
+## Handling Apostrophes in Strings
+
+Here is another example, a variant of the previous one, where we are combining strings a little differently. Rather than saying 'MADE BY', we are going to make the product manufacturer possessive by adding an apostrophe 's'.
+
+This is interesting because we are using single quotes to surround a string. How do we include a single quote or apostrophe within a string? This is a standard problem with a standard solution: to get an apostrophe, we use two single quotes. So, we have the single quotes around the string, and then this pair of single quotes will produce a single quote (an apostrophe) in the result.
+
+Running this, we get the result with apostrophe 's' added to everything. Note again that for 'Vaporware', the manufacturer is `NULL`, so it prints out as an empty string when everything is concatenated.
+
+## Conclusion on Operators and Functions
+
+This has been a tiny sampling. We have shown one operator, multiplication (`*`), and a couple of functions, `CONCAT` and `UPPER`. These few examples clearly represent only a tiny sampling of the built-in operators and functions available in the SQL language. The assumption is that while you will see more examples in other videos and exercises, for the most part, it will be your responsibility to consult manuals to find the appropriate operator or function you are looking for and understand its syntax.

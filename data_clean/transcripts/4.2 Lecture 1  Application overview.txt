@@ -1,0 +1,47 @@
+### Integrating Databases and Applications
+
+The primary objective is to integrate a database and an application into a single software system. This process involves several interrelated issues: establishing a connection, executing SQL commands, transferring data, and determining the architectural placement of code—specifically, whether functionality should reside within the application or as functions within the database.
+
+### Database Connection Strings
+
+Connecting to a database is a foundational task. In environments like Jupyter Notebooks, this is achieved using connection strings, which typically consist of five main components:
+1. **Driver:** Specifies the interface the programming language uses to communicate with the database.
+2. **Username:** Credentials for authentication.
+3. **Password:** Credentials for authentication.
+4. **Server Location:** The address of the database server.
+5. **Database Name:** The specific database to be accessed.
+
+These components are utilized across various libraries and programming languages.
+
+#### Python Example
+In Python, a library function is called by passing these components as arguments. For example, `db_name='RiceDB'`, `user='RiceUser'`, and so on. This connection object is then used in subsequent statements to interact with the database.
+
+#### Java Example
+In Java, the process is slightly more complex, often requiring the components to be split across multiple variables. A URL is constructed using the JDBC driver and the database type (e.g., `postgresql://localhost/rice_db`). Here, PostgreSQL acts as a secondary driver, utilizing both JDBC and PostgreSQL protocols. The username and password are provided separately. The process involves registering the driver and then opening a connection using a function that combines these elements.
+
+### Sending SQL Commands
+
+There are two primary strategies for sending SQL commands from an application to a database:
+
+1. **Simple API:** This approach uses a straightforward interface where the application sends a command as a plain SQL text string.
+2. **Complex API (Object-Relational Mapping):** This approach builds the structure of an SQL command in a way that is integrated into the programming language. This is known as Object-Relational Mapping (ORM).
+
+### The Object-Relational Impedance Mismatch
+
+Mapping data between an application and a database is a significant challenge. Applications typically organize data using objects, arrays, or structures with pointers, whereas databases organize data into tables and tuples. An object in an application may correspond to pieces of multiple tuples in a database. This discrepancy is known as the "object-relational impedance mismatch." 
+
+ORM frameworks attempt to solve this mismatch, whereas a simple API places the burden of mapping directly on the developer.
+
+### Data Mapping and Performance
+
+Under the hood, mapping data often involves an intermediate stage where data is converted into a string format. This is done because standardized string representations are easier to parse and unparse than mapping complex application structures directly to database structures.
+
+However, this process has performance implications:
+* **Communication Costs:** Communicating over a network, combined with the parsing and unparsing of data, is relatively expensive.
+* **Mapping Overhead:** If the process requires two mappings (application to string, then string to database), it is generally twice as expensive as a direct mapping.
+
+Consequently, it is important to minimize the frequency of data transfers between the application and the database.
+
+### Architectural Considerations
+
+When organizing code, developers must decide whether to place logic in the application, in the database, or split it between the two. Regardless of the chosen architecture, an API layer must exist to facilitate communication. Future discussions will focus on the specifics of communicating instructions and data between the application and the database.

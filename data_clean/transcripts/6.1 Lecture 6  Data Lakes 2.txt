@@ -1,0 +1,11 @@
+### Is OLAP Dead?
+
+The question of whether OLAP is dead may sound provocative, but if you look online or in industry publications, you will see that headline appear occasionally. This leads to the question: what is happening, and why is there a perception that OLAP might be dead?
+
+This stems from a few factors. I have previously discussed the goals of relational databases, specifically the division between transactional and analytical databases. The goals of analytical databases are currently merging somewhat with those of transactional databases. In particular, the requirements for periodic updates and predetermined queries are shifting; users now desire more flexibility, more frequent updates, and queries that are not predetermined.
+
+Consequently, you often see analyses being performed directly within a transactional database. It is easier to maintain one database than to create an OLAP database from a transactional one. Transactional databases are frequently fast enough without the need for denormalizing all the data and organizing it into n-dimensional cubes.
+
+Furthermore, there is a movement away from traditional implementations on the OLAP side. OLAP databases traditionally use dimensional modeling. The query language is more inconsistent than on the transactional side, though MDX remains the most common. As we have discussed, cubes are a traditional way to organize data. However, there are far fewer programmers familiar with MDX than with SQL. Organizations may prefer to move toward more familiar territory, allowing SQL programmers to write analytical code, as cubes are less familiar and relational structures are more widely understood and frequently sufficiently fast.
+
+Perhaps most importantly, analytical tasks are often moving to other tools, such as NoSQL-style databases and data mining tools. While OLAP is not dead, it is losing ground, largely in favor of NoSQL databases and, to a lesser extent, transactional databases.

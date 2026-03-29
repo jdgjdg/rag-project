@@ -1,0 +1,31 @@
+### Memory Hierarchy and Fragmentation
+
+I want to return to the memory hierarchy and discuss the issue of fragmentation and how it can affect the costs of using our tables and indices. Our focus is on these costs and what we can do about them.
+
+#### Causes of Fragmentation
+Several operations can cause fragmentation, breaking the original idea of a sequential memory map of all memory locations. 
+
+Consider the delete operation: if I want to delete data, it forms a hole. Moving all subsequent data to fill that hole is expensive. Similarly, consider an insert operation: pushing back all existing data to accommodate new data is also expensive. 
+
+An alternative is to break the sequence. If I have a chunk here and a chunk there, I could add a new chunk in between them. This leads to the idea of data fragmentation. After insert and delete operations, as well as appending data to files, it is more efficient to think of our data as chunked into sequential arrays that are linked with other chunks. This idea is used at multiple levels of the memory hierarchy and is known as a block or a page, usually consisting of four-kilobyte chunks. 
+
+For efficiency, we want these chunks to maintain the appropriate sequential ordering as much as possible. However, after many CRUD operations, these chunks can get out of order—one chunk will be here, the next up here, the next over here, and so on. This is the essence of data fragmentation: having to follow chunks all around in memory.
+
+#### Consequences of Fragmentation
+At the disk level, following a pointer could mean performing a brand-new disk access. When you go to a new location, you must perform a disk seek operation, which is relatively expensive. 
+
+Fragmentation can also occur in our tables and indices. One strategy to mitigate this in indices is to only use part of a new block when it is created, leaving the remainder empty. This allows us to add more information later in sequential order without creating a new chunk at a fragmented location. The percentage of a chunk that is initially filled and used in an index is known as the fill factor, and in Postgres, we have control over this.
+
+Fragmentation in the memory system imposes costs and provides potential benefits:
+*   **Costs:** It can cause more disk seeks, which are expensive operations. It can also make it harder to find unused space because it is distributed in smaller chunks.
+*   **Benefits:** Because there is unused space in the data, we might be able to take advantage of those gaps when inserting new data.
+
+#### External Fragmentation
+A second form of fragmentation is known as external fragmentation, which refers to the existence of holes in our data. The main consequence is that it requires us to use more memory than we would otherwise. This can cause worse problems with other kinds of fragmentation because we end up with more chunks, more pointers, and more data fragmentation than initially expected.
+
+#### Managing Holes and Fragmentation
+There are a couple of options for managing and dealing with these holes:
+1.  **Tracking Holes:** Similar to `malloc` and `free` in C or C++, the system keeps track of where these holes are and attempts to use them when inserting new data.
+2.  **Garbage Collection:** This involves periodically stopping and fixing the data by moving it to fill the holes. Within Postgres, the process of occasionally stopping and filling those holes is known as vacuuming. We have control over this process.
+
+In conclusion, fragmentation can increase memory access costs, but we have control over it in Postgres through the fill factor and vacuuming.

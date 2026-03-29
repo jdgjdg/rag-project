@@ -1,0 +1,41 @@
+### Database Design in MongoDB vs. Relational Databases
+In relational databases, Entity-Relationship (ER) design largely dictates database structure once the semantics are defined. In MongoDB, however, design is guided more by performance and usage patterns than by semantics.
+
+### Design Approaches: Embedding vs. Referencing
+When designing a MongoDB database, there are several strategies for handling relationships, such as the relationship between products and manufacturers.
+
+#### 1. Single Collection with No Embedding
+In this design, products and manufacturers are combined at the same level within a single collection. While this technically functions as a product collection, it fails to reflect the semantic distinction between products and manufacturers. Consequently, this approach is generally avoided.
+
+#### 2. Embedding
+Embedding involves nesting related data within a single document.
+*   **Product-Centric:** Manufacturers are embedded within product documents.
+*   **Manufacturer-Centric:** Products are embedded within manufacturer documents. Because a manufacturer can have many products, this requires an array of embedded products.
+
+#### 3. Referencing
+This approach uses two separate collections—one for products and one for manufacturers—and uses references to link related documents. Referencing can be implemented in several ways:
+*   **Product references manufacturer:** Each product document contains a reference to its manufacturer.
+*   **Manufacturer references products:** Each manufacturer document contains an array of references to its products.
+*   **Bidirectional referencing:** Both documents reference each other. While this is redundant, it allows for efficient access regardless of which document is retrieved first.
+
+### Benefits of Embedding
+*   **Efficiency:** Lookups are more efficient because the data is already joined, requiring only one operation.
+*   **Atomicity:** MongoDB operations are atomic at the document level. Embedding allows multiple fields to be updated within a single atomic action.
+*   **Locality:** Because a document is a single BSON object, embedded fields are stored together, providing memory hierarchy benefits and faster access.
+
+### Benefits of Referencing
+*   **Consistency:** Referencing avoids data redundancy, which simplifies updates and ensures consistency.
+*   **Efficiency in Writes:** By avoiding redundant data, you only need to update one document rather than multiple copies.
+*   **Document Size Management:** MongoDB has a 16MB document size limit. Referencing prevents documents from becoming too large, especially in one-to-many relationships with high arity.
+*   **Reduced I/O:** Smaller documents mean that if you do not need the joined data, you do not have to read the extra data associated with it.
+
+### Rules of Thumb for Schema Design
+1.  **Usage Determines Design:** Identify the primary queries and the most important data. Design your collections around the data that is accessed or searched most frequently.
+2.  **Preference for Embedding:** Embedding generally produces a more efficient design. Only move to referencing if you encounter issues with document size, the need to avoid joins, or if both entities are accessed with equal frequency and importance.
+3.  **Performance Over Semantics:** Performance and usage patterns should take precedence over traditional normalization and consistency concerns.
+
+### Determining Document Classes
+When deciding which data should stand alone versus being embedded, consider the following:
+*   **Standalone Classes:** Use these for the most important data, data that is queried or updated frequently, data referenced by multiple other classes, or reference data needed to support the application (e.g., a list of students).
+*   **Document Representation:** Define a prototypical document structure, including required versus optional attributes, data types, and the depth of nesting (arrays or sub-documents).
+*   **Size Constraints:** Ensure that documents remain under the 16MB limit while balancing the need to load sufficient data in a single operation.

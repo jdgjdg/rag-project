@@ -1,0 +1,44 @@
+### Introduction to Postgres Function Syntax
+In this video, I will introduce the syntax behind Postgres functions. Rather than starting with example data, I will jump directly into the basic function syntax using an example that computes the volume of a cube given the length of a side.
+
+To create a function, you can use the `CREATE` keyword, or `CREATE OR REPLACE` if you want to redefine an existing function. You must specify the name and types of all input parameters, as well as the return type. A special option is the `RETURNS NULL ON NULL INPUT` phrase. This indicates that if a null value is passed to the function, it will immediately return null without executing the function body. This is consistent with standard SQL semantics for null handling.
+
+### The Function Body and Dollar Quoting
+The function body follows the `AS` keyword. You will notice the use of pairs of dollar signs (e.g., `$$`). This is a specific SQL syntax used to enclose the function body as a string. If you were to use single quotes to contain the body, it would be inconvenient because you might need to use single quotes within the function logic itself, leading to messy and complicated code. 
+
+The double-dollar notation allows you to define a string delimiter. By using `$$`, you are essentially creating an empty delimiter. It is highly unlikely that you would need the sequence `$$` within the body of your function, making this a convenient way to encapsulate the code.
+
+### Defining Variables and Logic
+Within the function body, you can declare local variables. For example, you can declare a variable named `volume` of type `integer`. The statements are enclosed within `BEGIN` and `END` blocks. 
+
+The syntax includes:
+*   **If statements:** These require an explicit `THEN` and an explicit `END IF`. The `ELSE` clause is optional.
+*   **Assignment:** The assignment operator is `:=`, similar to Pascal.
+
+### Language Specification and Optimization
+After the function body, you must specify the language, such as `LANGUAGE plpgsql`, which is the standard procedural language for Postgres. Postgres allows you to specify different languages within these double quotes.
+
+You can also include the keyword `IMMUTABLE`. This acts as a hint to the optimizer, indicating that the function always produces the same result given the same inputs and does not change any data. While many compilers can infer immutability, explicitly including the keyword can assist with optimizations. You call the function using a `SELECT` statement, such as `SELECT cube_volume(10);`, which returns 1000.
+
+### Functions Returning Void
+You can define functions without a return value by using `RETURNS VOID`. If a function returns nothing, it typically performs an action, such as updating a table. You can embed SQL directly within PL/pgSQL. 
+
+There are different ways to call these functions:
+*   **SQL context:** You can use `SELECT` to call a function that returns void.
+*   **PL/pgSQL context:** You use the `PERFORM` keyword if the function does not return anything, and `SELECT` if it does. 
+*   **Named parameters:** You can pass arguments by name, which allows you to provide them in any order, regardless of the order specified in the function parameters.
+
+### Loops and Recursion
+Postgres functions support standard programming constructs:
+*   **While loops:** These require an explicit `END LOOP`.
+*   **For loops:** These are also supported. 
+*   **Data types:** When calculating values like factorials, use the `NUMERIC` type to accommodate large numbers that exceed the capacity of an `INTEGER`.
+
+When calling functions with null values, if the function is not defined with `RETURNS NULL ON NULL INPUT`, it may fail if the logic (such as a loop) cannot handle null inputs. For example, a for-loop will throw an error if the upper bound is null. Recursion is also fully supported and follows standard programming patterns.
+
+### Managing Long-Running Functions
+When using loops or recursion, you may encounter non-terminating functions or those that take an excessive amount of time to execute. These functions will continue to run and block your client. Redefining or dropping the function will not stop the execution, and even rebooting the Postgres server may not terminate the process if it restarts automatically.
+
+To stop a runaway computation, you must terminate the backend process. You can find running processes in the `pg_stat_activity` view. By filtering for your database, you can identify the process ID (PID) and use the `pg_terminate_backend(pid)` function to kill the specific process.
+
+In summary, Postgres functions can be written using procedural extensions in a manner similar to other programming languages, providing familiar features and control structures.

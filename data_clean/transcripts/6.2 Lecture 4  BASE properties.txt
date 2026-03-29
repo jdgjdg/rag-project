@@ -1,0 +1,28 @@
+### ACID vs. BASE Properties in Database Systems
+
+Relational databases traditionally use ACID properties. NoSQL databases sometimes use ACID properties, but traditionally they utilize more relaxed properties known as BASE properties. While this is a pun, it stands for specific concepts. As a reminder, ACID properties are atomicity, consistency, isolation, and durability.
+
+### The BASE Properties
+The BASE properties are defined as follows:
+
+*   **Basically Available:** The system is robust to individual node failures. This means partial failures are tolerated; if some nodes go down, the overall system continues to function. While you might lose access to data stored on those specific nodes, you can mitigate this by replicating data across additional nodes.
+*   **Soft State:** The state of the system can change over time, even without new input. This occurs because the system is moving toward consistency, though not immediately or at all times. This change can happen as a background process.
+*   **Eventual Consistency:** If there is no new input to the system, it will eventually become consistent. However, if there is continuous input—specifically write actions—the system may never reach a state of total consistency because new writes create inconsistencies faster than the system can resolve them. This occurs because operations that guarantee consistency are slow, requiring network communication between processors.
+
+### ACID vs. BASE Philosophy
+Another way to distinguish between these models is their approach to consistency:
+*   **ACID is pessimistic:** It cannot tolerate inconsistency and forces consistency immediately.
+*   **BASE is optimistic:** It tolerates some inconsistency and works toward consistency over time, accepting that the system may not be consistent at every moment.
+
+### Variations of Eventual Consistency
+There are several variations of eventual consistency used by different systems, all of which concern behavior within a single thread of computation:
+
+*   **Monotonic Read:** Once a process has read a result, it will never read an earlier value. It will see that result or a newer one.
+*   **Monotonic Write:** Writes are executed in the order they appear in the code. This distinguishes between when the code initiates a write and when that write actually occurs.
+*   **Read Your Writes:** If a process writes information, it will always see those updates. Subsequent reads will reflect what that process has written or something later.
+*   **Writes Follow Reads:** If a process performs reads before a write, those reads occur before the write. Consequently, the write will reflect the results of the preceding reads (e.g., if you read value A and then write A, the write will be based on the value that was read).
+
+### Conflict Resolution
+When multiple processes attempt to write to the same location, conflict resolution policies are required. A typical policy is "Last Write Wins." In this scenario, if multiple processes send writes (e.g., A=5, A=1, A=3) to the same location, the system processes them in the order they arrive. The final value visible to other processes is the one that was written last. Other methods for resolving ties include using processor identification numbers.
+
+These BASE properties were consolidated in a 2008 paper. While many systems use variations of these properties, it is important to note that not all systems use the same set; some systems continue to use ACID properties to guarantee serial behavior.

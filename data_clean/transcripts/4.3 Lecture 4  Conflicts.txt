@@ -1,0 +1,24 @@
+### Definition of Conflicts
+To define conflicts and their basic properties, consider a typical schedule. Two actions, $A_i$ and $A_j$, form a conflicting pair if they meet the following criteria:
+1. They belong to different transactions.
+2. They operate on the same variable.
+3. At least one of them is a write operation.
+4. $A_i$ precedes $A_j$ in the schedule.
+
+Conflicts cannot occur if actions are in the same transaction, as the sequential execution is the intended plan. If actions are on different variables, they do not affect each other and therefore do not conflict. Furthermore, if both actions are reads, they do not conflict because read operations do not modify data.
+
+In a given schedule, conflicts are identified by comparing operations: a read may conflict with a write, a write may conflict with a read, or a write may conflict with another write. Conflicts signal potential problems, but they are not inherently problematic in and of themselves.
+
+### Conflict Serializability
+Two schedules are conflict equivalent if they satisfy two conditions:
+1. They contain the same transactions with the same actions, and each transaction maintains the same structure.
+2. Every pair of conflicting actions in the schedule is ordered in the same way.
+
+A schedule is conflict serializable if it is conflict equivalent to some serial schedule. The implication is that if a schedule is conflict serializable, it is also serializable.
+
+### Practical Application and Examples
+When comparing a serial schedule to another schedule, one must examine the conflicts. If two schedules possess the same set of conflicts—meaning the conflicts occur between the same pairs of actions and in the same relative order—they are conflict equivalent. For instance, if a read precedes a write in one schedule, the same read must precede the same write in the other.
+
+Conversely, consider a schedule previously identified as not serializable. While it may contain the same number of conflicts between the same pairs of actions as a serial schedule, the ordering of those conflicts differs. For example, if a read of $j$ in transaction two occurs before a write of $j$ in one schedule, but the write of $j$ occurs before the read of $j$ in another, the actions are in different orders within the conflicting pairs. Consequently, this schedule is not conflict serializable.
+
+While comparing a schedule to one serial ordering is a starting point, a schedule that is not conflict equivalent to one serial ordering is typically not equivalent to others. A sequence that is conflict equivalent to a serial ordering is serializable, whereas a sequence that is not conflict equivalent to a serial ordering is not serializable. Future discussions will expand further on the relationship between conflict serializability and serializability.

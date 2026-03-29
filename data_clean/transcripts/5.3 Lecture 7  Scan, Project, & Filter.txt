@@ -1,0 +1,15 @@
+### Implementation of Scan, Project, and Filter Operations
+
+We now turn to implementing the various operations and understanding their costs. This discussion focuses on the simple operations of scan, project, and filter. The implementations for each of these are straightforward.
+
+#### Scan Operations
+For the scan operation, we can perform a sequential scan, in which we look through our table from top to bottom, processing all blocks. Since we are counting disk operations, this involves reading each block of the table. Alternatively, we can perform an index lookup. There are various kinds of index lookups, such as using a B-tree or performing a binary search on the table, the costs of which have been discussed previously.
+
+#### Project and Filter Operations
+To project tuples, we simply extract the desired columns. Furthermore, projection and filtering are essentially always either pipelined or combined with another operation. They do not stand on their own and are never implemented as independent operations; therefore, neither of these takes any disk I/O. The filter is simply a conditional test, similar to an "if" statement. As previously mentioned, all of these operations can potentially be combined.
+
+#### Complex Filtering
+Filtering can be more complex, particularly when using a number of conditions combined with "AND" versus "OR." "AND" is much more common in queries, and we will not be considering "OR" operations here. There are two primary options for handling "AND" conditions:
+
+1.  **Sequential Testing and Short-Circuiting:** The most straightforward approach is to test one condition after the other, taking advantage of short-circuiting. This means that if we encounter a condition that is false, we can stop immediately. We do not need to test the remaining conditions because all conditions must be true for the "AND" operation to pass. This is simple and appropriate when the conditions are each relatively inexpensive.
+2.  **Reordering Filter Operations:** Sometimes, we may want to reorder the filter operations. If we have three conditions, they might be executed in the order they occur in the query, or they might be reordered to make the execution more efficient. We will examine this in the next video.
