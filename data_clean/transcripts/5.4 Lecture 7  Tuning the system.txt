@@ -1,0 +1,37 @@
+### Improving Query Execution Through System Resources
+
+We have been discussing tuning queries to improve performance, primarily focusing on optimizing the queries themselves. This section shifts the focus to system-level improvements to enhance query execution.
+
+The most straightforward approach is to improve system resources. Upgrading hardware—such as obtaining a faster computer, increasing memory, or utilizing better I/O and disk drives—will improve every query. However, this is not always feasible due to budget or time constraints, and there are physical limits to the performance gains achievable through hardware alone.
+
+### Parallelizing Data Across Multiple Disks
+
+Beyond hardware upgrades, you can parallelize data across multiple disks to increase throughput.
+
+*   **Partitioning:** This involves storing different data on different disks. You can partition by different objects, tables, rows, or attributes. Specifically, partitioning different rows of the same table is known as **sharding**. By distributing data, the system can read from multiple disks simultaneously, significantly increasing the volume of data read at once.
+*   **Striping:** This method organizes data to allow for the simultaneous reading of blocks in sequence. It leverages the principle of spatial locality, which assumes that if you are reading specific data, you are likely to access nearby data as well.
+*   **Mirroring:** This involves storing the same data in multiple locations, allowing you to read different parts of the data simultaneously. An additional advantage of mirroring is redundancy; if one disk fails, you have a backup version of your data available.
+
+These strategies can be combined in complex configurations to further optimize performance.
+
+### Query Optimization Tweaks
+
+You can also adjust query optimization through several administrative techniques:
+
+*   **Indexing:** Creating indices is generally beneficial for performance, though it introduces extra overhead.
+*   **Table Storage Management:** Techniques such as clustering allow you to sort data on the disk. Additionally, managing the **fill factor** and using the **vacuum** command can help mitigate fragmentation.
+*   **Statistics Management:** Using the `ANALYZE` command ensures the optimizer maintains accurate statistics and estimates about your data, enabling it to generate more efficient execution plans.
+*   **Optimizer Flags:** You can toggle various optimizer features on or off. Because different optimizers vary in complexity, it is often necessary to experiment to determine how these tweaks affect your specific queries.
+
+### Overriding the Query Optimizer
+
+In some cases, the query optimizer may select a suboptimal plan. While it is generally recommended to let the optimizer function automatically, there are ways to override its decisions:
+
+*   **Index Hints:** In some SQL versions (though not Postgres), you can specify which index to use for a query, forcing the system to use an index even if the optimizer suggests otherwise.
+*   **Join and Subquery Ordering:** In Postgres, you can influence the join order. While join operations on multiple tables are commutative, you can adjust the `join_collapse_limit` parameter to force the system to follow the join order you have specified syntactically. Similarly, you can force subqueries to follow a specific syntactic order.
+
+It is important to note that overriding the optimizer is often discouraged, as the optimizer typically generates more efficient plans than a manual override.
+
+### Summary of Optimization Priorities
+
+When optimizing queries, the most critical factors are indices and statistics. Parallelizing I/O and managing disk organization are also vital for very large databases, though these topics intersect with broader areas of distributed computing, concurrency, and fault tolerance. The minor tweaks mentioned regarding optimizer flags and overrides are significantly less important and are not commonly used in standard practice.

@@ -1,0 +1,27 @@
+### Understanding MongoDB Cursors
+
+In this video, we will explore cursors in MongoDB in more detail. As established in previous examples, when we use the `find` method, it returns a cursor—an object that does not immediately provide the result set information. To access the data, we typically convert the results into a Python list.
+
+We will use our standard `products` and `manufacturers` collections for these examples. When we execute a `find` operation, the result is a cursor. If we loop over these results using a Python loop to print specific fields—such as the `_id` and the `product_name`—we can successfully access and display the document data.
+
+### Cursor Consumption and Cloning
+
+A notable behavior of cursors is that they are consumed as you iterate over them. If you attempt to loop over the same cursor a second time, it will yield no results. This occurs because iterating through the data advances the cursor's internal pointer; once you reach the end of the result set, there is no more data left to retrieve.
+
+To reuse results, you can clone the cursor before iterating over it. Cloning creates a copy of the cursor before the data is consumed. When you loop over a cloned cursor, it essentially regenerates the results by re-running the query. 
+
+You can think of a cursor in two ways:
+1. **As a reference:** It acts as a pointer indicating your current position within the result set. As you loop, the pointer moves until it reaches the end.
+2. **As a set of instructions:** A cursor is not a static list of results; rather, it contains the instructions for how to generate those results. Cloning the cursor allows you to re-execute those instructions to retrieve the data again.
+
+### Sorting and Data Structures
+
+You can perform operations on cursors, such as sorting. For example, if you clone a cursor and apply a sort, you can then convert it into a list. In a query where we filter for documents where the `color` field is `none` or nonexistent, applying a descending sort will return the documents in reverse alphabetical order (e.g., "widget," "vaporware," "hyper widget").
+
+Another way to reuse results is to store them in an application-level data structure, such as a Python list. Once the data is stored in a list, you can iterate over it repeatedly without needing to re-run the query.
+
+### Query Execution and Planning
+
+Because a cursor represents the ability to generate data rather than the data itself, it is considered an "unevaluated query." You can use the `explain` method—the equivalent of `EXPLAIN` in relational databases—to view the query plan. This provides details on how the query will be executed (such as a filter where `prod_color` is equal to `none`) without actually running the query.
+
+You can also apply modifiers to the cursor before execution, such as `limit`. For instance, applying `.limit(1)` to a cursor and then producing the results will return only a single document. This functionality mirrors the limit operations found in relational databases. Ultimately, a cursor is an unevaluated query that holds the potential to perform a match and retrieve data based on the defined criteria.

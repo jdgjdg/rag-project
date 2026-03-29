@@ -1,0 +1,36 @@
+### Introduction to Aggregation in SQL
+I have previously motivated the notion of aggregation, also called vertical computation. Now, we will examine how to implement this in SQL. Our sample data consists of a table of purchases, which is fairly simple: it tracks various fruit items purchased on different dates at different prices and quantities. I have included some null values in this data to demonstrate how they are handled.
+
+### Basic Aggregation Examples
+For our first example, we want to perform a few simple aggregations within the `SELECT` clause. We want to compute three specific values:
+
+1.  **Maximum Price:** We use the `MAX` function on the `p.purch_price` column. As we have seen before, we should rename the result using `AS max_price` so the output has a useful column name.
+2.  **Total Quantity:** We use the `SUM` function on the `purch_quantity` column to calculate the total number of items purchased.
+3.  **Total Purchase Price:** We can perform computations within the `SUM` operator. By multiplying `purch_price` times `purch_quantity`, we calculate the total expenditure for all items. We rename this `AS total_purch_price`.
+
+The query is as follows:
+`SELECT MAX(p.purch_price) AS max_price, SUM(p.purch_quantity) AS total_quantity, SUM(p.purch_price * p.purch_quantity) AS total_purch_price FROM purchase AS p;`
+
+### Handling Null Values in Aggregation
+When performing these aggregations, it is important to understand how null data is treated. Aggregation functions simply ignore nulls rather than treating them as zero or propagating the null value. When summing values, if a row contains a null, the function ignores that specific entry during the calculation.
+
+### Counting Values and the Distinct Keyword
+We may also want to compute the number of price values in a column. There are several ways to interpret this request, such as counting all rows, counting only non-null values, or counting unique values.
+
+Consider the following computations:
+*   `SELECT COUNT(purch_price) AS count_price FROM purchase AS p;`
+*   `SELECT COUNT(DISTINCT purch_price) AS count_distinct_price FROM purchase AS p;`
+
+In the first case, `COUNT(purch_price)` returns six. Because aggregation functions ignore nulls, this counts all non-null entries in the column. 
+
+In the second case, `COUNT(DISTINCT purch_price)` returns four. This ignores the nulls and counts only the unique, non-null price values (e.g., $1.00, $0.50, $1.50, and $5.00). While the `DISTINCT` keyword can be used with any aggregation function, it is most commonly used with `COUNT`.
+
+### Counting Tuples with COUNT(*)
+As a special case, we can use the asterisk (`*`) as an argument for the `COUNT` function. This is a unique use of the asterisk compared to other contexts. 
+
+`SELECT COUNT(*) AS count_tuples FROM purchase;`
+
+This query counts the total number of tuples in the table. In our example, this returns eight. Note that `COUNT(*)` counts the total number of tuples regardless of whether there are null values in the data.
+
+### Summary
+We have covered the basic mechanics of using aggregation functions in SQL. In future examples and exercises, we will explore more complicated uses of these functions.

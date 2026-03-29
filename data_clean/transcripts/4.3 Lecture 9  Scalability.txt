@@ -1,0 +1,19 @@
+### Scalability in Relational Databases
+
+We have been discussing concurrency in relational databases, and a closely associated question is that of scalability. To understand how well relational databases scale, we must first define what we mean by scalability. There are three primary types of scalability: handling increasingly expensive computations, managing growing volumes of data, and supporting a rising number of users. As these metrics increase, we must evaluate how well a relational database system copes.
+
+### Traditional Single-Server Architecture
+
+Traditionally, relational databases are based upon a single server. A significant reason for this is that enforcing the consistency and locking mechanisms required to ensure data integrity is computationally expensive. If a system operates in parallel, it requires communication over a network, which is significantly easier to manage within a single server environment.
+
+As we have seen, we can utilize multiple cores. Postgres, for example, uses multiple cores because the communication between them is very inexpensive, making this a standard implementation. We have also briefly discussed the use of multiple file servers, which allows for scaling the amount of data; however, the central server can still become a bottleneck.
+
+### Cluster-Based Scaling and the Master-Slave Approach
+
+A logical question is whether we can use multiple compute servers to process pieces of data individually, utilizing many more servers than just a handful of cores. In other words, what if we use a cluster? This is an evolving area in database implementations.
+
+Typically, current implementations utilize a master-slave approach within the cluster. In this model, one processor is designated as the master. It is in charge of the entire computation and coordinates a group of slave processors that execute its instructions. Once again, the master processor can potentially become a bottleneck. Consequently, there is a limit to how effectively the master-slave approach can scale.
+
+### Conclusion on Relational Database Scalability
+
+Overall, relational databases are often criticized for having poor scalability. While describing it as "poor" may be an overstatement, scalability is certainly not one of the primary strengths of relational databases. This limitation serves as an important motivation for other styles of databases, which we will describe soon.

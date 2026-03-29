@@ -1,0 +1,27 @@
+### Query Optimization: Filter Ordering
+
+One possible query optimization is to optimize the order in which multiple filters are executed. Typically, filters are executed in the order they are provided, utilizing short-circuiting and any relevant indices. However, it is often useful to determine an optimal ordering of these individual conditions.
+
+To determine the optimal order, we must consider the cost of each filter and its selectivity—the benefit of the filter. Selectivity represents how few tuples survive a test; the smaller the selectivity, the fewer tuples pass through. We assume we begin with a large number of tuples and are staging these filters to produce a final result.
+
+### Calculating Optimal Orderings
+
+When considering the ordering of filter steps, two questions arise:
+1. How many possible orderings exist for these steps?
+2. For a particular order, how is the cost calculated?
+
+The number of possible orderings is determined by the number of permutations of the tests, which is $n!$. For three filters, this results in $3! = 6$ possible orderings.
+
+To calculate the cost of a filtering operation, we multiply the total time for all filter operations by the total number of tuples. For example, starting with 400 million tuples, all tuples pass through the first test, the survivors pass through the second test, and the remaining survivors pass through the third test. By calculating the time for each stage and summing them, we can determine the total cost in nanoseconds. Comparing different orderings of the same filters demonstrates that some sequences are significantly more efficient than others.
+
+### Efficient Determination of Optimal Order
+
+We do not need to evaluate all $n!$ permutations, as this is an exponential and expensive process. Instead, we can calculate the following fraction for each predicate:
+
+$$\frac{1 - \text{selectivity}}{\text{cost}}$$
+
+By sorting these values in decreasing order, we identify the most efficient sequence. This fraction represents the amount of data eliminated per unit of time; the goal is to maximize the data eliminated per unit of time. Calculating this for all values takes linear time, and sorting them takes $O(n \log n)$ time, which is significantly more efficient than the exponential time required to test every possible ordering.
+
+### Practical Considerations
+
+In practice, query plans do not always utilize this specific optimization. This is often because indices may already exist on the relevant attributes. Furthermore, this calculation neglects the overhead associated with the staging process itself. There must be sufficient benefit to performing this staging compared to simply applying the entire filter sequence over the data as originally provided.

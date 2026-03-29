@@ -1,0 +1,14 @@
+### Neo4J Property Updates
+Neo4J now allows property values to be lists. Consequently, property values are no longer limited to atomic types.
+
+### Neo4J Design
+A Neo4J design is a description of the node types, relationships, and the properties of each. This can be described in text or graphical form.
+
+There are generally fewer restrictions on what constitutes a good Neo4J design. It involves assigning each concept to be a node type, relationship, or attribute in a way that is appropriate and simple. For example, consider patients visiting doctors. Making patients and doctors two node types (or possibly one "person" type), with "visiting" as a relationship, is an obvious and simple approach. 
+
+However, consider the alternative: making "being a patient" a relationship and "visits" a node type. In this scenario, a patient's name and contact information would have to be properties of the relationship. This data would be replaced for each visit/doctor combination the patient had. This design becomes even less logical if we consider that doctors may also be patients at times.
+
+### Adapting Relational ERDs to Neo4J
+A relational Entity Relationship Diagram (ERD) can be adapted to Neo4J in a straightforward way, as an ERD is already a graph. Entity sets become node types, and relationships become relationships. 
+
+However, ERD relationships with an arity greater than two must be broken up into binary relationships for Neo4J, as discussed in Module 2.2, Lecture 6. Additionally, you should collapse any ERD sub-type/super-type relationships into a single node type with different properties for each subclass. Following these steps produces a usable Neo4J design, which may then be refined further.

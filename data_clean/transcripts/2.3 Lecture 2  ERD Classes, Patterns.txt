@@ -1,0 +1,53 @@
+## Common Superclass-Subclass Patterns
+
+### Composite Pattern
+
+The composite pattern is a common superclass-subclass relationship. Consider folders in an operating system. Folders can contain either files or other folders. This is embodied in the following structure:
+
+*   **Folder Entry:** Represents items that can be in a folder.
+*   **File:** One type of item that can be in a folder.
+*   **Folder:** Another type of item that can be in a folder.
+
+This is an equality relationship, meaning everything in a folder is either a folder or a file. Folders and files are distinct; a thing cannot be both.
+
+Each folder entry can be in zero or one folders. The top-level folder in a hierarchy is not in any other folder. Conversely, each folder can contain many items.
+
+This composite pattern is also used in object-oriented programming design patterns. The concept is similar, but applied in a database context rather than an object-oriented programming context.
+
+### Employee Classification
+
+Another example illustrates two ways to represent employee types: hourly and salaried.
+
+**Method 1: Subclasses**
+
+*   **Employee (Superclass)**
+    *   **Hourly Employee (Subclass):** Has a `wage` attribute.
+    *   **Salaried Employee (Subclass):** Has a `salary` attribute.
+
+**Method 2: Classification Attribute**
+
+This method uses a single `Employee` class with a `class` attribute to distinguish between hourly and salaried employees.
+
+*   **Employee:**
+    *   `class` attribute: Can be "hourly" or "salaried".
+    *   `wage` attribute: Present for hourly employees, potentially null for salaried.
+    *   `salary` attribute: Present for salaried employees, potentially null for hourly.
+
+The original drawing with separate `wage` and `salary` attributes can be seen as an optimization of the second method, combining them into one attribute. This is semantically questionable but more efficient.
+
+**Choosing the Right Strategy**
+
+*   **Use subclasses** when subclasses have distinct attributes. If there are no attributes, a single classification attribute is more natural.
+*   **Use subclasses** when the subclasses are unlikely to change. The design should be static once established. Adding more subclasses later indicates a dynamic design, which is inappropriate for an ERD. Adding values to an attribute is a more natural change.
+
+### Anti-Pattern: Unnecessary Subclassing
+
+Consider a person who can drive or own a car, or both. Creating subclasses for "driver" and "owner" within a "person" class is an anti-pattern if it doesn't add distinguishing attributes or relationships.
+
+*   **When subclasses are useful:**
+    *   If a `driver` subclass has a `driver's license number` attribute.
+    *   If an `owner` subclass has a relation to an `insurance policy`.
+
+Subclasses should only be introduced if they have distinguishing characteristics or relationships that differentiate them from the superclass.
+
+Further examples of superclass-subclass relationships and other inheritance styles will be explored.

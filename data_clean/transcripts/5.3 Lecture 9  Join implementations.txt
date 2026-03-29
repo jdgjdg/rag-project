@@ -1,0 +1,62 @@
+### Overview of Join Operations
+This section outlines the implementation of join operations and their associated costs. We consider several types of joins, including cross joins, inner joins, and outer joins. While these operations differ in how they handle dangling tuples, they are implemented using the same underlying operations. The three primary implementation choices are the nested loop join, the sort-merge join, and the hash join.
+
+For all cost analyses, we use the following notation:
+*   $T(R)$: The number of tuples in relation $R$.
+*   $B(R)$: The number of blocks in relation $R$.
+*   $B$: The number of blocks available in memory.
+
+Unless otherwise stated, we assume joins are performed on an equality constraint (equi-joins), typically involving a foreign key. For any join of two inputs, $R$ and $S$, the inputs can be swapped; the cost formulas adjust accordingly.
+
+### Nested Loop Join
+The nested loop join involves looping over all tuples in $R$ and, for each tuple, looping over all tuples in $S$ to check the join condition.
+
+#### Simple Nested Loop Join
+In the unoptimized version, we iterate through each pair of tuples. To improve efficiency, we read the inner loop data one block at a time. The cost is:
+*   **Cost:** $B(R) + (T(R) \times B(S)) + \text{Cost of writing output}$
+*   If the input $R$ is pipelined, the cost of reading $R$ may be omitted. If the output is pipelined, the cost of writing to disk is omitted.
+
+#### Block Nested Loop Join
+We can optimize the nested loop join by utilizing memory to read $R$ in chunks. We use $B-2$ blocks to store $R$ in memory, one block to hold a block of $S$, and one block to accumulate the output.
+*   **Cost:** $B(R) + (\lceil B(R) / (B-2) \rceil \times B(S)) + \text{Cost of writing output}$
+
+#### Index Nested Loop Join
+If an index exists on the join attribute of $S$, we can perform an index lookup for each tuple in $R$ instead of a full scan of $S$. This is restricted to equi-joins.
+*   **Cost:** $B(R) + (T(R) \times \text{Cost of index lookup})$
+*   For a primary index, the lookup cost is logarithmic (binary search). For a B-tree, the cost is also logarithmic but with a larger base, typically resulting in a constant cost bounded by 3 or 4.
+
+### Sort-Merge Join
+The sort-merge join consists of two phases: sorting the data and merging the sorted inputs.
+
+#### Sorting Phase
+We typically use an external merge sort. The cost to sort $R$ is $2 \times B(R) \times \lceil \log_{B-1}(B(R)/B) \rceil$. The same logic applies to $S$. If the data is already sorted (e.g., due to a previous `ORDER BY` or a prior sort-merge join), these costs may be avoided.
+
+#### Merge Phase
+Once sorted, we perform a linear scan to merge the relations. While the worst-case cost involves significant backtracking (approaching $B(R) \times B(S)$), the typical case assumes minimal backtracking, resulting in a cost of $B(R) + B(S)$. 
+
+#### Pipelining and Optimization
+*   **Pipelining:** If sorting is required, pipelining is not possible. If sorting is not required, we can pipeline the linear scan. If neither $R$ nor $S$ requires sorting and there are no duplicates in $R$, the sorting costs can be eliminated entirely.
+*   **Skew:** Sort-merge join is less sensitive to data skew, as the cost tends to be additive rather than multiplicative.
+*   **Optimization:** A "merge-join" optimization exists where the merge phase of the sort and the merge phase of the join are combined into a single recursive process.
+
+### Hash Join
+The hash join uses hashing to group data into buckets based on the join attribute.
+
+#### Partitioning Phase
+We hash both $R$ and $S$ into $B$ buckets.
+*   **Cost:** $3 \times (B(R) + B(S))$ (reading inputs, writing buckets to disk, and reading them back).
+*   If memory is sufficient to hold the buckets, the cost of writing to disk can be reduced.
+
+#### Join Phase
+We join corresponding pairs of buckets.
+*   **Cost:** $B(R) + B(S)$ for the join itself.
+*   **Total Cost:** Approximately $4 \times (B(R) + B(S))$.
+
+Hash joins are highly effective for equi-joins and offer the advantage of parallelization, as both the hashing and the join phases can be executed across multiple cores or machines.
+
+### Summary
+The choice of join implementation is determined by the system based on cost estimates, considering factors such as:
+*   Availability of indices.
+*   Possibility of pipelining.
+*   Whether data is already sorted.
+*   Opportunities for parallel execution.

@@ -1,0 +1,56 @@
+## Implementing ERD Features
+
+### Compound Attributes
+
+When dealing with compound attributes in an ERD, the usual approach is to ignore their compound nature and assume the attributes are directly linked. This results in a simplified implementation.
+
+A variation is to incorporate the compound attribute's name into the naming scheme of the individual attributes. This helps convey that they are all part of a larger, related concept, such as an address.
+
+### Strong vs. Weak Entity Sets
+
+The implementation of strong and weak entity sets differs.
+
+#### Strong Entity Set Example: Team
+
+For a strong entity set like "Team," which has attributes "name" and "sport," both can be part of the primary key. If there's a many-to-one relationship with "City," a foreign key referencing "cities.name" is included. The "City" table would have its own "city_name" attribute.
+
+The minimum cardinality of one for the relationship (e.g., a team must belong to a city) is implemented by enforcing a "not null" constraint on the "city_name" attribute. This guarantees that a city is always referenced.
+
+#### Weak Entity Set Example: University Team
+
+A weak entity set, such as a "University Team," has a primary key that is a combination of its partial key and the primary key of the identifying entity set (e.g., "University").
+
+The "University" entity set is implemented straightforwardly. The "not null" constraint is implicitly handled because the "university_name" is part of the primary key, and primary key fields cannot be null.
+
+A foreign key relationship will also exist. In this scenario, the "University Team" table might have two fields, whereas a standalone "Team" entity might have three. This difference arises because the "University Team" name is intrinsically linked to the "University," unlike a standalone "Team" that might have its own independent name. For instance, a university's mascot name is a property of the university itself.
+
+### Minimum Cardinality on the Many Side of a One-to-Many Relationship
+
+When the minimum cardinality is on the many side of a one-to-many relationship (e.g., each manufacturer must have at least one product), implementation becomes challenging due to underlying semantics.
+
+**The Challenge:**
+
+*   Each manufacturer must have at least one product.
+*   When a manufacturer is created, a product must already exist for it.
+*   However, the product's foreign key to the manufacturer would initially be null because the manufacturer doesn't exist yet.
+*   This creates a dilemma: either update the product's foreign key when creating the manufacturer, or find a way to update both simultaneously.
+
+**Implementation Options:**
+
+1.  **Ignore Minimum Cardinality:** The easiest solution is to disregard the minimum cardinality constraint when it's on the many side of a relationship.
+2.  **Sequential Insertion (Problematic):** The idea of creating the product first and then the manufacturer, followed by updating the product's foreign key, is not always feasible.
+3.  **Simultaneous Insertion (Database Dependent):** Some databases support an "insert all" statement that allows inserting data into multiple tables concurrently. This is not a standard feature and is not available in systems like PostgreSQL.
+
+#### Minimum Cardinality on Both Sides of a One-to-Many Relationship
+
+When minimum cardinality exists on both sides of a one-to-many relationship, the problem intensifies. The option of creating the product and then the manufacturer to update the product's foreign key is no longer viable due to the reciprocal minimum cardinality constraint.
+
+This creates a "chicken and egg" problem: a product requires a manufacturer, and a manufacturer requires a product. The only correct way to implement this is to insert records into both tables simultaneously using an "insert all" statement, which, as noted, is not universally supported.
+
+**Traditional Approach:** The traditional approach is to abandon the minimum cardinality constraint on the one-to-many side.
+
+### Associative Entity Sets
+
+Implementing associative entity sets is straightforward. They are used for many-to-many relationships and are implemented as junction tables with their own primary keys.
+
+When viewed as an entity set, an associative entity set translates to a table with a primary key. This primary key can participate in additional relationships, just like any other entity set.

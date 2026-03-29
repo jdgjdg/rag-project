@@ -1,0 +1,46 @@
+### Querying in MongoDB: The Matching Paradigm
+
+We will investigate features of how to perform queries using MongoDB’s `find` method. To begin, we will create sample data consisting of standard products and manufacturers, now including a `product_color` field, which is an array of color strings.
+
+The fundamental concept of querying in MongoDB differs from relational databases. In relational databases, you specify conditions to test. In MongoDB, the model is based on matching documents. 
+
+#### Basic Document Matching
+When using `collection.find`, you provide a document that acts as a specification for what the target document should look like. 
+
+*   **Single Field Match:** To find a product with the name "Gizmo," you pass a document specifying that field. Since `find` returns a cursor, we wrap it in a `list()` to view the results.
+    ```python
+    list(collection.find({"prod_name": "Gizmo"}))
+    ```
+*   **Multiple Field Match (Conjunction):** If you provide a document with multiple fields, MongoDB performs an implicit conjunction, matching only documents that contain all specified key-value pairs.
+    ```python
+    list(collection.find({"prod_name": "Gizmo", "prod_price": 10}))
+    ```
+If you provide a specification that does not exist in the collection, such as searching for a "Gizmo" with a price of 30, the query returns an empty list.
+
+#### Advanced Query Operators
+When you need conditions beyond simple equality, you must move outside the basic matching paradigm and use syntax that resembles Boolean conditions. These operators use a special dollar sign (`$`) prefix. Because we are using PyMongo, these keywords must be provided as quoted strings, unlike in the JavaScript-based MongoDB client where they are unquoted.
+
+*   **Logical OR:** To combine conditions where you want to match one criteria or another, use the `$or` operator with a list of conditions.
+    ```python
+    list(collection.find({"$or": [{"prod_name": "Gizmo"}, {"prod_price": 30}]}))
+    ```
+*   **The `$in` Operator:** This allows you to match a field against a list of possible values.
+    ```python
+    list(collection.find({"prod_price": {"$in": [10, 30]}}))
+    ```
+*   **Comparison Operators:** You can perform range queries using operators like `$gt` (greater than) and `$lt` (less than). When multiple conditions are applied to a single field, it functions as an implicit conjunction.
+    ```python
+    list(collection.find({"prod_price": {"$gt": 10, "$lt": 100}}))
+    ```
+
+Other available operators include:
+*   **Negation:** `$not`
+*   **Not In:** `$nin`
+*   **Comparisons:** Equality, `$ne` (not equals), `$lte` (less than or equal to), and `$gte` (greater than or equal to).
+
+#### Limitations and Workarounds
+A significant limitation of MongoDB queries is that you cannot compare two different fields within the same document (e.g., comparing `total_supply` to `num_sold`). 
+
+While this may seem to restrict functionality, you can work around this by redesigning your schema. For example, you can add a `current_supply` field. This field is initialized to the `total_supply` and updated (decreased) whenever a sale occurs. By maintaining this as a current inventory number, you can query whether `current_supply` is greater than 0. 
+
+This approach is a departure from relational databases. In relational databases, we generally discourage updating values to facilitate comparisons. In MongoDB, you must think ahead about the types of comparisons you need to perform and ensure your document structure includes the appropriate fields to support those queries.

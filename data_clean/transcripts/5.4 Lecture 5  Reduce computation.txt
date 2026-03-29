@@ -1,0 +1,32 @@
+### General Principles of Query Tuning
+A general principle with query tuning is that we want to reduce the amount of computation. While this seems obvious, we must look at specific examples to understand how to apply it.
+
+### Avoiding Redundant Computation
+A general technique to avoid recomputing the same data is to name it using a common table expression or a temporary table. However, because the optimizer is intelligent, it is not always obvious if a query will actually recompute data. 
+
+For example, consider a sub-query that computes a maximum value. Under a naive implementation, one might assume it redoes that sub-query for every single product tuple. By examining the query plan, we can see if it is actually re-executing that maximum computation. In this case, the aggregate is broken down into parts, but it is not performing the maximum computation 500,000 times. We can verify this by explicitly bringing out the price as a separate computation; doing so results in no speed improvement, and the overall execution time remains the same.
+
+### Efficient Existence Checks
+A common mistake is using the `COUNT` function to check for the existence of at least one record. The problem is that `COUNT` cannot terminate early; it must count everything rather than stopping once it finds at least one match. 
+
+In our testing, a query using `COUNT` to check if a value is greater than zero took approximately 15 minutes (700,000 milliseconds). By rewriting the query to check for existence properly, the execution time dropped to 200 milliseconds.
+
+### Using CASE to Avoid Multiple Scans
+SQL’s `CASE` conditional expression can be used to avoid multiple scans of a table. If we perform three separate scans to count items in three different ranges, the query takes 500 milliseconds. By rewriting this to perform all three counts simultaneously using a `CASE` expression—where we assign a value of one when the data falls into a specific range and then count those ones—we can achieve the same result in roughly half the time with a much shorter query plan.
+
+### Evaluating Duplicate Elimination
+Eliminating duplicates reduces the amount of data, but removing them takes time. One strategy for eliminating duplicates requires sorting the data, which is a relatively expensive operation. It is important to determine if the optimizer is already avoiding unnecessary work and if the elimination is worth the cost.
+
+For example, when retrieving manufacturer names for products, using `DISTINCT` is relevant because an inner join may return the same manufacturer multiple times. In one version of this query, the plan does not explicitly use a "unique" node type; instead, it uses hashing to implement the distinct operation. When we compare this to a version without `DISTINCT`, the latter takes roughly half the time. By examining the query plans, we can see that the difference lies in the hash joins and the order of the sequential scans. The slower version starts the scan on the manufacturer table, while the faster version starts on the product table. Swapping the roles of these tables, which differ significantly in size, leads to the difference in execution time.
+
+Furthermore, adding a `DISTINCT` keyword to a sub-query may have no effect at all. In some cases, two different query versions result in the exact same query plan, and any difference in execution time is merely due to variability.
+
+### Correlated Subqueries
+There is a common notion that correlated subqueries—which syntactically depend on the outside query—are inherently expensive. The naive view is that the subquery must be executed for each tuple of the exterior query.
+
+In our first example, a correlated subquery took about 4,000 milliseconds because it performed an index scan 500,000 times. Rewriting this as an inner join was ten times faster because it eliminated the need to loop over every product.
+
+However, in a second example using `EXISTS`, the correlated subquery was quite fast (under 200 milliseconds). Comparing the query plans for the `EXISTS` version and an `IN` version reveals that they are identical. In this instance, the correlated subquery is not a problem, as the optimizer executes it just like a version without a correlated subquery. Similarly, an inner join version may yield a similar query plan and execution time.
+
+### Conclusion
+The consistent goal of query tuning is to reduce the amount of computation. However, we must investigate thoroughly to determine if a query is truly expensive. Some optimizations are beneficial, while others have no effect and result in the same query plan. It is essential to examine the query plan to understand what is actually happening during execution.

@@ -1,0 +1,27 @@
+### Introduction to Transaction Logs
+We are going to start looking at transaction logs. While there are other kinds of logs, we will focus solely on transaction logs. A log is essentially a record of the actions occurring in a transaction. It is written to stable storage, such as a disk drive, and can be used to restore a consistent state.
+
+### Anatomy of a Log Entry
+A log entry consists of the following components:
+1. A transaction ID.
+2. A memory location or variable name of the item being updated.
+3. The old value that was stored at that location or variable.
+4. The new value that is being assigned to that location or variable.
+
+### The Necessity of Transaction Logs
+One might ask why we need a log at all, rather than performing all writes instantaneously at the end of a transaction to achieve the desired "all or nothing" result. The problem is that we cannot perform writes instantaneously. Individual writes take time, and a failure could occur in the middle of the process, interrupting the writes and leaving the system in an inconsistent state.
+
+### Constraints on Transactions
+There are several reasons why transactions require logs, particularly regarding space and time:
+
+*   **Space Constraints:** If a transaction updates every row of a massive table that cannot fit in memory, we cannot store all those actions in memory while waiting for the end of the transaction. We must update a log as we proceed through the transaction.
+*   **Time Constraints:** Transactions should not wait for one another, as we want to support concurrency. While two-phase locking typically requires holding locks until the end of a transaction, this depends on the isolation level. Furthermore, a transaction that runs for a long time may consume significant memory, competing with other transactions for virtual memory space. This creates a similar issue to the space constraints mentioned above.
+
+### Key Concepts for Log Management
+As we discuss logs in more detail, keep the following concepts in mind:
+
+*   **Redo:** We can redo committed changes from a valid state. If we have a valid state, we can return to it and redo the changes stored in the log. By referencing the log, we can identify which locations need to be updated to specific values and reapply those changes.
+*   **Undo:** If the current state is inconsistent—perhaps because a transaction was aborted, rolled back, or another error occurred—we can undo the uncommitted changes. The log allows us to identify the previous values and restore them to their respective locations.
+*   **Checkpoints:** We can implement checkpoints in our logs to mark a valid state. Rather than redoing operations from the very beginning of the log, we write an entire valid state to the log. While this is potentially expensive due to the volume of data, it allows the system to ignore all transaction log entries prior to that checkpoint.
+
+Throughout this process, efficiency is a primary concern. However, it is important to remember that writing to the disk is inherently slow.

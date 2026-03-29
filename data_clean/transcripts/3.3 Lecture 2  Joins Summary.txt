@@ -1,0 +1,18 @@
+### Visualizing Join Operations
+
+We have introduced a number of different join operations with examples of each. I want to present these operations in a different, more visual way that may be helpful. In these examples, we are joining two tables, each of which has an ID field and a data field, and we are joining on these two ID fields.
+
+*   **Inner Join:** If we want our result to have rows only when both input tables have the ID fields, we use the inner join operation.
+*   **Full Outer Join:** If we want our result table to include IDs for everything in table A as well as table B—in other words, any ID from either A or B—this is the full outer join operation.
+*   **Symmetric Difference:** If we want data that is in A or B, but not both, we can implement this with a full outer join combined with an extra condition to exclude the data that exists in both.
+*   **Left Outer Join:** If we want all data coming from A, we use a left outer join. In this diagram, A is the left operand. When there is no corresponding value in B, the result contains a null for the B data.
+*   **Right Outer Join:** A right outer join is the symmetric variation of the left outer join.
+*   **Left Exclusive Join:** If we want data that is only in A, this is similar to the left outer join, but we filter for data where there is no corresponding value in B.
+
+### Implementation and Syntax Notes
+
+There are a couple of final notes regarding these join operations.
+
+The first note concerns syntax. You should avoid using implicit join conditions or omitting keywords, such as omitting the word "full" when performing a full outer join.
+
+Secondly, it is important to distinguish between join operations and join implementations. We have been looking at different join operations, which are semantically different ways to manipulate your data using various SQL keywords. Later in the course, we will look at different join implementations, which are the underlying methods of executing these joins that can be applied to any of the join operations discussed.

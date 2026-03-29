@@ -1,0 +1,29 @@
+**Clarification and Correction (9:00 Mark)**
+
+We are using two `Product` instances, so we need to rename the relevant attributes of one of them. This must be done after introducing one instance of `Product`, but before the antijoin combining the two instances of `Product`. However, there are two mistakes in the video's use of renaming: the name `p_name1` is never introduced, and the name `p_man1` is used before being introduced. The following are two options for correcting this example.
+
+**Option 1: Rename After the Join**
+
+Note how `p_man` in the join refers to the first `Product` instance, while `p_man` in the antijoin refers to the second instance. Therefore, renaming either `p_man` is unnecessary.
+
+```
+pi_(m_name)
+     (sigma_(p_name1 != p_name)
+         ((rho[p_name1/p_name]
+             (Manufacturer JOIN_(p_man=m_name) Product))
+         ANTIJOIN_(p_man=m_name) Product)))
+```
+
+**Option 2: Rename Before the Join**
+
+```
+pi_(m_name)
+     (sigma_(p_name1 != p_name)
+         ((Manufacturer JOIN_(p_man1=m_name)
+             rho [p_man1/p_man] rho[p_name1/p_name] Product))
+         ANTIJOIN_(p_man=m_name) Product)))
+```
+
+**Clarification (10:40 Mark)**
+
+In databases, and more specifically SQL, multiset union is defined to use the sum of multiplicities. However, the traditional mathematical definition would call that the multiset sum operation, while union uses the maximum.

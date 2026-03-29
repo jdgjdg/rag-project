@@ -1,0 +1,29 @@
+### Introduction to Triggers
+Triggers are a special version of what some languages call event handlers, and they are associated with functions. To demonstrate this, we will work with an employee table. This example includes two specific new attributes: `last_update` and `updated_by`. The goal is to automatically notate who changed the data and when every time the table is updated. This serves as a method for auditing table activity.
+
+### Defining Triggers and Handlers
+To implement this, you must define both a trigger and a handler. The handler is a function, and the trigger specifies when that function is called. These two components function as a pair.
+
+The function returns a trigger. Within the function definition, there is a special tuple named `new`. This is a keyword that functions like any other tuple, allowing you to inspect its parts and apply conditions. In this example, we perform several sanity checks. While these checks could be implemented using table constraints, using an event handler allows for custom error messages. When a condition is not met, we raise an exception, which is an error that must be handled by other code.
+
+The primary purpose of this example is to automatically populate the `last_update` and `updated_by` fields. The function retrieves the current timestamp and the current user, inserting these values into the `new` tuple.
+
+### Creating the Trigger
+The trigger is created and named, and it must specify the operations it monitors. In this case, it is set to trigger "before insert or update." This ensures the trigger executes before the operation occurs, allowing for data manipulation before the record is committed to the table. 
+
+The trigger is configured to execute for each row being updated, meaning the function only needs to process one row at a time. Alternatively, a trigger can be written to process all data being inserted or updated simultaneously. The trigger executes the specified procedure (the function).
+
+### Testing and Validation
+When testing, we first insert tuples that do not violate any conditions. The timestamp and `updated_by` fields are automatically populated, allowing for future auditing of data changes. In a subsequent test, we attempt to enter invalid data. The system identifies the first piece of problematic data and returns the specific error message defined in the function (e.g., "emp_name cannot be null").
+
+### Best Practices and Controversies
+The use of triggers is somewhat controversial because they can confuse the control flow within a database. Triggers are defined separately from the application code that affects the tables. If multiple triggers exist on the same table, the order of execution can be unclear, making the semantics difficult to understand. When combined with check constraints, database functions, and application-level data manipulation, the overall control flow becomes complex.
+
+Best practices suggest keeping triggers simple. They are best used for:
+*   Computing derived values.
+*   Auditing (e.g., tracking who updated a record and when).
+*   Updating secondary tables that are inaccessible to the application for security reasons.
+
+There is significant disagreement regarding whether triggers should be used for data integrity, consistency rules, or arbitrary business rules, as these implementations can become overly complicated. 
+
+Ultimately, triggers provide a mechanism to control what happens during insert, update, or delete operations. They allow you to perform custom checks or data modifications. While triggers overlap with the capabilities of features like constraints, they offer greater flexibility than built-in features.

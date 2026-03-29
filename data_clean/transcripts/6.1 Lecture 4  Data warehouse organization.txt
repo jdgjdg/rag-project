@@ -1,0 +1,20 @@
+### Data Warehouse Architectures: Kimball vs. Inmon
+
+We have introduced the concept of data warehouses, but I want to dive deeper into how they are organized. I previously showed a diagram that illustrates how we create and use a data warehouse. There are two competing approaches to this architecture.
+
+#### The Kimball Approach
+One approach is advocated by Kimball, which aligns with what we have discussed so far. In this model, the data warehouse is denormalized and consists of a collection of n-dimensional cubes. This warehouse is then accessed by users for various purposes. Kimball’s methodology focuses on the business processes—specifically, why you want to use the warehouse and how the data will be utilized.
+
+#### The Inmon Approach
+Inmon structures the data warehouse differently, focusing on subject areas and how to divide data into distinct categories. The Inmon warehouse is typically normalized, for example, using Entity-Relationship (ER) modeling. From this normalized warehouse, you break the data apart into multiple data marts. These data marts are denormalized into cubes, and each contains a specific, non-overlapping, or fairly separate set of data. 
+
+Examples of these discrete business areas include purchasing, sales, and inventory. However, when using the data, you may need to access multiple data marts simultaneously. For instance, if you are analyzing sales, you must look at sales data in comparison to purchasing data to ensure you are buying the same products for your stores that you are selling.
+
+#### Comparison of Methodologies
+In summary, there are two traditional styles of data warehouses: Kimball style and Inmon style.
+
+*   **Kimball Style:** This approach stores raw, denormalized data directly from the sources, often using a dimensional model. This setup is easier to design and create, but it can be harder to use. The view of the data is focused on business processes; essentially, the data is stored based on how it is used.
+*   **Inmon Style:** This approach cleans the data, making it easier to use, though it is harder to implement because it requires a process to clean and normalize the data into an ER model. The focus is on the subject areas of the data—how the data belongs together. This method is often based on which data is accessed together, as that indicates how data is related. A significant advantage of the Inmon style is that it often aligns better with security restrictions, such as FERPA and HIPAA, by grouping similar data that shares the same security requirements.
+
+#### Conclusion
+It is important to emphasize that there is nothing set in stone regarding these two approaches. Data warehouses can mix and match ideas from both methodologies. While these are two distinct ways of organizing data that differ in their details, they still share the same overall big-picture structure.

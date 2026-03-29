@@ -1,0 +1,28 @@
+### Designing Neo4j Databases
+
+Designing Neo4j databases is the simplest database design process discussed in this course. A design consists of four primary components: node types and their properties, and relation types and their properties. Every piece of data should be categorized into one of these four boxes. There are two primary approaches to this design process.
+
+### The Design-from-Scratch Approach
+
+The first approach is designing from scratch. While simplistic, the rule of thumb is that if something is a noun—a thing—it should be a node. If something is a verb—an action—it should be a relation. 
+
+This approach can hide complexity. For example, in our running course example of placing orders for products, "order" functions as both a noun and a verb. In such cases, the standard practice is to try both methods: model it as a node and model it as a relation to see which approach better suits the data and makes more sense.
+
+### The Entity-Relationship Design (ERD) Approach
+
+The second approach utilizes entity-relationship design (ERD) as a starting point. This is particularly useful when transitioning from a relational database to Neo4j. 
+
+In this approach, the mapping is straightforward:
+*   An entity set in an ERD becomes a node type, and its entity attributes become node type properties.
+*   A relation in an ERD becomes a relation type, and its relation attributes become the relation type's properties.
+
+#### Handling ERD Complexities
+There are a few specific challenges when mapping ERDs to Neo4j:
+
+*   **Binary Relations:** Neo4j only allows binary relations. If you have ternary, quaternary, or higher-order relations, you must break them up using approaches previously discussed in the context of ERD.
+*   **Associative Entity Sets:** When an entity set acts as both an entity set and a relation, you must decide whether it functions better as a relation or a node type in Neo4j. You may need to test both configurations to determine which makes more sense for the overall design.
+*   **Superclasses and Subclasses:** Neo4j does not support superclasses and subclasses. The solution is the same as that used in SQL:
+    1.  Implement everything, where each superclass and subclass becomes a distinct node type.
+    2.  Collapse the hierarchy and implement only specific parts, using properties to indicate which subclass a node belongs to.
+
+Neo4j design is inherently simple because it relies on combining a few basic elements repeatedly.

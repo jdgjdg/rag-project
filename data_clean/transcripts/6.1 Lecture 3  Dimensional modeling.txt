@@ -1,0 +1,40 @@
+### Dimensional Modeling for OLAP
+
+When using OLAP (Online Analytical Processing), we typically use dimensional modeling instead of entity-relationship (ER) modeling. Dimensional modeling emphasizes decision-making and the use of historical data. The primary goal is to analyze data by aggregating it quickly, which is why we use denormalization to optimize performance. Because we are typically not updating data in OLAP, we are not concerned with data integrity or maintaining data consistency.
+
+### Entity-Relationship vs. Dimensional Modeling
+
+In a physical ER model, tables represent entities such as customers, stores, products, and order lines (individual items in an order). These models often feature complex relationships with foreign keys pointing in various directions.
+
+In contrast, dimensional modeling categorizes tables into two types: **facts** and **dimensions**.
+
+*   **Facts:** These are the data points you want to summarize and aggregate, such as the number of items sold or the sale price. This data is typically numeric and often additive (e.g., adding revenue from one month to another). Note that some data is non-additive; for example, adding the unit prices of different products only makes sense if you are buying exactly one of each.
+*   **Dimensions:** These tables contain the data you want to aggregate over, such as stores, customers, or time.
+
+### Designing the Dimensional Model
+
+The design depends entirely on the intended queries. To approach dimensional modeling:
+1.  Identify the potential queries to determine how the data will be used.
+2.  Categorize data into facts and dimensions. Note that some data may serve as both depending on the specific query.
+3.  Group facts and dimensions into tables. Each query should use only one fact table, with foreign keys radiating outward from the fact table to the relevant dimension tables.
+
+#### Star and Starflake Schemas
+*   **Starflake:** A design where dimension tables have their own related tables radiating outward.
+*   **Star Schema:** A more common approach where the design is collapsed into a single level of dimension tables. This is generally preferred over the starflake schema and is achieved by denormalizing data.
+
+When transitioning from an existing ER model, you can attempt to collapse the model into a star schema. This often involves turning junction tables into fact tables, using synthetic keys (IDs), adding a time dimension, and denormalizing or pre-aggregating data to improve efficiency. However, this process is not always possible or logical, and starting from scratch is sometimes necessary.
+
+### The N-Dimensional Data Cube
+
+Dimensional models can be viewed as an n-dimensional data cube. In this representation:
+*   **Facts** are the data within the cells of the cube (e.g., the number of items sold in a specific order).
+*   **Dimensions** represent the axes of the cube (e.g., x = customers, y = stores, z = products).
+
+While often visualized as a three-dimensional cube, these models can have any number of dimensions. Furthermore, these cubes are often sparse, meaning many cells do not contain data for every combination of dimensions. To optimize performance, we may pre-aggregate data along specific dimensions before running queries.
+
+### Implementation Approaches
+
+There are three primary ways to implement these designs:
+1.  **Relational Implementation:** Modeling the cube structure using standard relational tables.
+2.  **Native Cube Implementation:** Implementing the structure as an n-dimensional array, utilizing specific optimizations to handle data sparseness and avoid wasting storage space.
+3.  **Hybrid Implementation:** Integrating both relational and cube-based approaches to leverage the advantages of each.

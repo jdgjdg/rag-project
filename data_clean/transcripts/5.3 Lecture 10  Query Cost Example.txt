@@ -1,0 +1,29 @@
+### Example: Computing Query Plan Costs
+
+This section provides a full example of computing the costs of a query plan. The query involves retrieving data from multiple tables and performing two joins. The chosen implementation uses a nested join followed by a sort-merge join, with the projection combined into the sort-merge join operation.
+
+#### Size Estimation
+Both joins are performed on foreign keys. The size in tuples is equivalent to the size of the left-hand input. We use the upper bound for these estimates to ensure safety, as the exact size is not known.
+
+To perform these calculations, we are given the following table sizes:
+*   The number of tuples in the combined Person/Card table is 1,000.
+*   When joined with the Model table, the result is also 1,000 tuples.
+
+Next, we compute the sizes of the joined tables in terms of blocks. While the number of tuples does not increase, the join results in larger tuples and, consequently, more blocks. Using the provided block sizes for these tables, we apply the standard formulas to calculate the block-based size for each join.
+
+#### Cost Estimation: Nested Join
+The formula for the nested join includes the number of blocks in the Person table. We must include a term for writing the result because we cannot pipeline into the sort-merge operation. The sort-merge join requires sorting the data, which cannot be done in a pipelining fashion; it must read the data more than once. Therefore, we must save the data for the sort-merge join to read when needed.
+
+The core cost of the nested join is mandatory. Regarding the scan operation for the Person table, we must pay for reading the Person table once, whether the scan is a separate operation or combined into the nested join. Plugging in the values provides the total cost for the nested join.
+
+#### Cost Estimation: Sort-Merge Join
+The sort-merge join includes the cost of sorting each input and the cost of the merge. The projection is effectively free, as we discard unnecessary attributes while computing the joins. 
+
+For the sort-merge join, we use a typical estimate—adding the terms rather than multiplying them—which is generally more accurate than the worst-case estimate. Assuming we have 10 blocks of memory available for sorting, we perform the calculations using base-nine logarithms.
+
+A notable result occurs in the calculation: the term $\log_9(10/10)$ results in zero. This indicates that the data fits entirely within memory, allowing for a standard internal sort rather than an external sort. While there is no cost for the sort itself, we still account for the cost of reading the data into memory, which is covered by the $B(n)$ term. Combining these values results in a total of 610 disk operations.
+
+#### Conclusion
+In this example, the sort-merge join proved to be much more efficient than the nested join. The efficiency gain is largely due to the estimation method, where we add the terms rather than multiplying them. Multiplying the terms, as done in the nested join, results in a significantly higher cost. 
+
+This example demonstrates the process of taking a physical query and stepping through the operations. To perform these estimations, one must select the correct equations based on the specific operations used during both the size estimation and the cost estimation phases.

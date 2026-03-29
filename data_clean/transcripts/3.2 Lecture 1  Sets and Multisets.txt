@@ -1,0 +1,56 @@
+### Relational Set and Multiset Operations in SQL
+
+Relations are sets, while tables are multisets. Consequently, it is natural to include set and multiset operations in SQL. To demonstrate this, we will use an example involving the cities where I have lived and where my wife has lived.
+
+#### Defining Types and Tables
+To ensure both tables share the same structure, we first define a custom type. We create a type called `cities` that includes the attributes `name`, `region`, and `country`. We then define two tables using this type:
+
+```sql
+CREATE TABLE my_cities OF cities (constraints);
+CREATE TABLE wife_cities OF cities (constraints);
+```
+
+This syntax allows us to define tables based on a specific type while specifying constraints within the parentheses.
+
+#### Sample Data
+The data represents our personal histories:
+*   **My cities:** Kansas City, Kansas (born and raised); Pittsburgh (graduate school); Houston (school and work).
+*   **Wife's cities:** Prior, Oklahoma (born); Houston (lived most of her life); Georgetown (college); London (work).
+
+There is an overlap in our history, specifically in Houston.
+
+#### Set Operations
+SQL provides set operations that function on the results of subqueries.
+
+**Union**
+The `UNION` operation combines the results of two queries into a single set. Because it is a set union, it removes all duplicates:
+```sql
+SELECT * FROM my_cities
+UNION
+SELECT * FROM wife_cities;
+```
+
+**Intersect**
+The `INTERSECT` operation returns only the rows present in both sets. In this example, the only city where we have both lived is Houston, Texas:
+```sql
+SELECT * FROM my_cities
+INTERSECT
+SELECT * FROM wife_cities;
+```
+
+**Except**
+The `EXCEPT` operation performs a set difference. When we place `my_cities` first, the query returns cities where I have lived that my wife has not:
+```sql
+SELECT * FROM my_cities
+EXCEPT
+SELECT * FROM wife_cities;
+```
+In this case, the result is Pittsburgh and Kansas City.
+
+#### Multiset Operations
+SQL also supports multiset versions of these operations, which preserve duplicates. By appending the `ALL` keyword—`UNION ALL`, `INTERSECT ALL`, and `EXCEPT ALL`—the operations treat the data as multisets. For example, using `UNION ALL` would result in Houston appearing twice in the output.
+
+#### Important Considerations for Set Operations
+There is a critical detail regarding how these operations function: while schema attribute names are generally independent of order in SQL, set and multiset operations are order-dependent. These operations compare attributes based on their position. Furthermore, the attribute names of the resulting set are determined solely by the first operand; the attribute names of the second operand are ignored.
+
+In summary, SQL allows for the easy application of `UNION`, `INTERSECT`, and `EXCEPT` on tables, with the flexibility to choose between set and multiset behavior. The next topic to consider is set or multiset membership.

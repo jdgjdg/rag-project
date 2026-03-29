@@ -1,0 +1,21 @@
+### Implementing Anti-Joins in SQL
+
+Recall that relational algebra includes an anti-join operation, which retrieves all elements in Table A that do not have a corresponding match in Table B. SQL does not have a native anti-join operator; however, there are several ways to implement this functionality.
+
+#### Implementation Using Left Outer Join
+We have previously discussed using a left outer join to achieve this. By performing a left outer join and adding a condition to filter for rows where the Table B data is null, we can isolate the elements that exist in Table A but not in Table B.
+
+#### Implementation Using NOT IN
+We can also implement an anti-join using the `NOT IN` operator. This approach explicitly selects all elements in Table A that are not present in Table B.
+
+#### Implementation Using NOT EXISTS
+Consistent with the relationship between `IN` and `EXISTS`, any operation performed with `NOT IN` can also be performed using `NOT EXISTS`. While the syntax differs, the logic remains equivalent to the `NOT IN` approach.
+
+#### Limitations of the EXCEPT Keyword
+One might consider using the `EXCEPT` keyword, which is a set or multiset operation. However, this does not function as an anti-join for the following reasons:
+
+*   **Set-based vs. Multiset-based:** The `EXCEPT` operation is set-based rather than multiset-based. If the result of an anti-join should contain multiple instances of a value (e.g., three, four, and four), `EXCEPT` will only return one copy of each result.
+*   **Data Field Constraints:** `EXCEPT` functions most effectively when restricted to an ID field rather than including additional data fields.
+*   **EXCEPT ALL:** Using `EXCEPT ALL` does not resolve these issues, as it produces different results based on the frequency of values in the data, which does not align with the definition of an anti-join.
+
+When evaluating these implementations, we can consider query tuning to determine if one method is more efficient than the others.

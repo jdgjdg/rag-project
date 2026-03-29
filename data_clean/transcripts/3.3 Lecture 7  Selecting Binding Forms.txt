@@ -1,0 +1,34 @@
+### Choosing Between Common Table Expressions, Temporary Tables, Views, and Materialized Views
+
+To decide which tool to use—common table expressions (CTEs), temporary tables, views, or materialized views—you must first identify the specific problem you are trying to solve.
+
+#### Avoiding Duplicated Subqueries
+If your goal is to avoid duplicating code within your subqueries, the choice depends on the scope of the usage:
+
+*   **Single Select Statement:** If the subquery occurs in only one `SELECT` statement, you should use a `WITH` clause (CTE).
+*   **Multiple Select Statements:** If the subquery occurs in multiple `SELECT` statements, you should use a temporary table.
+
+While these are the semantically correct options, you should investigate whether a view or a materialized view might be more efficient based on your specific implementation and example.
+
+#### Simplifying Queries for Readability
+If you are staging a sequence of subqueries to simplify your main query and improve readability:
+
+*   **Single Select Statement:** Use a `WITH` clause.
+*   **Multiple Select Statements:** Use a temporary table.
+
+Again, these are the most appropriate semantic choices. However, you should evaluate whether inlining those subqueries—copying the subquery directly into the main query—is more efficient for your specific case.
+
+In PostgreSQL, a common table expression acts as an optimization boundary. PostgreSQL optimizes each query within the `WITH` clause independently from the main body of the `SELECT` statement. If you inline the subqueries instead of using a `WITH` clause, the database can optimize the entire query as a single unit. Whether this approach is more efficient depends entirely on the specific example, as implementation differences make a universal rule impossible.
+
+#### Creating Alternate Views of Data
+If you require an alternate view of your data, the natural choice is to use a view. However, you should test both a standard view and a materialized view to determine which is more efficient for your specific implementation.
+
+#### Summary of Tools
+The following table summarizes the four tools discussed:
+
+*   **Common Table Expressions (`WITH`):** Best for simplifying single `SELECT` statements or avoiding code duplication within one query.
+*   **Temporary Tables:** Best for simplifying multiple `SELECT` statements or avoiding code duplication across multiple queries.
+*   **Views:** Best for creating an alternate view of your data.
+*   **Materialized Views:** An alternative to standard views that may offer better efficiency depending on the implementation.
+
+We will discuss the efficiency, costs, and optimization stages of these implementations in the upcoming module of this course.

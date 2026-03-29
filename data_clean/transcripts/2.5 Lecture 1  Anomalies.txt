@@ -1,0 +1,28 @@
+# Introduction to Database Design and Normalization
+
+This module focuses on database design. So far, we have focused on entity-relationship (ER) design and entity-relationship diagrams, which are mathematically based tools for designing databases. They have proven to be effective and have been in use for at least three decades. Next, we will examine another tool called normalization. Normalization is even more mathematically based and provides a specific algorithm for us to use.
+
+# Understanding Database Anomalies
+
+Before discussing normalization itself, we must introduce the background concepts, starting with anomalies. Anomalies describe the problems we are trying to solve or avoid through the process of normalization. There are three kinds of anomalies: insert, update, and delete. Since inserting data is essentially the same as creating data, these represent the three mutating operations from CRUD (Create, Read, Update, Delete). Each of these anomalies presents a problem in a database, and they all stem from the core issue of data redundancy.
+
+## Insert Anomalies
+To illustrate these anomalies, we will use a working example of a single table containing students, courses, and rooms, assuming we do not have related tables for additional data. 
+
+An insert anomaly occurs when we want to enter certain data but cannot do so without entering other, unrelated data. For example, suppose we want to insert a new room and a course into our table. Even if we have the data for the course and the room, the table structure might require an enrolled student to be present in the row. Therefore, we cannot record the existence of the course and room until a student enrolls.
+
+## Update Anomalies
+Update anomalies occur when data is stored redundantly. If we want to update the room for a specific class—for instance, changing it to Duncan Hall 170—we face a problem because the room information for that course is stored in multiple rows. We must ensure that every instance is updated correctly; otherwise, the database will contain inconsistent data.
+
+## Delete Anomalies
+A delete anomaly occurs when the deletion of one piece of data unintentionally results in the loss of other important information. For example, if every student drops a particular course and we delete those student records, we may lose all rows or tuples containing information about that course. Consequently, the information regarding which room the course was assigned to simply disappears from the database.
+
+# The Prevalence of Single-Table Design
+
+All of these problems stem from having the wrong grouping of attributes in a single table. If this single-table design is so problematic, it raises the question of why it is so common. 
+
+The primary reason is the widespread use of spreadsheets. Most people learn to use spreadsheets for school projects or professional tasks, and the most typical way to represent data in a spreadsheet is in one large table. While spreadsheets can link multiple tables using functions like VLOOKUP, very few people actually learn how to use those features. 
+
+When moving to databases, people often apply the knowledge they already have. They may learn SQL but continue to design their data layouts as they did in spreadsheets without specifically learning database design. In other cases, users are simply restricted to the software available to them, such as Microsoft Excel, and they lay out data in the way that seems most obvious within that tool.
+
+While we cannot change the situations where someone is required to use a spreadsheet, we can address the lack of design knowledge. Having discussed ER diagrams, we will now move forward with the study of normalization.

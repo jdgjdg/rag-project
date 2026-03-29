@@ -1,0 +1,34 @@
+### Introduction to B+ Tree Indices
+B+ tree indices are the most commonly used type of index and are typically the default in most databases. B-trees and B+ trees have proven to be the most effective data structures for ordered secondary indices.
+
+### Balanced Search Trees
+To understand B+ trees, one must first review the balanced search tree. A search tree is structured such that each node contains information allowing one to decide which child to search for a specific value. For example, if searching for a value, one might compare it to 50 and determine it is too large, moving to the left; if the next value is 17, it might be too small, requiring a move to the right. 
+
+"Balanced" means that the heights of all branches are essentially equal, typically within one level of each other. Specifically, the height of each branch is logarithmic relative to the number of nodes and the amount of data in the tree. Any balanced search tree implementation aims for logarithmic time operations for insertion, search, and deletion.
+
+### B+ Tree Structure and Optimization
+A B+ tree is a balanced search tree optimized for disk-based access. It is designed to be shallow, meaning the tree height is low, to minimize the number of nodes accessed during an operation. Because each node corresponds to a disk page or disk block, the nodes are "wide," meaning each node has many children. 
+
+The height of this balanced tree is $\log_B(n)$, where $B$ is the number of children per node (the fan-out) and $n$ is the number of elements in the tree. Since $B$ is large, the logarithmic factor is relatively small, often approaching a near-constant value.
+
+Key properties of B+ trees include:
+*   All data is stored in the leaf nodes.
+*   Leaf nodes are sequentially linked, allowing for efficient sequential traversal in either order once a specific piece of data is found.
+
+### Calculating Tree Height
+To determine the height of a B+ tree, one must calculate the number of children per node. Assuming a node size of one disk block (4,096 bytes), the capacity depends on the size of the search key values and the pointers. For example, if a search key is an integer (4 bytes) and a pointer is 8 bytes, the total is 12 bytes per entry. Dividing the block size by this entry size results in approximately 341 children per node. For 1 million elements, $\log_{341}(1,000,000)$ is approximately 2, resulting in a maximum tree height of three.
+
+### Handling Data and Text Keys
+While the provided diagrams show unique search keys, B+ trees do not require uniqueness. If a search key is not a candidate key, duplicates are permitted by maintaining a "less than or equal to" ordering.
+
+When using text search keys, the variable length of the strings complicates the tree structure because the number of children per node varies. To maximize fan-out and minimize tree height, one can store only the necessary prefixes of search key values. For example, to distinguish between "Johnson" and "Jones" in an internal node, one might only store the prefix "JON." Similarly, leaf nodes can share common prefixes, storing the common part (e.g., "JO") once and storing only the suffixes ("son" and "nes") to save storage space. While these savings are minor for a single data point, they are significant when applied to large indices.
+
+### Operations and Maintenance
+The basic operations for a B+ tree index are search, insert, and delete, all of which perform in logarithmic time. These operations automatically add or delete internal and leaf nodes as needed, ensuring there is no fragmentation within the index. This contrasts with array-based index structures, which are prone to fragmentation.
+
+### Summary
+In summary, the B+ tree is the most commonly used index. Key takeaways include:
+*   Operations are logarithmic.
+*   It is a sorted index, allowing for ordered traversal.
+*   It is a secondary index, existing as a separate data structure.
+*   It requires additional storage for nodes and pointers, necessitating a consideration of whether the overhead is justified by the performance gains.

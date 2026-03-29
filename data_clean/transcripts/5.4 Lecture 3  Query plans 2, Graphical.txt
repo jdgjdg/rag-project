@@ -1,0 +1,21 @@
+### Introduction to Graphical Query Plans in pgAdmin
+
+This section provides an introduction to obtaining query plans in a graphical format using pgAdmin. I have a Jupyter notebook open on the screen containing a text-based query for comparison. I will start pgAdmin locally on this machine. Once pgAdmin is running, I need to connect to the database and open the Query Tool. I will copy the same query used in the Jupyter notebook example into the tool.
+
+### Executing and Analyzing Queries
+
+There are two primary buttons to note: the execute button and the "Explain Analyze" button. We want to use the "Explain Analyze" function. After running the query, pgAdmin provides a graphical result and a pop-up window displaying the total time.
+
+I want to compare this graphical result to the textual output previously described. Note that in this specific Jupyter notebook display, the layout is not ideal; it does not handle indentation properly. This is why the presentation mode, which lays it out appropriately, is useful. You can also use psql, which displays the output correctly.
+
+### Interpreting the Graphical Plan
+
+In the graphical mode, you can see the same steps as in the text output. The icon with the line pointing downward illustrates a scan. You can hover over this icon to see that it is a sequential scan, along with other relevant details. Following the scan, you can see the aggregate, which matches the text output. There is also a "Gather" node, which provides information regarding workers, followed by the final version of the aggregate.
+
+You can also navigate to the "Messages" tab to view the total query runtime, which is quite useful. In this run, the time is 382 milliseconds, whereas the previous run was 285 milliseconds. There is a fair amount of variation for the execution of the exact same query plan.
+
+While this specific example displays a linear layout because it is a simple query, the tree layout provided by the graphical interface is generally very appropriate.
+
+### Exporting and Submitting Query Plans
+
+One additional feature is the ability to download the diagram as an SVG file, which you can then save. For assignments requiring the submission of query plans, you are free to use either the text layout or the graphical layout.

@@ -1,0 +1,31 @@
+### Connecting Applications to Databases via Simple APIs
+
+When connecting an application to a database, one option is to use a simple API. Conceptually, this involves two steps: first, concatenating strings to form an SQL statement, and second, calling a function that sends that string to the database to retrieve results.
+
+### Python Implementation
+
+In Python, the process involves calling a function with a tuple of arguments. A specific Python detail is that to create a tuple with a single element, you must include a comma after the element; otherwise, Python interprets it as a parenthesized expression.
+
+*   **Fetching a single row:** You call the function `proc` with the function name and a tuple of arguments. You then call a fetch function to retrieve the result into a variable, such as `row`.
+*   **Fetching multiple rows:** The setup is identical, using the function name and a tuple of arguments. However, instead of fetching a single row, you use a `fetch all` command when expecting multiple rows of data.
+
+### Java Implementation
+
+Java implementations differ because the language is strongly typed.
+
+*   **Callable Statements:** You begin with a specialized SQL string that acts as a function call. This string uses question marks as placeholders for parameters. You convert this string into a `callable statement` using a function call. You then define the parameters by specifying their position and type (e.g., `set int` for an integer). Finally, you execute the statement and retrieve the result using a method like `get int`, specifying the position of the result.
+*   **Prepared Statements:** For general SQL queries, you use a `prepared statement` with placeholders. You populate the parameters using `set int` for each position. You then execute the query, which returns a table-like structure. You can loop over this result set to extract data from each row.
+
+In both languages, the core process remains the same: build the statement, insert the arguments, and retrieve the results.
+
+### Advantages and Disadvantages of Simple APIs
+
+**Advantages:**
+*   **Simplicity:** The API is easy to learn and use.
+*   **Flexibility:** There are no restrictions on the types of SQL statements you can build and send.
+
+**Disadvantages:**
+*   **SQL Proficiency Required:** Application programmers are required to know SQL, which may not always be the case.
+*   **Security and Error Risks:** Because the API allows any SQL to be sent, it is possible to send dangerous or incorrect SQL. There is no validation or checking performed by the API.
+*   **Lack of Portability:** If you migrate from one SQL system to another (e.g., from Postgres to Oracle), you must manually edit all SQL strings to ensure they comply with the new system's syntax.
+*   **Limited Features:** While simple, these APIs do not provide additional features or abstractions, requiring a trade-off between ease of use and functionality.

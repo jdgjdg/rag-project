@@ -1,0 +1,29 @@
+### Course Summary and Database Selection
+
+Congratulations, you have survived until the end of the course. I want to summarize a few of the main points. I encourage you to go back and review the goals of the individual modules as well.
+
+### When to Use a Database
+We need to put data somewhere. In many situations, a natural place to start is with simpler organizations, such as flat files or spreadsheets. Coming from a computer science background, you might consider writing an application that utilizes the millions of data structures learned in algorithms and data structures courses. 
+
+Many standalone applications begin by using flat files or spreadsheets to store data. At some point, you may realize the data is becoming too complicated for those formats and you need to move to a database. Your life would have been simpler if you had realized this earlier, as the transition is always difficult and is often made too late. 
+
+You should consider moving to a database if you notice the following:
+*   **Query Flexibility:** The primary reason to use a database is the need to query your data in a variety of ways. Flat files and spreadsheets are very limited in how you can access data. You might want a database even when you do not have a massive volume of data simply because you need to search that data in diverse ways.
+*   **Concurrent Access:** Flat files and spreadsheets do not allow for concurrent access unless you are using cloud-based versions of those applications.
+
+### Databases vs. Traditional Data Structures
+In traditional computer science, we have various data structures such as lists, arrays, heaps, Fibonacci heaps, trees, graphs, and bi-directional graphs. You should consider pushing data into a database instead of using these structures for two main reasons:
+1.  **Access Patterns:** Standard data structures support only a handful of access patterns efficiently. For example, a structure might allow you to look up a value given a key, or find the largest value, but not the smallest. Databases allow for very flexible search patterns.
+2.  **Concurrency:** All databases support concurrent access, including concurrent reads and writes. In a standard application, implementing concurrency makes writing the application much more difficult.
+
+### Choosing the Right Database
+The question of which database is "best" is nonsensical. No single database is best overall. Instead, you should ask what is best for the particular application at hand. When deciding which database to use, consider the following factors:
+*   **Data Model:** Determine which data model is appropriate for your needs.
+*   **Data Integrity:** Consider how much you care about data integrity. For example, the relational model prioritizes data integrity, whereas other NoSQL models typically relax it.
+*   **Concurrency and Performance:** Evaluate your requirements for concurrency and performance, and how they balance against data integrity.
+*   **Cost:** Various databases have different costs. For instance, Oracle can be expensive but provides significant benefits. Many NoSQL databases and several relational models are free software, but they may require you to handle more tasks on your own and provide less support.
+
+I have broken the decision-making process down into these categories because they are the questions we have focused on throughout the course.
+
+### Conclusion
+Throughout this course, you have learned many concepts and a great deal of terminology. If you do not remember these, please review them. By now, you should consider yourself proficient at using databases and capable of making informed decisions about which databases to use and how to implement them in your applications.

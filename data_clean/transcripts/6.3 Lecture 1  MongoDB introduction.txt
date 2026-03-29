@@ -1,0 +1,36 @@
+### Introduction to MongoDB
+We are going to look at MongoDB, a commonly used NoSQL database, and compare it to relational databases. We will use a Jupyter notebook for this demonstration. Our first step is to connect to the database running on this computer using a library called `pyMongo`. We must import this library to connect to the MongoDB server.
+
+An important note that will affect our examples is the programming language we are using. Jupyter Notebook is built on top of Python, so we are running Python code and making MongoDB library calls from Python. MongoDB does not have a separate programming language analogous to SQL; it is built using these library calls. This differs from using the MongoDB client itself, which is based on JavaScript. Consequently, the library calls are slightly different for each language to ensure they are idiomatic.
+
+### MongoDB Concepts vs. Relational Concepts
+To start, let’s compare MongoDB concepts to their roughly equivalent relational concepts:
+
+*   **Databases:** These are called databases in both systems.
+*   **Collections and Documents:** Instead of a table, MongoDB uses a collection of documents. A document corresponds to an individual row, and a collection is a group of those documents.
+*   **Fields:** In a document, we have key-value pairs called fields, which are equivalent to attributes in relational databases.
+*   **Primary Keys:** Each document has its own primary key, just like a relational table. In MongoDB, this field is always named `_id`.
+*   **Embedding:** A value of a key-value pair can itself be a document. This is known as an embedded document. Embedding is a critical concept because it corresponds to joining tables in a relational database.
+
+### Creating a Database and Collection
+We create a database and collection using the following steps. The client represents our MongoDB server. Using this syntax, I am creating a database called `rice_db` to be consistent with our relational examples. Once the database is established, I create the `products` collection within it. Note that this is Python code, so we are using Python variables.
+
+As in our relational examples, I will drop the collection before starting, even though we have not created anything yet. This ensures that the following steps are always run on a brand-new collection, allowing the code to be rerun multiple times starting from a fresh state.
+
+Note that the creation of a database and a collection is lazy; they do not exist until we actually add documents to them.
+
+### Inserting Documents
+We can create a single document using the `insert_one` library method. The content within the curly brackets is a document, which is a collection of key-value pairs. Because this is Python code, it must conform to Python syntax; therefore, this is a Python dictionary. Unlike JavaScript, where key names do not need to be quoted, in Python, we must quote our key names.
+
+In the example, I am embedding the manufacturer information related to the product. When executed, this returns an arbitrary object. Two important points to note:
+1.  Every document requires an `_id` field. If you do not provide one, it is automatically created and populated.
+2.  The embedded document design for manufacturer data is one possible approach, but we will revisit data design strategies later.
+
+We can also create multiple documents using the `insert_many` library method. This data matches the data used in our previous relational database examples, including "vaporware." This inclusion demonstrates that not every document needs to have the same fields, which is a core feature of MongoDB.
+
+### Basic Queries
+To perform basic queries, we use the `find_one` method on the collection. Providing no conditions returns an arbitrary document. You will see that even though we did not enter a value for `_id`, it exists and contains an `ObjectId`, which is a unique identifier that we will describe later.
+
+Using `collection.find()` returns a cursor object rather than the data itself. Since we are using Python, we convert that cursor object into a list. This produces a Python list containing all of our documents. Because we provided no conditions, it returns every document, each containing an `ObjectId`. This confirms that all entered data is present. 
+
+In future videos, we will dive deeper into MongoDB, specifically focusing on more advanced queries and the capabilities of the `find` method.

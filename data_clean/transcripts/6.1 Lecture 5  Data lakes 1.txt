@@ -1,0 +1,40 @@
+### The Concept of Data Lakes
+
+We have discussed data warehouses, but in the last decade, the notion of data lakes has become a competing idea. The starting premise is that we do not know exactly what we want to do with our data. We acquire data and may want to perform various types of analyses; we might use some data for one job and other portions for a different job. Rather than optimizing the data immediately for specific uses, we keep the data in its original form and organize it for use cases as they arise.
+
+Consequently, we can modify our previous architectural diagram. Instead of using a data warehouse, one of our inputs is a data lake—a repository for our source data from wherever we acquire it, or from multiple sources. We only perform the extract, transform, and load (ETL) process once we know what we intend to do with the data, preparing it for the specific uses we have in mind.
+
+### Schema-on-Write vs. Schema-on-Read
+
+Associated with this is a distinction between traditional methods of structuring data and the data lake approach. Traditional methods involve creating a schema for organizing data at the time of creation (schema-on-write). Conversely, data lakes utilize unstructured data where we create the schema on read; this means that when we plan to use the data, we organize it as necessary.
+
+### Metadata in Data Lakes
+
+Data in a data lake is not merely absolute raw data from our sources. Traditionally, we also add metadata—data about the data we are storing. We group this metadata into three categories: business metadata, operational metadata, and technical metadata.
+
+Data.gov is a website containing a significant amount of government data. Using an arbitrary example of educational data from 2013-14, we can illustrate that it provides extensive metadata. This includes when the metadata was updated, a description, information about access and use, related information, dates of creation, the original source, semantic tags, and other fields.
+
+#### Business Metadata
+Business metadata includes:
+*   **Text description:** A summary of the data.
+*   **Ownership:** Who owns the data.
+*   **Semantic tags:** Labels describing the pieces of metadata and their purpose.
+*   **Policies:** Usage permissions and access rights.
+*   **Limitations:** Information regarding redactions, such as data that is missing, removed on purpose, or anonymized.
+
+#### Operational Metadata
+Operational metadata includes:
+*   **Currency:** How current the data is (e.g., whether it is active, archived, or purged).
+*   **Lineage:** The history of how the data reached you, the original source, and any transformations applied over time. Knowing this history is useful if transformations were incorrect and need to be undone.
+*   **Usage history:** What the data has been used for in the past and access records.
+*   **Quality:** The accuracy of the data (e.g., the precision of sensor data).
+
+#### Technical Metadata
+Technical metadata includes:
+*   **Size:** The storage size in bytes.
+*   **Format:** The file format.
+*   **Schema:** The traditional structure, including fields, field types, and the natural language of the data (e.g., English).
+*   **Version:** The version history of the data.
+*   **Update frequency:** If the data is updated periodically, how often it is refreshed (e.g., yearly data accumulation).
+
+In summary, a data lake is a collection of data accompanied by additional metadata that provides context about the dataset.

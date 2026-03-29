@@ -1,0 +1,34 @@
+### Introduction to Grouping in SQL
+Grouping is a SQL notion often used in conjunction with aggregation. To understand this, let us first review simple aggregation. In a basic example, we can sum all products of purchase price and quantity for all purchases to get a total. We can modify this by filtering for purchases of bananas, which results in a smaller total. Reviewing the data confirms this, as there are only three purchases involving bananas, and one of those contains a null purchase price, meaning it is excluded from the computation.
+
+### Using Group By for Simultaneous Subtotals
+If we want to calculate subtotals for each fruit simultaneously rather than querying them individually, we use the `GROUP BY` clause. 
+
+The query structure is as follows:
+*   **Select:** `p.purch_product`, the sum of `p.purch_price * p.purch_quantity` (renamed as `total_purch_price`), and `COUNT(*)` (renamed as `count_of_purchases`).
+*   **From:** `purchase` as `p`.
+*   **Group By:** `p.purch_product`.
+
+The resulting output provides the purchase price total and the count of purchases for each fruit. For bananas, the total matches the previous individual calculation, and the `COUNT(*)` correctly identifies three purchases, including those with null values.
+
+### Rules for Attributes in Select Clauses
+When using `GROUP BY`, it is important to understand which attributes can be used in the `SELECT` clause. You can select the attributes you are grouping by, or you can group by multiple attributes. Any attribute in the `SELECT` clause that is not part of the `GROUP BY` clause must be embedded within an aggregate function. 
+
+This is necessary because, for a group like "oranges," the purchase quantities might be 20, 10, and null. The database cannot report a single value for these three distinct entries without an aggregate function to consolidate them.
+
+### Filtering with the Having Clause
+The `HAVING` clause is used to filter based on aggregates. For example, adding `HAVING COUNT(*) > 1` ensures that only products with multiple purchases are displayed. 
+
+It is important to distinguish between `WHERE` and `HAVING`:
+*   **`WHERE` clause:** Used for filtering based on individual attributes and conditions.
+*   **`HAVING` clause:** Used for filtering based on aggregate results.
+
+### Syntax and Execution Constraints
+There are specific limitations regarding the order of execution in SQL:
+1.  **Aliases in `HAVING`:** You cannot use an alias defined in the `SELECT` clause within the `HAVING` clause (e.g., using `count_purchases` in `HAVING` will result in an error). This is because the `HAVING` clause is processed before the `SELECT` clause.
+2.  **Aggregates in `WHERE`:** Aggregate functions are not allowed in the `WHERE` clause.
+
+### Uncommon Uses of Grouping and Having
+There are two atypical but valid ways to use these clauses:
+*   **`GROUP BY` without aggregation:** You can use `GROUP BY` without any aggregate functions in the `SELECT` clause. This is functionally equivalent to using `SELECT DISTINCT p.purch_product FROM purchase AS p`.
+*   **`HAVING` without `GROUP BY`:** You can use a `HAVING` clause to filter based on aggregates without an explicit `GROUP BY` clause. In this scenario, all data is treated as a single group, and the aggregate is calculated over the entire dataset. While possible, this is an atypical use case.

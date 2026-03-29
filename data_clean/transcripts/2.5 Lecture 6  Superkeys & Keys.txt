@@ -1,0 +1,15 @@
+### Defining Super Keys and Candidate Keys via Functional Dependencies
+
+We have previously defined super keys and primary keys, and we will do so again using functional dependencies to be more precise. A set of attributes is a super key if that set of attributes functionally determines all of the attributes of the relation. Equivalently, using attribute closures, we can use this equation. A candidate key is a minimal super key, and we can pick one of those to be a primary key. This provides a precise way of computing super keys.
+
+### Example: Identifying Super Keys and Candidate Keys
+
+Consider the following relation and set of functional dependencies. While we could compute the closure of every subset of attributes for these four attributes, there is typically a more efficient way to identify super keys and keys.
+
+To find the super keys, we must identify the sets that functionally determine the entire relation. For example, if we have the attribute "category," we can determine "color," so we do not need "color" in the subset. Additionally, if we have "name" and "category," we can determine "price." Therefore, the set {name, category} is a super key.
+
+As established, any superset of a super key is also a super key. Consequently, {name, category, price}, {name, category, color}, and {name, category, price, color} are all super keys. The minimal set identified, {name, category}, is the only candidate key and would be the primary key we choose.
+
+### Next Steps
+
+We will now apply these definitions of closures, super keys, and keys toward the definitions of normal forms and normalization algorithms.

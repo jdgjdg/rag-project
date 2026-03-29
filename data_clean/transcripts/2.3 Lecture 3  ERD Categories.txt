@@ -1,0 +1,75 @@
+## Introduction to Categories and Union Types
+
+This video introduces a form of superclass/subclass relationships known as categories or union types. To motivate their use, let's review a previous example.
+
+### Review of Previous Example: Multiple Inheritance
+
+In a previous example, an `Engineering Manager` inherited from multiple superclasses through three separate superclass relationships. Furthermore, `Engineering Manager`, `Salaried Employee`, and each of their superclasses shared the same primary key because they inherited it from `Employee`. This guaranteed they all had the same primary key, and `Engineering Manager` would inherit it from them.
+
+### New Scenario: Disparate Superclass Primary Keys
+
+Consider a scenario where superclasses do not share the same primary key.
+
+**Example 1: Art Collectors**
+
+An `Art Collector` can be either a `Person` or a `Company`. The `Person` and `Company` entity sets are disparate and disjoint; there is no reason for them to overlap or share the same primary key.
+
+*   A `Person` might have a `Person ID` and their attributes.
+*   A `Company` might have a `Company ID` and their attributes.
+
+Each entity in the `Art Collector` entity set inherits from *one* of these entity sets, not both. A specific `Art Collector` will be either a `Person` or a `Company`. However, `Art Collector` itself can contain both `Person` and `Company` entities.
+
+It does not make sense for `Art Collector` to inherit both or just one of the primary keys from `Person` or `Company`. Instead, `Art Collector` will have its own primary key, `Art Collector ID`, along with potentially other fields about collecting art.
+
+**Example 2: Road Vehicles**
+
+Similarly, in another entity set, each component (e.g., `Car`, `Truck`, `Bicycle`) will have its own primary ID. The superclass (`Road Vehicle`) will also have its primary ID.
+
+### Understanding the Diagram
+
+Think of the diagram in these examples as representing a union of the superclasses at the top. The subclass is then either a subset of or equal to that union.
+
+*   In the left example (Art Collectors), not every `Person` or `Company` must be an `Art Collector`.
+*   In the right example (Road Vehicles), every `Car`, `Truck`, and `Bicycle` is a `Road Vehicle`.
+
+### The Need for Categories/Union Types
+
+Let's examine an example that does not use categories or union types to understand why this new feature is needed.
+
+**Problem Statement:** Represent that every `Art Piece` is owned by a `Person` or a `Company`.
+
+**Attempt 1 (Without Categories):**
+
+*   Entity set: `Art Pieces`
+*   Entity sets: `People`, `Companies`
+*   Relationships:
+    *   `Art Pieces` can be owned by a `Company`.
+    *   `Art Pieces` can be owned by a `Person`.
+
+If we specify that each `Art Piece` is owned by exactly one `Person` and exactly one `Company`, this implies each `Art Piece` is owned by both.
+
+If we change this to a 0-to-1 relationship for both, it means an `Art Piece` can be owned by at most one `Person` and at most one `Company`. However, this still allows an `Art Piece` to be owned by both a `Person` and a `Company`, and it also allows an `Art Piece` to be owned by nobody. Neither of these versions meets the goal.
+
+**Attempt 2 (Using Categories/Union Types):**
+
+Instead, we can set it up where every `Art Piece` is owned by exactly one `Art Collector`. Separately, each `Art Collector` is either a `Person` or a `Company`. This effectively separates the ownership from the identity of being a `Person` or `Company`.
+
+### Distinguishing Multiple Inheritance from Categories/Union Types
+
+Students often ask about the similarities and differences between these examples.
+
+**Multiple Inheritance (e.g., All-in-One Printer):**
+
+*   The `All-in-One Printer` inherits all attributes from `Copier`, `Printer`, `Scanner`, and `Fax`.
+*   These are separate superclass relationships.
+*   The `All-in-One Printer` has the same primary key as each of these superclasses.
+
+**Union Types/Categories (e.g., Art Collector, Road Vehicle):**
+
+*   Each `Art Collector` or `Road Vehicle` is *one* of the constituent types (e.g., `Person` or `Company`).
+*   A particular `Art Collector` inherits attributes from `Person`, while another `Art Collector` inherits attributes from `Company`.
+*   `Person`, `Company`, and `Art Collector` each have their own primary keys.
+
+**Key Distinction:**
+
+Categories and union types provide a union of the *superclasses*, not a union of the subclasses. Furthermore, each subclass entity belongs to *one* of these superclasses, not all of them.

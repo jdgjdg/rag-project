@@ -1,0 +1,27 @@
+### Multiple Approaches to Querying
+
+In recent videos, we have reused some of the same examples. We have seen that the same problem can be solved in multiple ways. We will explore this further and address the question of how to approach these choices. We will use our product and manufacturer example once again. Specifically, we are looking for which manufacturers make a product. We have previously seen a variety of solutions, including using `JOIN`, `IN`, `EXISTS`, and `EQUALS ANY`, among other methods.
+
+### Reviewing Query Methods
+
+To remind ourselves of these solutions, consider the relational calculus version of the query. We can use `JOIN`, `IN`, `EXISTS`, and `EQUALS ANY`. Fortunately, all of these methods yield the same result.
+
+Another approach involves the notion of existence. You can think of this as counting the number of times you find a match and ensuring that the count is at least one. In this version, we perform the count and verify that the count is greater than or equal to one using a subquery. This is very straightforward and provides the same result as the other methods.
+
+### Equivalence and Rewriting Queries
+
+You will often find that queries using `EXISTS` can be easily translated into queries that use `IN`. Similarly, you can commonly rewrite `JOIN`, `IN`, and `EXISTS` into other forms, though this depends on the details of the specific queries.
+
+Another example is using set intersection. You can find all manufacturers and then find all manufacturers mentioned in the products table, intersecting those two sets. Finding all manufacturers that appear in both tables yields the same result.
+
+### Choosing the Optimal Query
+
+The general question you should ask yourself is: if you can solve a problem in multiple ways, which way should you choose? First, you must ensure that the methods are semantically equivalent and that they truly produce the same results. 
+
+Determining if they perform the same operations is difficult because, while we have an intuitive idea of how things are implemented, we do not yet know what is happening under the hood. In principle, we want to choose the fastest version. To determine this, we will look at query plans later. Query plans will answer both the question of what steps are being used and provide the estimated time before execution and the actual time taken after execution, allowing us to make comparisons.
+
+### Performance Considerations
+
+For now, you can make judgments using naive ideas or guesses about how things are implemented. For instance, the counting version is likely to be slower because, with counting, you cannot stop until you have processed every single piece of data. It is unlikely that the optimizer will recognize that it can stop once the count is greater than or equal to one, as it would need to understand that the count essentially always increases by one.
+
+Alternatively, you can experimentally generate large amounts of sample data so that your queries take a significant amount of time, then run them and compare their speeds. Since neither of these solutions is ideal, we will rely on query plans to answer these questions more effectively in the future.

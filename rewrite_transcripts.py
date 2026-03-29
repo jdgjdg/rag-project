@@ -66,7 +66,14 @@ for i, txt_file in enumerate(txt_files):
         text = txt_file.read_text(encoding="utf-8")
         prompt = PROMPT.format(text=text)
         response = llm.invoke([HumanMessage(content=prompt)])
-        dest.write_text(response.content, encoding="utf-8")
+        content = response.content
+        if isinstance(content, list):
+            content = " ".join(
+                block.get("text", "") if isinstance(block, dict) else str(block)
+                for block in content
+            )
+
+        dest.write_text(content, encoding="utf-8")
         print(f"    ✓ done")
 
     except Exception as e:
@@ -76,7 +83,14 @@ for i, txt_file in enumerate(txt_files):
             # retry once
             try:
                 response = llm.invoke([HumanMessage(content=prompt)])
-                dest.write_text(response.content, encoding="utf-8")
+                content = response.content
+                if isinstance(content, list):
+                    content = " ".join(
+                        block.get("text", "") if isinstance(block, dict) else str(block)
+                        for block in content
+                    )
+
+                dest.write_text(content, encoding="utf-8")
                 print(f"    ✓ done after retry")
             except Exception as e2:
                 print(f"    ✗ failed after retry: {e2}")

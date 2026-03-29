@@ -1,0 +1,28 @@
+### Creating RC and RA Formulas
+
+#### RC Queries
+A Relational Calculus (RC) query typically consists of four parts and follows this structure:
+
+{ outputs | EXISTS variables (A(a) AND B(b) AND conditions) }
+
+1. **Output attributes:** The variables being returned.
+2. **Existential quantification:** The quantification of variables for other relations. Note that some problems may require other forms of quantification.
+3. **Relational mapping:** Relating the variables to their respective relations.
+4. **Conditions:** The constraints applied to the query.
+
+RC does not distinguish join conditions from filter conditions, nor does it clearly indicate specific joins.
+
+#### RA Queries
+Writing Relational Algebra (RA) queries is generally more difficult. It requires distinguishing join conditions from filter conditions and, more importantly, ordering the operations appropriately. It is often easiest to build an RA query from the inside out, starting with operations on the raw relations, then performing operations on those results, and continuing sequentially.
+
+For RA queries, writing them as one large formula can be unwieldy. It is often better to break them down into parts, assigning variables to subformulas and then using those variables in subsequent formulas.
+
+#### Drafting and Formatting
+For a first draft, develop the RC and RA queries by hand. This is the easiest way to make changes as you solve the problem.
+
+For a final version, there are several options:
+
+*   **Handwritten:** Writing by hand (neatly) is the simplest option. You can then scan your formula.
+*   **Equation Editors:** The equation editors in Google Docs, Microsoft Word, or Apple Keynote are easy to learn. However, their button-based interfaces are slow to use, difficult to edit, and not well-suited for formatting long equations that require multiple lines.
+*   **LaTeX:** LaTeX produces the best layout. It has a steep learning curve, but it is not difficult to use once you understand the syntax.
+*   **Jupyter Notebooks:** For some exercises and assignments, you will write RC and RA queries within a Jupyter Notebook. You can write MathJax embedded within Markdown text, which resembles LaTeX.

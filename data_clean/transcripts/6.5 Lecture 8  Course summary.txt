@@ -1,0 +1,23 @@
+### Course Review and Recurring Themes
+We have covered a significant amount of material this semester. I want to take this opportunity to review the topics we have gone over and highlight how these pieces relate to each other. We have had a number of recurring themes throughout this course. We examined how to find data in a database, specifically whether to use indexes or pointers versus searching through the data directly. We also analyzed the trade-offs between complex and simple designs. Within database design, we focused heavily on the trade-off between enforcing data integrity and maintaining efficient access.
+
+### Core Database Topics
+Our curriculum covered several foundational areas:
+*   **Database Theory:** At the beginning of the course, we discussed functions, relations, relational calculus, and relational algebra. We returned to these concepts later when implementing queries.
+*   **Querying and Aggregation:** We explored various ways of grouping data and aggregating data after grouping.
+*   **Query Plans:** We utilized relational algebra to develop query plans.
+*   **Database Programming:** We spent a fair amount of time programming within several different databases, focusing on the costs and efficiency of our queries and programs.
+*   **System Integration:** We discussed how to integrate a database into a larger application or system, which introduces issues of security and data ingestion.
+*   **ETL (Extract, Transform, and Load):** We covered the process of ensuring data is clean before it enters the database.
+*   **Design Approaches:** We examined different approaches for various database systems, specifically the decision to normalize or denormalize data.
+
+### Concurrency and Transactions
+Concurrency is an important general computer science topic, especially as we utilize many computers and multiple cores within a single machine. To understand concurrency, we discussed serialization as a single sequence of operations. Our programming focused on transactions and the isolation levels that affect concurrency. We explored programming according to ACID or BASE properties, or other combinations of properties. Additionally, we discussed the CAP theorem, which encapsulates the trade-offs among different database approaches.
+
+### Advanced Topics and Future Study
+Given the constraints of a single semester, there are several areas you may want to investigate further:
+*   **Big Data:** We discussed how to manage large databases, including partitioning and sharding.
+*   **Alternative Database Models:** We briefly mentioned models for geographical data, time-series data (common in healthcare), and NoSQL approaches such as key-value and column stores.
+*   **Business Intelligence:** We touched upon business intelligence as an analytical approach.
+*   **Advanced Tools and Practical Issues:** While we used simple tools, more advanced options exist that require additional learning. We skipped several practical issues, including the MDX language used for OLAP, live database migration, advanced ETL processes, and comprehensive OLAP issues such as data warehouses and data lakes.
+*   **Cloud Implementation:** Many modern databases are implemented in the cloud. This modifies design models, impacts efficiency, and changes the pragmatics of how data is accessed and moved.

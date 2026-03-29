@@ -1,0 +1,17 @@
+## Database Patterns: An Overview
+
+The concept of database patterns, previously mentioned, is inspired by design patterns from the object-oriented world. This object-oriented approach has significantly influenced how object-oriented programs are written and how data is structured over the past few decades. The notion of database patterns is relatively new in the database community.
+
+The term "database patterns" is used in different ways, depending on the level of abstraction.
+
+### Application-Independent Design Patterns
+
+A more abstract and application-independent approach focuses on design patterns, similar to the Composite pattern. This type of pattern is useful whenever a hierarchy of data needs representation. It serves as a tool for storing data and can be considered a component of an application, rather than being tied to a specific domain like retail sales. This approach aims to abstract away from application-specific details. Unfortunately, limited work has been done in this area.
+
+### Pragmatic and Domain-Specific Patterns
+
+A related, more pragmatic, and less abstract idea focuses on domain-specific patterns. For example, in a retail sales context, this would involve concepts like stores, salesmen, and sales, and their interrelationships. This approach provides an archetype for understanding these relationships. While useful, these patterns are more specific and do not generalize as broadly.
+
+### Resources
+
+There are excellent libraries of examples available for both of these ideas. The following are some sources for each concept.

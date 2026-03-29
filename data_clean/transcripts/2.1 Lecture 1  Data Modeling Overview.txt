@@ -1,0 +1,75 @@
+## Benefits of Database Design
+
+The first question to ask is why we need to worry about database design and what benefits good design provides. Several ideas come to mind, starting with simplicity. While simplicity can be overemphasized, the goal is to have a design that is understandable to both the database designer and the client. This allows for clear communication about what is being built and ensures it is the right thing. Simplicity of implementation is also crucial, leading to relatively simple queries.
+
+Speed is always important. Design impacts speed in several ways. We want to avoid redundant data, as redundancy can slow down queries by increasing the amount of data to process and creating copies. We also want to ensure that related data is associated with each other, creating a notion of locality so that fewer operations are needed to retrieve related pieces of data. In calculations, data should be stored in the right form to make computations easy.
+
+Another significant benefit is data integrity. The design should include mechanisms to enforce desired integrity constraints. Finally, adaptability is key. The design should be easy to update later as needs change.
+
+## Data Modelling
+
+Database design is achieved through data modelling. Data modelling can be described as:
+
+*   "A notation for describing data or information."
+*   "A collection of conceptual tools for describing data, data relationships, data semantics, and consistency constraints."
+
+These descriptions highlight that data modelling focuses on the data itself and provides a graphical representation of data and its associated elements.
+
+Data modelling is traditionally described in three phases:
+
+### 1. Conceptual Data Modelling
+
+This initial phase focuses on the basic ideas and outlines of the data. It is suitable for discussing with non-technical stakeholders, such as clients, to ensure the fundamental concept is correct.
+
+### 2. Logical Data Modelling
+
+This phase delves into more detail, attempting to model all desired data properties, semantics, and relationships. It is a theoretical model based on conceptual ideas and is not tied to a specific implementation.
+
+### 3. Physical Data Modelling
+
+This final phase addresses how the data will be represented in a particular database system.
+
+## Entity Relationship Diagrams (ERDs)
+
+Specifically, we will be using Entity Relationship Diagrams (ERDs), invented by Peter Chen in 1976. ERDs are a graphical language with three main components:
+
+*   **Entity Sets:** These represent the "things" or sets of things in your data, typically described as nouns.
+*   **Relationships:** These describe how entity sets are connected and what they do, typically described with verbs.
+*   **Attributes:** These are modifiers on entity sets and relationships, providing more information and typically described by adjectives and adverbs.
+
+### ERD Phases in Practice
+
+*   **Conceptual Phase:** Focuses on basic entity sets and relationships, making initial decisions about whether something should be an entity set, relationship, or attribute.
+*   **Logical Phase:** Adds more detail by including attributes that modify entity sets and relationships, and further elaborating on relationships. Decisions are made about choosing between equivalent ER models that best describe the data and its constraints.
+*   **Physical Phase:** Details the actual implementation of the model, often represented in tables within a specific database system like SQL. This phase involves choosing between equivalent or near-equivalent implementations and considering trade-offs.
+
+These three phases are more of a continuum, and the exact boundaries can vary between different descriptions.
+
+## ERD Notation Conventions
+
+There are numerous variations of ERD notation. For this course, we will focus on a specific set of conventions based on Peter Chen's original work. Consistency in applying these conventions is important. While ERDs share some similarities with UML (Unified Modeling Language), they are distinct notations.
+
+## Why Use ERDs Instead of SQL for Modelling?
+
+SQL is appropriate for the physical modelling phase, where implementation details are being defined. However, it is not suitable for earlier phases for several reasons:
+
+*   **Client Communication:** Describing models in SQL is not appropriate for non-technical clients. ERDs, with their graphical representation of rectangles and diamonds, are more understandable.
+*   **Implementation Decisions:** SQL requires making implementation decisions, such as selecting data types for attributes, which are premature in the earlier modelling stages when attributes themselves may not even be fully defined.
+*   **Evolving Standards:** SQL has changed over time and varies between different versions. Using SQL for modelling creates a moving target. ERDs provide a stable representation that can then be translated into a specific SQL implementation.
+
+## Normalization
+
+In addition to data modelling, normalization is a second approach to achieving good database design. Normalization provides an objective, mathematically rigorous definition of good design and comes with an algorithm. In practice, data modelling and normalization are used in combination.
+
+## Problems of Poor Design
+
+Poor database design can lead to several problems, including:
+
+*   **Redundancy:** This is a common issue that can increase storage needs and complicate data management.
+*   **Speed Issues:** Poor design can lead to more joins, which are expensive operations, and slower data lookups.
+*   **Integrity Issues:** Lack of proper relationships can remove tools for enforcing data integrity.
+*   **Difficulty in Joining Data:** This can further slow down operations.
+
+These problems directly impact the goals of good database design, such as simplicity, speed, and integrity.
+
+This module will focus on database design issues related to data and data semantics. Other aspects, such as efficiency and implementation issues, will be covered elsewhere.

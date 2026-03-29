@@ -1,0 +1,12 @@
+## Category Types vs. Disjoint Unions
+
+A category type is very similar to a disjoint union, but flipped on its head. The choice between using a category type versus a disjoint union depends on the specific use case.
+
+### The ArtCollector Example
+
+The ArtCollector example illustrates this distinction well. One would not normally consider ArtCollector as a disjoint union of Person and Company.
+
+*   **Partial Membership:** Most importantly, only some persons and some companies are art collectors. A disjoint union would incorrectly imply that all persons and all companies are art collectors.
+*   **Semantic Dissimilarity:** Furthermore, persons and companies are semantically dissimilar. Person and Company have few, if any, shared attributes.
+
+Category types are typically used with ad hoc combinations like ArtCollector.

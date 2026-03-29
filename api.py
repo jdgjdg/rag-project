@@ -3,15 +3,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 
-from retriever import load_vectordb, get_retriever, get_sources
-from chain import build_chain
+from retriever import load_vectordb, get_retriever
+from chain import invoke_with_fallback
 
 # ── Startup: load vectordb and chain once ──────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     vectordb = load_vectordb()
     retriever = get_retriever(vectordb)
-    app.state.chain = build_chain(retriever)
     app.state.retriever = retriever
     yield
 
@@ -36,7 +35,7 @@ class AnswerResponse(BaseModel):
 # ── Endpoint ───────────────────────────────────────────────────────────────
 @app.post("/query", response_model=AnswerResponse)
 def query(request: QuestionRequest):
-    answer = app.state.chain.invoke(request.question)
+    answer = invoke_with_fallback(app.state.retriever, request.question)
     
     docs = app.state.retriever.invoke(request.question)
     sources = list({

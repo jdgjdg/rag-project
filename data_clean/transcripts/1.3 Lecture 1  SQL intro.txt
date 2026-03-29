@@ -1,0 +1,26 @@
+We have been focusing on the mathematical side of things, including the relational model, relational calculus, and relational algebra. Now, we will finally move to the more pragmatic side and look at SQL, the Standard Query Language, examining some of its ideas and syntax.
+
+### SQL Sub-languages
+
+SQL is broken down into multiple sub-languages. Technically, the various keywords and features in SQL are categorized based on their purpose and goal. This includes components that comprise the core SQL language.
+
+An additional part, often considered an extension of SQL, allows for procedures or functions. This extends the more declarative notions of SQL queries and other operations. Although technically an extension, it is often lumped in as part of SQL.
+
+### SQL Standards and Implementations
+
+One unfortunate aspect of SQL is the existence of many standards. The official current standard is SQL 2016. A committee convenes every few years to decide upon and update the standard.
+
+However, each product implementation has its own subset of the standard; they do not fully support everything in the official standard. Furthermore, products often add their own extra features. This results in each product effectively having its own standard. There is particularly large variation in the procedural language extensions to SQL across different products. We will try to focus primarily on a fairly standard subset, but it is impossible to cover every variation. This idea of having many standards is common across many industries.
+
+### Why PostgreSQL?
+
+We will focus on Postgres, also known as PostgreSQL, for several reasons:
+1.  Academics appreciate free resources. PostgreSQL can be downloaded and installed easily by both instructors and students.
+2.  It is mostly standards compliant. In fact, among the major versions of SQL in database management systems available, PostgreSQL is the most SQL standard compliant.
+3.  Its procedural language is much better and simpler than those of many competing products. We will not delve into the specific differences, but other options are often less desirable.
+
+### SQL Resources
+
+There are a number of online references for SQL. While this class does not have a textbook, and I will introduce almost all the SQL you need to know, it is beneficial to have online references. They provide good examples and descriptions of various keywords and variations.
+
+I have listed four general SQL references that cover major versions of SQL. Additionally, it is very important to use the PostgreSQL-specific documentation. While it may be less readable, it is more definitive and specific to PostgreSQL. You may want to bookmark these resources.

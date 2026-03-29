@@ -1,0 +1,68 @@
+### Functional Dependence Closure
+
+This video describes functional dependence closure, which provides an easier way to obtain all logically implied functional dependencies than proving each one by hand. 
+
+#### Definitions
+Let $F$ be a set of functional dependencies, and let $A$ and $B$ be sets of attributes. 
+1. **Attribute Closure:** The closure of a set of attributes, written as $A^+$, is the set of attributes $B$ such that $A$ functionally determines $B$ ($A \to B$).
+2. **Functional Dependency Closure:** The closure of a set of functional dependencies, written as $F^+$, is the set of all functional dependencies logically implied by $F$.
+
+Since functional dependencies represent database semantics, their closure explicitly lists everything implied by those semantics. This provides a fuller representation of the formal semantics, which can then be compared against the informal notion of the desired semantics.
+
+#### Examples of Attribute Closure
+Consider the following examples to motivate the algorithm for computing the closure:
+
+*   **Example 1: Closure of {name}**
+    Looking at the rules, we know that {name} is in the result because {name} derives {name}. Given the rules, {name} also gives us {color}. That is the extent of the closure: {name, color}.
+*   **Example 2: Closure of {name, category}**
+    Starting with {name}, we have {name, color}. From {category}, we can get {department}. Given that we now have {color} and {category}, we can derive {price}. In this case, it appears we can derive all attributes.
+*   **Example 3: Closure of {color}**
+    None of the rules allow us to derive anything from {color}. Therefore, the closure is simply what we started with: {color}.
+
+#### Algorithm for Computing Attribute Closure
+The algorithm for computing the attribute closure follows this logic:
+1. Start with a result set containing all attributes known to be in the closure (the attributes you start with).
+2. Repeatedly iterate through the functional dependencies.
+3. If a functional dependency applies—meaning all attributes on its left-hand side are present in the result set—add the attributes on its right-hand side to the result set.
+4. Continue this brute-force process as long as the functional dependencies produce new results.
+5. If you iterate through all functional dependencies and no new attributes are added to the result set, the algorithm stops and returns the result.
+
+**Walkthrough: Closure of {name, category}**
+1. **Initialization:** The result set starts with {name, category}.
+2. **First Iteration:**
+    *   Apply the FD where {name} is on the left-hand side: Add the right-hand side to the result.
+    *   Apply the FD where {category} is on the left-hand side: Add the right-hand side to the result.
+    *   Apply the FD where {color, category} is on the left-hand side: Since both are now in the result, add {price}.
+3. **Second Iteration:** Iterate through the loop again. Since no new attributes are added, the algorithm terminates and returns the set.
+
+Note that the order in which functional dependencies are listed does not change the final result, though it may affect how many iterations are required to reach it.
+
+**Walkthrough: Second Example**
+1. **Initialization:** Start with {A, F} in the result set.
+2. **Iteration 1:** Check the functional dependencies. One applies, allowing us to add {B}.
+3. **Iteration 2:** Check the functional dependencies again. Now that {B} is present, another FD applies, allowing us to add {C}. Another FD then applies, allowing us to add {D}.
+4. **Iteration 3:** An FD involving {A, D} applies, allowing us to add {E}.
+5. **Iteration 4:** All functional dependencies are checked. While they may apply, they do not add any new attributes to the set. The result set has not changed, so the algorithm terminates and returns the set.
+
+#### Closure of a Set of Functional Dependencies ($F^+$)
+Computing the closure of a set of functional dependencies is a similar process. We look at each subset of attributes in the functional dependency set. Anytime something can be proven, it is added to the result. 
+
+However, proving functional dependencies manually is challenging because you must determine which rules apply. To simplify this, we use attribute closure. We can determine if $A \to B$ is in the closure by computing the attribute closure $A^+$ and asking whether $B$ is a subset of $A^+$.
+
+#### Complexity and Subsets
+To compute the full FD closure, we must look at every combination of variables (e.g., A, B, C, and D). For every combination, we compute its attribute closure and then look at the subsets of that closure. 
+
+The number of attribute sets to compute is $2^n - 1$, where $n$ is the number of variables (excluding the empty set, as its closure is uninteresting and does not correspond to a functional dependency). For each of these, we determine the relevant functional dependencies. For example, if $B$ results in $\{B, D\}$, the functional dependencies are $B \to B$, $B \to D$, and $B \to \{B, D\}$.
+
+#### Abbreviations and Trivial Functional Dependencies
+Because the list of functional dependencies can become extremely long, we use two rules to eliminate unnecessary information:
+1.  **Ignore Trivial Functional Dependencies:** A functional dependency is trivial if the left-hand side is a subset of the right-hand side (e.g., $A \to A$). These are ignored because they always hold.
+2.  **Simplification:** Anytime we have a dependency of the form $A \to \{A \cup B\}$, we simplify it to $A \to B$ to eliminate redundant information.
+
+By applying these rules, we can produce a shorthand version of the closure that is much smaller and more useful.
+
+#### Functional Dependence Covers and Equivalence
+1.  **Covers:** One functional dependency set covers another if the latter can be inferred from the original. This is determined by comparing the closures of the two sets.
+2.  **Equivalence:** Two functional dependency sets are equivalent if their closures are equal.
+
+The shorthand version of a functional dependency set covers the original version; it embodies all the information of the original while eliminating redundant or trivial data.

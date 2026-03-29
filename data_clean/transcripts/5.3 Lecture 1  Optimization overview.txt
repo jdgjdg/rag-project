@@ -1,0 +1,32 @@
+### Overview of Query Optimization
+We are going to discuss query optimization. The process begins with an SQL query, which is parsed to understand the syntax and converted into a representation of the intended operations. This representation is modeled as a tree composed of relational algebra steps—the basic semantic operations we want to perform.
+
+The optimization process converts this tree by evaluating a wide range of possible physical plans to select the best one. These physical plans utilize actual implementation algorithms, representing different strategies for executing each semantic operation. This process is guided by metadata from the database, such as statistics and data sizes, rather than the actual data itself. Once the best physical plan is determined, it is executed on the database data to produce the requested results.
+
+### Logical Plans and Relational Algebra
+A logical plan follows the syntax of the query and represents the order of operations. For example, a logical plan might involve joining a `person` table and a `car` table on a specific condition, joining that result with a `model` table, applying filter conditions, and finally projecting the desired attributes.
+
+There are multiple equivalent logical plans for any given query. While one plan may follow the syntax literally, we can use relational algebra equivalences to translate it into other valid plans. For instance, one could join the `car` and `model` tables first, or apply filter operations on gender and type before performing the joins. These trees are equivalent to logical expressions; the tree structure embeds the syntax of the query.
+
+### Physical Plans and Cost Estimation
+With logical plans established, we can generate physical plans. These involve different implementation strategies, such as various join algorithms or access methods like scanning with a filter versus using an index. Indices allow for the quick retrieval of specific information, whereas scanning involves looking through all data to filter out the desired results.
+
+The ultimate goal is to determine which plan is the fastest. To answer this, we must estimate the cost of each operation in the physical plan. This requires knowing the cost of the algorithms used, which is based on the input sizes. We must estimate these sizes by knowing the current size of each table and predicting how much data will result from each operation (e.g., the selectivity of a filter operation).
+
+### The Optimization Process and Heuristics
+In principle, the optimization process involves:
+1. Generating all possible logical plans using relational algebra equivalences.
+2. Generating all possible physical plans for each logical plan using different implementation strategies.
+3. Estimating the costs for each physical plan.
+4. Selecting the cheapest or fastest plan.
+
+However, even for unremarkable queries—such as those with multiple joins, filtering, grouping, and ordering—the number of possible query plans can exceed 22 million. Because it is impossible to evaluate every plan, we use heuristics to generate only a subset of plans and combine steps so that cost estimation guides the search.
+
+Common heuristics include:
+*   **Early Filtering:** Filtering data as early as possible to reduce the volume of data for subsequent operations.
+*   **Delayed Projection:** Keeping necessary attributes until the end, as they are often required for intermediate filtering and join operations.
+
+### Challenges in Query Optimization
+Cost estimates can be inaccurate for various reasons, potentially leading to the selection of a sub-optimal plan. Query optimization was pioneered by Pat Selinger in the 1970s. As Selinger famously noted, query optimization is exceptionally difficult; achieving perfect or near-perfect optimization is effectively impossible.
+
+While you are not required to perform the optimization yourself, you must be able to read a physical query plan to understand its conceptual execution. You should be able to evaluate the plan experimentally to determine if it is a reasonable choice and, if you believe you can improve upon it, tune the query or the system to optimize performance.

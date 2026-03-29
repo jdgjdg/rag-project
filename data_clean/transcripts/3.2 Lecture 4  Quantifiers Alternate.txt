@@ -1,0 +1,15 @@
+### SQL Quantification: ANY and ALL Operators
+
+SQL provides alternative syntactic methods for expressing quantification. We return to our example of identifying manufacturers that produce items. To express existential quantification, we can use the `ANY` operator, which aligns closely with natural language. For example, we can query for manufacturers whose names are equal to any of the product manufacturers. Running this query yields the same results as previous methods, identifying those manufacturers that are actively producing something.
+
+### Universal Quantification with the ALL Operator
+
+Consider the following logical expression: finding all product names where all products ($P'$) have a price less than or equal to the current product. In other words, this query identifies product names that belong to the most expensive products—those that are more expensive than, or at least as expensive as, every other product. 
+
+We can implement this by using the greater-than-or-equal-to operator against all other products ($P$). For instance, if we execute this query, we find that the "hyper widget" is the most expensive. While this could also be achieved by finding the maximum price, this approach mirrors how one might phrase the requirement in English: find all products ($P$) such that the price is greater than or equal to all other product prices. It is notable that SQL includes a form for "for all" (universal quantification) in this specific syntax, even though it does not provide it in the previous existential form.
+
+### Generalizing Quantification Operators
+
+More generally, the `ALL` or `ANY` keywords can be placed after any Boolean comparison operator. This serves as a secondary way of expressing quantification. You can use existential quantification (`EXISTS`), or you can negate the entire expression and the operation being performed, effectively converting a "for all" statement into a "there exists" (or `ANY`) statement to achieve the same result.
+
+We have two primary quantifiers available: the `ANY` operator and the `ALL` operator, both used in conjunction with a subquery. Because these are binary comparison operators, they require a first operand. Unlike the original form of quantification, this approach provides both existential and universal quantifiers.

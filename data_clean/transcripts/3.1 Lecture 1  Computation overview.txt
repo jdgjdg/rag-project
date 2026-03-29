@@ -1,0 +1,27 @@
+### Overview of SQL Computation Forms
+
+We will examine several different forms of computation within SQL queries. Before diving into the details of the syntax, I want to provide a quick overview of the conceptual differences between these forms of computation. By computation, I am referring to performing actual operations on data, such as multiplying one times two, rather than simply searching for data.
+
+### Horizontal Computation
+
+Previously, we have seen what I describe as horizontal computation. In this example, for each tuple, we are computing the price multiplied by the quantity. For each tuple, we perform the multiplication to produce a result. We perform this operation horizontally, tuple by tuple.
+
+### Vertical Computation and Aggregation
+
+In addition to horizontal operations, we can compute things vertically, such as totaling an entire column. To illustrate some concepts, this result counts the number of distinct colors present. Another result involves computing the price multiplied by the quantity for each row and then summing those values to reach an overall result. In both cases, we are totaling or aggregating a column.
+
+### Grouping and Subtotals
+
+We can combine aggregation with the concept of grouping to calculate subtotals. In this example, we multiply price by quantity in each tuple, but we then sum those values for red, sum them for green, and sum them for blue to obtain the respective results.
+
+### Window Functions
+
+Another form of computation involves using windows that specify which rows or tuples we want to combine. In this example, we perform a simple moving average. The objective is to average the current value and the previous value for the quantities. 
+
+The average of 2 and 3 is 2.5; the average of 3 and 5 is 4; the average of 5 and 1 is 3; and the average of 1 and 0 is 0.5. The first value is slightly less obvious; it is the average of 2, as there is no previous value to average it with. Each circle in this model represents a window of values that we are using.
+
+Because we are averaging the current value and the previous value, one of the requirements when working with windows is to order the data.
+
+### Summary of Implementation
+
+Syntactically, we have previously seen that horizontal computation can be performed within the SELECT clause of our queries. We will see in future videos how to implement vertical computation and window computation.

@@ -1,0 +1,40 @@
+### Introduction to Real-World Data Challenges
+In all of our examples so far, we have used clean data—data that has been hand-typed, randomly generated, or otherwise prepared to avoid problems. Real-world data is not so simple; it often presents numerous challenges that must be addressed. Consider two realistic scenarios:
+
+1.  **Creating a Database from Multiple Sources:** You are asked to take data from several different sources, combine them, and create a new database for a project. The primary issues here are that the data sources were not designed to work together, they have not been prepared for integration, and you must build the database structure from scratch.
+2.  **Importing Data into an Existing Database:** You have a functional, tested database, and you need to import real-world data from sensors or other sources into it.
+
+When discussing design, we are primarily focused on the first scenario: creating a database for existing data. You must determine the keys, constraints, and relationships between the data, which are often missing from the raw source. You must also decide whether to build the database based on the current layout of the source data or to perform Entity-Relationship (ER) modeling to apply standard design principles and create a new organizational structure.
+
+### The ETL Process
+Regardless of the design, you must use a process known as ETL: Extract, Transform, and Load.
+
+#### Extract
+Extracting data from its sources is conceptually straightforward, but it presents practical problems. You must identify the file format, which may be non-standard or obsolete. You may need to decipher delimiters or the internal organization of the data. Furthermore, you may face hardware compatibility issues, such as attempting to read data from legacy media like an eight-inch floppy disk on a modern PC.
+
+#### Transform
+Transforming both the organization and the data itself is typically the most difficult phase.
+
+**Organizational Transformation:**
+*   **Integration:** You must extract appropriate data from flat files or tables and join them from multiple sources to match your target schema.
+*   **Filtering:** You must decide whether to ignore specific tables or attributes or if you are required to process all available data.
+*   **Pivoting:** This involves rotating the table to exchange rows and columns to match your target storage format.
+*   **Splitting and Joining:** You may need to split columns (e.g., separating a "firstName lastName" field into two distinct fields) or join them. This is complicated by naming conventions, such as middle names, multi-word surnames (e.g., "The" or "Mac"), Hispanic naming conventions where the surname is not the final element, or Asian naming conventions that reverse the order of given names and surnames.
+*   **Computation:** You may need to derive new data, such as calculating the ratio of two source values.
+
+**Data Transformation:**
+*   **Units and Formats:** You may need to convert units (e.g., centimeters to inches) or reconcile different character sets (e.g., ASCII vs. EBCDIC vs. Unicode).
+*   **Precision and Types:** You must reconcile different precision levels in floating-point types or convert between fixed-point and floating-point storage.
+*   **Encoding:** You must interpret encoded values, such as abbreviations or numeric codes (e.g., 1 for Texas, 2 for Louisiana) that are not explicitly defined in the source.
+*   **Data Quality:** You must address incorrect data, typos, missing values (deciding between storing nulls or interpolating data points), and inconsistent abbreviations (e.g., "Duncan Hall," "DCH," "DH," or "Duncan").
+*   **Validation:** You must handle values that fall out of range, strings that exceed storage limits, or data that violates defined specifications.
+
+During transformation, you must determine how to validate the data, whether to automate the process, and how to handle failures—specifically, whether to attempt to fix errors or reject the data.
+
+#### Load
+The final step is loading the transformed data into your database. While conceptually straightforward, you must consider the frequency of the process:
+*   **One-time load:** You load the data and discard the original sources.
+*   **Periodic load:** You automate the process for recurring tasks, such as quarterly sales analysis.
+*   **Continuous load:** You implement a system to monitor and update the database as sources change, such as using screen scraping for websites.
+
+Additionally, you must consider auditing requirements, such as whether the data requires approval or verification by a third party before it is finalized in the database. While the ETL process is commonsensical, it is complex and requires careful attention to these real-world issues.

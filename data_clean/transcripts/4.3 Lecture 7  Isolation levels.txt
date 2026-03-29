@@ -1,0 +1,19 @@
+### The Role of Isolation Levels in Transactions
+
+As discussed in previous videos, we may want to allow some anomalies to occur in our transactions. Isolation levels are the tool that allows us to control those transactions in this way. The broader question is whether the ACID properties are too demanding. By weakening these guarantees, we can increase concurrency and reduce the required locking overhead. Consequently, isolation levels provide a dial to relax the "I" (Isolation) of the ACID properties. Later, we will discuss a similar but different set of properties known as BASE, which is used in some NoSQL databases.
+
+### ANSI SQL Isolation Levels
+
+Relational databases traditionally use four isolation levels. The serializable isolation level does not allow any anomalies; it strictly adheres to ACID properties to ensure safety. This is the ANSI standard, which mandates that systems always remain safe. However, most existing SQL vendors do not strictly follow the ANSI standard, choosing instead to loosen the protections to increase performance. 
+
+Most systems use "read committed" as the default level, which allows for the unrepeatable reads and phantom reads described in previous videos. It is important to note that not all database versions support all four levels. For example, Postgres does not support all four, while some SQL versions support additional levels. You must consult the manual for the specific version you are working with.
+
+### Practical Considerations and Trade-offs
+
+Anecdotally, most industry discussions suggest that "read committed" offers a favorable set of trade-offs, providing sufficient speed improvements without interfering with most applications. These inconsistencies are acceptable in many cases. 
+
+While anomalies are a useful tool for categorizing concurrency issues, we do not define conflicts, serialization, or isolation levels in terms of anomalies. In the next video, we will demonstrate how isolation levels are defined in terms of locking.
+
+### Implementation and Syntax
+
+The syntax for setting the isolation level is as follows: the command should be the first line within your transaction and includes keywords specifying the desired isolation level. Remember that your system has a default, and while you can change the default for a session, this specific command changes it only for the current transaction. In general, you should always consider isolation levels and evaluate whether the system default is appropriate for the code you are writing.

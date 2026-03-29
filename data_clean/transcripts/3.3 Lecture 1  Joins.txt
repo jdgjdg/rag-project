@@ -1,0 +1,37 @@
+### Introduction to Join Operations
+Previously, we have seen two forms of joins: the cross join and the inner join. We will now introduce additional forms of joins and compare them. As always, we define our sample data using a version of our standard product and manufacturer example. A difference in this instance is that there is a manufacturer without a product and a product without a manufacturer. Since that would break our referential integrity, we have removed the foreign key constraints. Consequently, there is no foreign key in the product table. 
+
+We must determine how to handle these "dangling tuples"—examples of a product that does not have a manufacturer or a manufacturer that does not have a product—while joining the two tables.
+
+### Cross Joins
+In a cross join, the question of how to handle dangling tuples is irrelevant because we match every product with every manufacturer, regardless of whether they actually belong together. A cross join (A cross B) produces all combinations of A and B, which is the cross-product. Specifically, when combining the product and manufacturer tables, we get 20 rows in our sample data, where every product is combined with every manufacturer. 
+
+Assuming we ignore attribute order—treating attributes as a set rather than an ordered sequence—the cross join of products and manufacturers is symmetric to the cross join of manufacturers and products. The only difference in an implementation is that the resulting attribute order might be different.
+
+### Inner Joins
+An inner join is essentially applying a condition after the cross-product. It matches each item on the left with the corresponding item on the right, typically using an equality constraint based on the foreign key. In our example, products match up with their corresponding manufacturers. 
+
+The inner join is also symmetric if we ignore attribute order. While there are no dangling tuples in an inner join, we typically write the join in one particular order. Because the product table typically contains the foreign key to the manufacturer, we write the inner join as "product inner join manufacturer" rather than the reverse. This reflects a typical way of thinking about the direction of the join.
+
+### Outer Joins
+To address dangling tuples, we use a set of operations known as outer joins: the left outer join, the right outer join, and the full outer join.
+
+#### Left Outer Join
+The left outer join is similar to the inner join; syntactically, we simply change "inner" to "left outer." This operation produces the same results as the inner join but also includes the product that has no corresponding manufacturer. Because the product is listed as the left operand, the left outer join retains the dangling tuples from the left table.
+
+#### Right Outer Join
+Similarly, the right outer join takes any dangling tuples from the right operand. In our example, "product right join manufacturer" includes the manufacturer that has no corresponding product. 
+
+Left and right outer joins are mirrors of each other: A left outer join B is the same as B right outer join A. In our example, because the product table contains the foreign key to the manufacturer, it is more useful to have the product on the left-hand side to identify products that do not align with any manufacturers. Consequently, the left outer join is generally more useful and common than the right outer join in this context.
+
+#### Full Outer Join
+A full outer join takes the dangling tuples from both sides. In our example, it includes "vaporware" (a product without a manufacturer) and "make nothing" (a manufacturer without a product). This operation is symmetric.
+
+### Summary
+In summary, inner and outer joins all agree on the data that is actually matched up—products that have manufacturers and manufacturers that have products. 
+*   **Inner joins** do not include any dangling tuples.
+*   **Left outer joins** include the dangling tuples from the left side.
+*   **Right outer joins** include the dangling tuples from the right side.
+*   **Full outer joins** include the dangling tuples from both sides.
+
+As a final note, some implementations of SQL do not include the right outer join or the full outer join. The left outer join is the most common operation among the outer joins.

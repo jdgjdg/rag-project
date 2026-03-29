@@ -1,0 +1,19 @@
+### Reducing Data Usage in Query Tuning
+
+A straightforward method for tuning queries is to reduce their data usage. Consider two examples where an application processes data returned by a query. In the first example, the query does not filter the data, relying instead on the application to perform the filtering. In the second example, the query returns all attributes, even though the application only requires a subset of them. The optimal approach is to have the query return exactly the data required. This reduces the volume of data transferred between the application and the database.
+
+### Avoiding Redundant Updates
+
+A less obvious optimization is to avoid updating data with the same values. For instance, a bank may periodically declare certain accounts as inactive. While one could simply select active accounts for processing, a specific query might be used to mark accounts as inactive. The non-obvious optimization is to include a condition such as `active = true` to filter for accounts that are currently active before marking them as `active = false`. 
+
+If an account is already marked as false, you should not perform an update. Updating is time-consuming because it involves writing to memory and potentially to disk. Furthermore, every write operation, including an update, typically involves logging the changes, which results in additional disk activity. Filtering for only the necessary records is more efficient than performing unnecessary updates.
+
+### Simplifying Keys
+
+Simplifying complicated keys makes indices smaller and look-ups easier. It also simplifies join operations because fewer attributes are required for comparisons. 
+
+For example, in a scenario involving doctors, patients, visits, and tests, one representation might treat visits and tests as weak entity sets, resulting in relatively complicated keys. As indicated, this leads to complicated indices and complex join conditions. By using simple operations, the amount of data processed during these operations is significantly reduced.
+
+### Summary of Data Reduction
+
+These examples illustrate various ways to reduce the amount of data processed. Additionally, as discussed in a previous video, eliminating duplicates is another potential method for improving performance. In each of these cases, the core principle is to reduce the amount of data that must be computed.

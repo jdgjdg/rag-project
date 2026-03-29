@@ -1,0 +1,30 @@
+### Connecting to Neo4j
+I have previously mentioned that Neo4j is a graph database. We are going to examine it and compare it to the previous databases we have studied. The first step is to connect to the database. We use the load extension and Cypher, which is the name of the programming language the system uses. We connect using a connection string that includes a password. Neo4j is the system user ID we are using, and the connection string specifies that I want to connect to my own machine.
+
+### Mapping Concepts: Neo4j vs. Relational Model
+We can map various concepts between Neo4j and a relational model:
+
+*   **Databases:** These remain databases.
+*   **Relationships:** These are the edges in our graph. They correspond to the relationships in entity-relationship diagrams, which are implemented as tables, junction tables, or foreign key relationships in a relational model.
+*   **Nodes:** Also known as entities, these correspond to the entities in our relational model, which are implemented as tuples.
+*   **Labels:** Nodes can be labeled to indicate which entity set a particular node belongs to, which corresponds to a table. Relationships can also have labels, which are tied to the nature of that relationship.
+*   **Properties:** These are attributes of either the relationship or the node, corresponding to table attributes. We can include an optional ID property, which corresponds to a primary key attribute.
+
+The process of combining data in a graph database involves matching nodes and relationships, which is analogous to joining tables in a relational model.
+
+### Creating and Managing Data
+To see these concepts in action, we will work with an example involving friendships and preferences. First, we match all nodes and delete them to ensure that any previous data does not conflict with our new operations.
+
+Next, we create nodes and a relationship. For example, we create a person named Mary. The variable "m" is a variable name for the node, and "Person" is the node label, acting like a table. We assign properties to Mary, such as name and eye color. We can create other nodes, such as "things," which do not need to have the same key-value pairs as the person nodes.
+
+When creating a relationship, we use an arrow (e.g., `->`) because all edges in this graph are directed. While relationships are directed, we can access them in either direction. The relationship itself can also have labels and properties.
+
+### Pattern Matching and Queries
+Neo4j uses pattern matching, which is somewhat analogous to SQL SELECT statements, utilizing various clauses.
+
+*   **Creating Relationships based on Properties:** We can match a node "P" (a person) and a node "N" (a thing with the property "flavor: sweet") and create a "likes" relationship between them.
+*   **General Relationship Matching:** We can match any node related to another node without specifying labels or types to see what is connected.
+*   **Bidirectional Matching:** By omitting the arrow in the match syntax, we can find relationships regardless of their direction. For example, if we want to find all pairs of people who are friends, we can match them in either direction and create a reciprocal "likes" relationship.
+*   **Path Visualization:** We can match any two nodes related to each other and return the resulting paths. When viewing these results, note that the system prints the properties of the nodes, but because nodes do not have an inherent name, they only display the properties assigned to them.
+
+Neo4j is centered on graphs and pattern matching. We can label entities, match them based on labels and properties, and analyze how they are connected to one another.

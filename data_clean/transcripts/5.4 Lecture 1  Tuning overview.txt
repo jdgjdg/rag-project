@@ -1,0 +1,26 @@
+### Introduction to Query Tuning
+
+Query tuning is the process of improving the performance of database queries from the perspective of the programmer. It is important to distinguish between query optimization, which refers to the internal processes the database system performs to improve queries, and query tuning, which involves the manual efforts of the developer to refine their code.
+
+### Approaches to Query Tuning
+
+There are several techniques for approaching query tuning, categorized by their focus:
+
+*   **Query-Level Techniques:** These focus on the queries themselves. The goal is to avoid interfering with the optimizer, reduce computation, and reduce data usage.
+*   **Database and Application Design:** This involves looking at the broader design of the database and the application. One such concept is denormalization, which is the opposite of normalization; this will be discussed further in the context of OLAP-style models.
+*   **Code Implementation:** While it is possible to write imperative code in SQL, it is generally preferable to write standard queries whenever possible, as they are more highly optimized in SQL implementations.
+*   **Offloading Computation:** One strategy is to move computation out of the database. This can be viewed as a way to make the database appear faster by performing less work within it, moving tasks to the application layer instead. Similarly, one could move integrity checks, triggers, and similar logic out of the database, though this is generally considered a bad idea as it involves living dangerously.
+*   **System Resources:** This involves deeper implementation details, such as parallelizing data, reducing the use of transactions, and tweaking system settings.
+
+### Identifying Target Queries
+
+A primary question in query tuning is determining which queries to target. To identify which queries can be improved, one must understand how fast they currently run and where the bottlenecks exist.
+
+#### Tools for Measuring Performance
+
+*   **EXPLAIN ANALYZE:** This command provides the query plan, the implementation details, and the execution timings. It is important to note that the timing provided by `EXPLAIN ANALYZE` is specific to the query execution itself; it does not include the time required to transmit data back to the client or the time spent printing the results.
+*   **Graphical Plans:** PGAdmin provides a graphical representation of the query plan, which is equivalent to the output of `EXPLAIN ANALYZE`.
+*   **Query Timing in pSQL:** You can enable query timing in pSQL if you only require timing information rather than the full query plan. Unlike `EXPLAIN ANALYZE`, this timing includes the time taken to print the results to the screen.
+*   **Client-Side Timing:** If you are writing an application, you can measure performance by recording the time before and after a call to the SQL code and performing the arithmetic. This method includes the overhead of calling the SQL and the time required to pass the data back to the application.
+
+The choice of tool depends on which specific metrics and timings are relevant to your performance analysis. The overall objective remains to speed up queries and improve the system as a whole.

@@ -1,0 +1,57 @@
+## Subclasses and Superclasses in ER Diagrams
+
+A significant aspect of ER diagrams, not yet discussed, is the use of subclasses and superclasses in an object-oriented style.
+
+### Basics of Superclasses and Subclasses
+
+The fundamental concept is that an entity belonging to a subclass is also an entity of its superclass. This implies that there will be an entity set for the superclass and entity sets for one or more subclasses.
+
+A direct consequence of this relationship is that a subclass entity possesses all attributes declared for its own entity set, as well as all attributes of the superclass entity set, because it is also an entity of that superclass.
+
+Regarding primary keys, since both subclasses and superclasses are entity sets requiring a primary key, and a subclass inherits all attributes of its superclass, the subclass must include the primary key attributes from the superclass. Therefore, subclasses share the same primary key as their superclass.
+
+The subclass is a subset of the superclass, which is a direct interpretation of an entity in the subclass also being in the superclass. A superclass can have one or more subclasses; if it has zero, it is not considered a superclass.
+
+### Example 1: Products (Overlapping Union)
+
+Consider a diagram illustrating products. Some products are software products, and others are educational products. This diagram uses an overlapping union, meaning a product can be both a software product and an educational product.
+
+*   **Attributes:**
+    *   Software products have the attribute `platform`.
+    *   Educational products have the attribute `age group`.
+    *   All products, including software and educational products, share attributes such as the primary key `sku`.
+
+The edges labeled with a symbol resembling a union should be interpreted as a subset symbol. This indicates that a software product and an educational product are each subsets of the union of products. This is evident as they are part of a union. Furthermore, the union of software products and educational products is a subset of all products. It is not necessarily equal, meaning there can be other products that are neither software nor educational.
+
+### Example 2: Employees (Disjoint Union)
+
+Contrast the previous example with a similar diagram for employees. Employees are broken down into two subclasses: hourly employees and salaried employees. Both the superclass and subclasses have their own attributes, similar to the product example.
+
+However, there are two key differences:
+
+1.  **Disjoint Union:** A disjoint union (indicated by 'd') signifies that an employee can be either an hourly employee or a salaried employee, but not both. These two sets are disjoint.
+2.  **Equality:** An edge resembling an equal symbol (a double line) indicates that the class of employees is equal to the disjoint union. This means all employees must belong to one of the subclasses; there cannot be an employee who is neither hourly nor salaried.
+
+### Set-Based Relationships
+
+In essence, subclasses and superclasses are based on set relationships:
+
+1.  A subclass is a subset of its superclass.
+2.  Subclasses can form unions, which can be either disjoint or overlapping.
+
+### Notation Simplification
+
+When a superclass has only one subclass, regardless of whether it's an overlapping or disjoint union, or a subset or equality relationship, the notation can be simplified. The redundant parts are removed, and the relationship is directly represented with a subset symbol on the edge. This simplification is meaningful because, in the case of a single subclass, all four variations (two union types, two edge types) represent the same underlying concept: the subclass is a subset of the superclass.
+
+### Multiple Inheritance
+
+These concepts can be combined. Multiple inheritance occurs when an entity can inherit attributes from more than one superclass. For instance, an "engineering manager" can be a subclass of "salaried employee," "manager," and "engineer." This means the "engineering manager" inherits attributes from all three immediate superclasses. Since "engineer" and "manager" also inherit from "employee," and "salaried employee" inherits from "employee," the "engineering manager" ultimately inherits attributes from "employee" as well.
+
+In such hierarchies, potential name clashes among attributes, especially primary keys, can arise. To address this, attributes with the same name are considered the same attribute within these hierarchies.
+
+### Generalization vs. Specialization
+
+These terms relate to the thought process behind creating these diagrams:
+
+*   **Generalization:** This process moves upwards. It starts with identifying entity sets and their relationships, then recognizing commonalities among subclasses to create superclasses that embody these shared characteristics.
+*   **Specialization:** This process moves downwards. It begins with a general concept (a superclass) and then creates subclasses that represent specific cases or specializations of that superclass.

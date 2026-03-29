@@ -1,0 +1,17 @@
+### Data Integrity Properties in Neo4j
+
+Neo4j enforces specific data integrity properties during concurrency. There are very few constraints enforced by the system. Duplicate nodes are allowed; while there is a primary key field that distinguishes them, that primary key property is largely hidden and difficult to access. Duplicate edges are also permitted between two nodes. There are no other notions of constraints, such as foreign keys, uniqueness constraints, or triggers.
+
+### Transaction Management
+
+In Neo4j, a single query constitutes a transaction, which is similar to the model used in MongoDB. Users cannot specify transactions larger than a single query. However, the system may implicitly combine transactions into larger queries behind the scenes. This is performed as an optimization to reduce the number of locks required and to facilitate longer transactions.
+
+### Isolation Levels and ACID Properties
+
+The isolation level used by Neo4j is "read committed," which is the default level for most relational databases. This level prevents certain issues, specifically dirty reads. 
+
+Regarding the CAP theorem, Neo4j utilizes ACID properties. Among the three properties of the CAP theorem—consistency, availability, and partition tolerance—Neo4j emphasizes consistency and availability, while deemphasizing partition tolerance.
+
+### Rationale for Using Neo4j
+
+The decision to use Neo4j is based on a combination of its data model and its adherence to ACID properties. The data model is highly graph-oriented, allowing for operations that are difficult to perform in other models, while simultaneously enforcing rigorous ACID properties. This combination of a specific data model and transactional properties is the primary reason for selecting Neo4j.

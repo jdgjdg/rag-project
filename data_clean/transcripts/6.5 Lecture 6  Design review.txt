@@ -1,0 +1,20 @@
+### Overview of Database Systems and Design Approaches
+
+In this course, we have examined a number of different database systems, each with its own approach to database design. Across these different design approaches, we have observed the same themes and trade-offs, though they are addressed with different results, decisions, and combinations. 
+
+It is important to remember that your overall system or application might utilize multiple databases, with each database holding a portion of the data in its own silo, specialized to its own role.
+
+### Online Transaction Processing (OLTP)
+In online transaction processing, we use traditional relational databases. These systems are transactional, as indicated by the name, and we normalize data to ensure data integrity. We use entity-relationship design to maintain this data integrity.
+
+### Online Analytical Processing (OLAP)
+In online analytical processing (OLAP), the focus is entirely on analysis. We denormalize data for efficiency, which represents a different trade-off. We use dimensional modeling, which is based upon facts and dimensions. By denormalizing, we replicate data and pre-compute data to increase efficiency. If we approach this from an entity-relationship diagram (ERD) perspective, we attempt to collapse data structures into star schemas.
+
+### MongoDB
+MongoDB can be used for either transactional or analytical purposes. From an ERD perspective, MongoDB functions similarly to relational databases; we translate entity sets into collections of documents. The primary design decision is whether to create a document class or to embed those documents. We aim to increase efficiency, particularly by avoiding lookups, through the use of embedding, as well as by replicating and pre-computing data. Furthermore, MongoDB insists on using a synthetic key for the ID.
+
+### Neo4j
+Neo4j is also used for both transactional and analytical purposes. If we approach the design from an ERD perspective, entity sets become node types and relationships become relationship types. In this system, we typically do not denormalize; we do not replicate or pre-compute data. We generally prioritize data integrity. Like MongoDB, Neo4j insists upon a synthetic key as your ID.
+
+### Conclusion
+In all of these database systems, we see the same themes and trade-offs. The systems simply make different decisions regarding those trade-offs based upon the specific needs of the data and the system.

@@ -1,0 +1,33 @@
+### Introduction to Postgres Query Plans
+In this lecture, we will examine text-based query plans in Postgres. While graphical query plans exist, text-based plans are often preferred for their utility in command-line environments. For this demonstration, we will use a standard product and manufacturer dataset containing a large volume of random data to ensure meaningful timing results.
+
+### Explain vs. Explain Analyze
+There are two primary tools for generating and understanding query plans: `EXPLAIN` and `EXPLAIN ANALYZE`.
+*   **`EXPLAIN`**: Generates the query plan without executing the query.
+*   **`EXPLAIN ANALYZE`**: Generates the query plan and executes the query.
+
+You can append keywords such as `VERBOSE` to these commands. Using `VERBOSE` displays all outputs, allowing you to understand which data is being produced by specific components within the query tree.
+
+### Understanding the Query Plan Tree
+Query plans are organized as trees. In the text-based format, children are indented below a parent node, and each node describes a specific piece of the computation. Because the plan is tree-oriented, a node must complete its child operations before it can finalize its own task. For example, to perform a final aggregate, the system must first perform a "gather" operation, which in turn requires a partial aggregate, which requires a partial sequential scan.
+
+### Interpreting Estimates
+When using `EXPLAIN`, the output provides estimates because the query has not yet been executed. Each node includes a cost line containing four values:
+1.  **Startup Cost**: The estimated time required to begin the computation before the first result is emitted. Frequently, this value is zero.
+2.  **Total Cost**: The estimated time to generate all data, assuming the computation runs to completion. Note that some nodes, such as a `LIMIT` node, may stop before completion.
+3.  **Rows**: The estimated number of tuples (rows) the node expects to process.
+4.  **Width**: The estimated size of the attributes per row in bytes.
+
+These time values are measured in abstract units: a disk page read is considered one unit, and a tuple read is considered 1/100th of a unit.
+
+### Parallelism and Implementation Techniques
+Query plans utilize various implementation techniques, such as parallelism. In the provided example, the plan uses two workers, likely because the host computer has two cores. The plan performs a sequential scan (linear search) on the product table and then calculates a maximum aggregation. Because the aggregation occurs on each worker in parallel, the system must "gather" those results and perform a final aggregation to determine the maximum of the partial maxima.
+
+### Interpreting Actual Execution Data
+When using `EXPLAIN ANALYZE`, the output includes actual execution data rather than estimates:
+*   **Actual Times**: Measured in milliseconds rather than abstract units. This represents the time taken for the query itself, excluding result printing or client transmission.
+*   **Actual Workers**: The number of workers actually used, which typically matches the planned number.
+*   **Loops**: The number of times a specific computation node is repeated. For instance, if a subquery is evaluated for each row of a main query, the loop count reflects that repetition.
+
+### Variability in Execution Time
+Execution times can vary significantly between runs—often by 20% or more—due to factors such as caching effects, disk contention from other applications, and system load. When analyzing query performance, it is important to account for this inherent variability.

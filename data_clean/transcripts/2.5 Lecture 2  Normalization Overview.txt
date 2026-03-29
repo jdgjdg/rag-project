@@ -1,0 +1,21 @@
+### Introduction to Normalization
+
+Normalization is the process of organizing data in a database to reduce redundancy and improve data integrity. A normal form is a specific collection of rules that all schemas must follow; every schema must possess certain properties to meet the criteria of a given normal form. Normalization is the systematic process of putting schemas into these normal forms, often utilizing specific algorithms to achieve the desired state.
+
+### Purpose and Benefits of Normalization
+
+Normalization provides an objective criteria for evaluating a database design. While Entity-Relationship (ER) diagrams are useful, they can be subjective. When using ER diagrams, designers often face choices between different diagram structures, making it difficult to determine which design is superior. Normalization offers a definitive set of rules that dictates exactly how to structure the data, allowing designers to identify and fix design mistakes.
+
+The primary goal of normalization is the reduction of redundancy, which is a recurring challenge in database design. However, it is important to note that denormalization—the practice of not fully eliminating redundancy—can also be beneficial. These benefits are particularly relevant when designing analytical databases and other specific database models.
+
+### Normalization and the Design Process
+
+A typical design workflow involves using ER diagrams first to establish an initial design, followed by normalization to refine the schema and resolve minor issues. While it is theoretically possible to use normalization as the entire design process—starting with a list of all attributes and determining their relationships without an ER diagram—this is not the standard approach. ER diagrams remain a convenient tool for discussing design with clients and establishing the semantics of the data being represented.
+
+### Hierarchy of Normal Forms
+
+There are numerous database normal forms. The most commonly referenced are the first through sixth normal forms (1NF–6NF), along with the Boyce-Codd Normal Form (BCNF) and the Domain-Key Normal Form (DKNF). These forms generally exist in a hierarchy where each level implies the requirements of the previous ones. For example, if a database is in Third Normal Form (3NF), it is also by definition in Second Normal Form (2NF) and First Normal Form (1NF). However, there are specific instances where this implication chain does not strictly hold.
+
+### Functional Dependencies and Course Focus
+
+The normal forms of greatest interest are those based on functional dependencies, which define how specific attributes depend upon others. These normal forms share the common goal of preventing database anomalies. This study focuses specifically on two primary forms: Third Normal Form (3NF) and Boyce-Codd Normal Form (BCNF).

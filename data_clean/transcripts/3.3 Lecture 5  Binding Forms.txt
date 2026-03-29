@@ -1,0 +1,24 @@
+### The Problem with Code Repetition
+In our in-class examples and exercises, we have been building queries that are increasingly long and complicated. In one particular example, we are essentially repeating two large blocks of code. From a software engineering perspective, repeating code is problematic for several reasons:
+
+*   **Increased Error Potential:** By writing the same code twice, you provide twice as many opportunities to make mistakes.
+*   **Reduced Readability:** When reading the code, there is twice as much to look at, making it harder and more time-consuming to understand.
+*   **Maintenance Difficulty:** If you need to change the code later, you must remember to update it in two places rather than just once.
+*   **Performance Inefficiency:** By repeating the code, you are recomputing the same result a second time, which takes twice as long.
+
+### Solving Repetition: Binding Names to Subproblems
+To fix this, standard practice dictates that when we identify common subproblems that we want to execute multiple times, we should bind a name to the result of that subproblem and reuse the value assigned to that name. In SQL, there are two ways to achieve this: the `WITH` keyword and temporary tables.
+
+### The `WITH` Keyword (Common Table Expressions)
+The `WITH` keyword, also known as a Common Table Expression (CTE), allows you to define a query result as a named table that can be used within the body of a larger query. 
+
+For example, you can define `average` as the result of a specific query. This `average` result acts as a table that can be referenced multiple times within the main query. The limitation of `WITH` is that it is part of the query itself—it is a clause that precedes the `SELECT` statement—and can only be used within that single query.
+
+A preferred syntax is to list the attribute names alongside the name of the table being created. This eliminates the need to rename attributes within the `SELECT` statement and improves readability by defining the structure in a prominent location. It is good practice to always make this explicit, even if you are using the same names.
+
+### Temporary Tables
+The second approach is to use a temporary table, which allows you to use results across multiple queries rather than just one. Syntactically, this is almost identical to working with standard tables. 
+
+To create one, you use the `CREATE TABLE` command but include the `TEMPORARY` keyword. You can populate the table by using `SELECT INTO`, again ensuring the `TEMPORARY` keyword is included. Once the table is created and populated, it exists for the duration of your session. You can perform as many queries or operations—such as adding or removing data—as you wish. The table will automatically be deleted at the end of the session when you log out.
+
+In summary, we have two binding forms to assign a name to a table for use in later queries: the `WITH` clause and temporary tables.

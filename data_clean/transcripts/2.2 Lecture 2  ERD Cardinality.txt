@@ -1,0 +1,60 @@
+## Cardinality of Relationships in ER Diagrams
+
+Previously in the course, we discussed the concept of cardinality of relationships and how to notate it in ER diagrams. We have different kinds of cardinality: one-to-one, many-to-one, and many-to-many relationships.
+
+The notation in ER diagrams that accompanies these cardinalities is added to the edges of the relationship.
+
+*   **One-to-One:** Each one of these maps to one of those.
+*   **Many-to-One:** Each one of these maps to one of those.
+*   **One-to-Many:** Each one of these maps to many of those.
+
+For example, a relationship where each one of these maps to one of those, and each one of these maps to many of those, would be represented accordingly.
+
+Conventionally, different letters are used to denote the number of mappings in each direction (e.g., 'n' and 'm') to emphasize that these numbers do not have to be the same.
+
+### Example with Cardinality Information
+
+Let's examine a familiar example with added cardinality information:
+
+*   **Product and Manufacturer:** Each product is made by one manufacturer, while a manufacturer makes many products (zero or more).
+*   **Product and Buyer:** A product can be bought by many people, and each person can buy many products (many-to-many).
+*   **Person and Manufacturer:** A person works at one manufacturer, but each manufacturer employs many people (many-to-one).
+
+It is important to note that even if the letter 'n' is used multiple times, it does not represent a variable with the same value each time; it is simply a shorthand for "many." Other notations use the infinity symbol instead.
+
+## Minimum Cardinality (Participation)
+
+Along with maximum cardinality, there is also minimum cardinality, sometimes called participation. This provides information not covered by maximum cardinality.
+
+Consider an example with only maximum cardinality: A product is made by one manufacturer. This allows for the possibility of products that are not yet made by any company. In this diagram, a product is made by at most one manufacturer, and a manufacturer makes at most an arbitrary number of products. It is permissible for a manufacturer to make no products.
+
+If we want to specify that a product *must* be made by a company, we can indicate this in the diagram. A product is made by at least one manufacturer and at most by one manufacturer. Conversely, a manufacturer makes at least zero products and at most an arbitrary number of products.
+
+A common shorthand is that "zero to n" is the same as "n." This shorthand will be frequently used in future diagrams.
+
+## Considerations for Assigning Cardinalities
+
+When creating an entity-relationship diagram and assigning cardinalities, it is crucial to remember that the real world is complex, and cardinalities are often higher than initially expected.
+
+**Examples of Real-World Complexity:**
+
+*   **Capitals:** A country typically has one capital. However, some countries have two (e.g., for executive and legislative branches), and during wartime, there can be competing capitals.
+*   **Heads of State:** Each country usually has a single head of state. However, countries like Andorra have two heads of state. Historically, individuals like Simon Bolivar have served as president of multiple countries simultaneously.
+
+These examples illustrate that relationships are not always neat and can frequently result in many-to-many relationships in diagrams.
+
+## Allowed Cardinalities
+
+A common question is whether cardinalities other than zero and one are allowed. The answer is no; they are not permitted in this notation.
+
+We limit ourselves to cardinalities of zero and one for two primary reasons:
+
+1.  **Semantics:** Constants other than zero and one rarely represent fundamental, unchangeable restrictions. For instance, the number of players on a sports team (e.g., Rugby with 15, 13, or 7 players per side) can vary and is not a fundamental, fixed restriction.
+2.  **Pragmatics:** Implementing cardinalities of zero and one, as well as "many," is straightforward in SQL. However, implementing other specific cardinalities like seven or fifteen is not as easily supported.
+
+When specific, non-standard cardinalities arise, there are a couple of ways to model them:
+
+*   **Generalization:** A one-to-five relationship can be generalized to a one-to-many relationship.
+*   **Replication:** A one-to-five relationship can be represented by five separate one-to-one relationships.
+
+Upcoming videos will provide more examples of cardinality in practice.

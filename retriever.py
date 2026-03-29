@@ -7,7 +7,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.load import dumps, loads
 
-from config import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL, TOP_K, NUMBER_OF_QUERIES, LLM_MODEL
+from config import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL, TOP_K, NUMBER_OF_QUERIES, FALLBACK_MODELS
 
 load_dotenv()
 
@@ -57,7 +57,7 @@ def get_retriever(vectordb: Chroma):
         generate_queries = (
             (lambda q: {"question": q})
             | prompt_perspectives
-            | ChatGoogleGenerativeAI(model=LLM_MODEL, temperature=0)
+            | ChatGoogleGenerativeAI(model=FALLBACK_MODELS[0], temperature=0)
             | StrOutputParser() 
             | (lambda x: x.split("\n"))
         )

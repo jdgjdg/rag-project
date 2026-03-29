@@ -1,0 +1,63 @@
+# Introduction and Early Data Management (1950s)
+
+Before we get into the technical content of the course, I want to start with a little bit of history. Why? First of all, I just like it; it's an interesting history. Secondly, it's going to provide us with context for some of the decisions of how databases are structured.
+
+We're going to start with the ancient times, back in the 1950s. Back in the fifties, you see pictures of these old computers, and they were very limited. Data management was almost inconceivable because the computers had such limited capacity for data storage that any notion of what we would think of as data management was just impossible. But they started getting bigger by the end of the fifties.
+
+A notable moment was the first conference on data systems and languages, known as CODASYL. One thing that came out of this was the programming language called COBOL, which was for processing business data.
+
+# COBOL and Data Description
+
+Here's a bit of COBOL. I know it's in very small print, but I want you to notice a couple of things from this example. If you look at all of this, you'll see that it's just a description of the data that's going to be used in this program. It's described declaratively; there's no "this is the data structure, put something here, and do that." It's declarative, saying there's going to be something like this that's laid out this way. This is all done separate from the code, which is on the next slide.
+
+Moreover, if you look through here, you'll notice things saying "record." All of your data is organized in terms of records, essentially a line in a data file.
+
+Here is the code part of this same program, which starts to say things like "procedure." These are all doing things like processing, printing, and preparing – nice verbs that do things. You can also see that the code is processing a record at a time. For example, it will do something to a record here and something else with a record; it's always working with a record at a time. A couple of other things you'll notice are the syntax: it's very English-like, with lots of words and keywords that read like English. At the time, it was thought that this would make an easier-to-write programming language. Also, there's lots of capitalization everywhere; all the keywords are capitalized. You'll see that those two properties come up in the SQL language that we're going to use as well.
+
+# The Hierarchical Data Model (1960s)
+
+Later, in the sixties, the information management system developed by IBM for the Saturn V rockets going off to space and the moon, was not only a great moment in our nation's history but also a significant moment in computer science history. The innovation was the first serious data model, known as the hierarchical data model.
+
+What does that mean? An example would look like this: you have a department with some data, and it gives you a pointer to the various employees in that department. Each employee has some data, and each of those has a pointer to the projects they're working on, including the data for the projects.
+
+A question we might ask is: which employees are supervised by some person, and which of those work on some project? You might write some code that looks like this. This is from an old database language called DL/I. You can see here that it says "Get a department." Then, after you get the appropriate department, you get the appropriate employee. Once you've got an appropriate employee, you look at the project and see if it's the one you're looking for; it follows the pointers, it follows the direction of the pointers.
+
+The problem with this is if you want to go the other way, you can't really do it. The pointers go in one direction, and you're forced to go that direction. One problem with that is it leads to redundant data. For example, if you have employees working on multiple projects, and you have projects with multiple employees, then for each employee, you're going to repeat the project information. You're going to have project information there multiple times for each employee that works on that project; it's going to be redundant data. That means it takes up more space to store and has the potential for inconsistent data, where you have the data listed one way once and then differently a second time.
+
+# The Network Data Model
+
+Another data model that was introduced as part of the CODASYL report is the network data model. You'll see that it looks very similar to the previous one. The main difference is that the pointers go both ways. So, if you have a department and you have employees, there's going to be an intermediate table here that does the mapping of which employees work in which department. Similarly, between employees and projects, you'll have another table that matches which employees work on which projects. The pointers go both ways.
+
+So we can ask the same question as before: which employees who are supervised by Mary work on the Fox project? We can actually solve this two different ways: going up or going down. We have the choice of which we do, and either is appropriate.
+
+Going up from the project is good when there are few employees working on the project. You select the Fox project, go to the employees (hopefully there are few of them), and then find out which departments they work in. However, we can also search down, starting with the department, because we know who the supervisor of the department we want to look at is. We look at how many employees there are. This is good when there are few employees supervised by Mary. The number of people in either direction limits how many things we have to search in the rest of our search.
+
+The problem is that we have to make this decision when we're writing the code. We either have to search up or we have to search down in this picture. We have to make that decision when we're actually writing the code. We could choose, "I know for Project Fox I'm going to search up." But how are you going to know that? Maybe we hire lots and lots of people for that project, and now searching in that direction will be less efficient than searching the other direction. How are you going to know that?
+
+# The Relational Data Model
+
+So we had these two data models: the hierarchical model and the network model. They battled it out; people argued about which was best. Then came along a new data model: the relational model that we're going to be focusing on. You can see from the diagram here that it's rather similar in that we're going to have these individual relations. But you can see that there are no pointers between the relations. Instead, we're going to get from one relation to the next by shared data: by the department name in this first pair, employee name here and here, and then the project name in this last pair. By finding data in one relation, you can look it up in the next relation; that's how we will connect these. This was invented by Edgar F. Codd in a paper called "A Relational Model of Data for Large Shared Data Banks."
+
+Let's return to our recurring example. The way we think of it is in this mathematical logical expression, where I've color-coded the pieces of the logic with the corresponding relation. We describe this as wanting to look up the employee name from the employee table; it needs to be an employee. Such that there exists a 'w' (something in this table) and an 'a' (something in this table), and a department, such that a bunch of things match so that things are equal – that's the going from one relation to the next. And we're looking for the two values that we care about: Project Fox and Mary as a supervisor. It is then the system's responsibility to turn this logical description into executable code. This is a descriptive notion of what we want to do.
+
+# Object-Oriented Databases (1980s-1990s)
+
+Moving a little later into more modern history, there are some other notions, in particular, object-oriented databases. Object-oriented languages were getting really popular during the 1990s. This is the same decade when Java was created and many other object-oriented languages. One of the notions is that we would want persistent objects; these languages are based upon objects. The notion of the database is simply keeping those objects alive from one run to the next.
+
+At least back in the eighties, this didn't catch on. There were multiple attempts at it, but there are reasons why it didn't catch on. The objects at that time were fairly simple, and you could do everything in the existing relational model. So, why use a new model that required new systems? You lost the advantage of the declarative queries that we were just describing, of being able to go anywhere and letting the system do this. Essentially, what this is doing is going back to the older hierarchical and network models because you are relying upon pointers being in your objects.
+
+An unfortunate part was that everybody was doing this for their own language. So you had a different database system for each language, and who wants to learn a different system every time you move to a new language? They were first versions of everything, so they simply couldn't keep up with the established relational databases that had been optimized for decades at this point.
+
+This idea, though, has returned with more complex objects, better implementations, and a single system that is implemented in terms of libraries that work with multiple languages. We'll see later on that this idea is becoming popular again.
+
+# Big Data Frameworks and NoSQL (2000s)
+
+Meanwhile, more recently, in the 2000s, you have things you might have heard of called MapReduce, Spark, and Hadoop, and various other systems. One thing to notice: none of these are actually databases; they are just frameworks for analyzing large datasets. It's basically a bunch of code that you put some data through.
+
+But one thing they've brought is that they were not based upon SQL approaches, not based upon relational data models. In the 2000s, part of the idea was, "We can do something other than the relational model!" It brought in a lot of new ideas. Another thing they brought in was that they were based upon ways that could be easily parallelized for modern parallel computers. The notion was, "I've got more data; let me just throw some more processors at it, and it'll speed up nicely because it's going to easily parallelize over those processors." It was the right time for these models to come in.
+
+These lead into the development of NoSQL databases, or at least their popularity. Originally, NoSQL really meant "No SQL"; we didn't want to do things the relational way with the SQL programming language that we'll see. Nowadays, we're really saying, "Relational ideas are still good, but we want to do other things in addition, and we want to do not only SQL." There are four main types of these NoSQL databases, based upon the different ways of storing the data: document stores, key-value stores, column stores, and graph databases.
+
+# Benefits of NoSQL Databases
+
+Broadly speaking, the stated benefits are flexibility and speed. A key idea is allowing a more flexible schema, meaning you're going to have more flexibility in how you store your data; at least, that's the stated notion. We'll get into this question of flexibility, whether it's actually true and to what degree it's true, later on in the course, but that's the stated benefit. They are more easily scalable because the notion is that these are going to use parallelism as much as possible, so we can just throw more processors at them, and it will really help. At least for what they're designed for, they are significantly faster. They're designed differently; each is good for different things. Very naturally, they're going to be better than the standard relational model for those things that they are designed for. As I've said, we're going to look more into relational databases and these non-relational databases throughout the course.

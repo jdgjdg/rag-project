@@ -1,0 +1,28 @@
+### Introduction to Generating Random Data in SQL
+Previously, we generated data using explicit lists with `INSERT INTO` and `VALUES`, by building queries with `INSERT INTO` and `SELECT`, or by importing data from files using the `COPY` command. This section covers generating data randomly. This process leverages advanced SQL features to ensure that all constraints, such as primary keys and foreign keys, are respected.
+
+### Strategy for Data Generation
+The overall strategy is to generate data in the order of foreign key dependencies. We must first generate the manufacturer data, as it does not depend on other tables. For dependent tables, we generate an enumerated list of the parent table's data and randomly select from that enumeration to maintain foreign key relationships.
+
+### Generating Manufacturer Data
+Since manufacturer data has no dependencies, we use `INSERT INTO` combined with a query.
+
+1.  **Generating Rows:** We use the `GENERATE_SERIES` function to create a sequence of numbers (e.g., 1 through 100). We assign this to a field `i`.
+2.  **Naming:** We convert the number `i` into text for the manufacturer name. While we could load realistic names from a table, using numbers ensures the data is distinct and allows for easy scaling to thousands or millions of rows.
+3.  **Address and City:** We use the `RANDOM()` function, which generates a float between 0 and 0.999999, combined with the `MD5` hashing function to convert the random number into a text string.
+4.  **State Codes:** To generate two-character state codes, we utilize ASCII encoding where 'A' is 65 and 'Z' is 90. We generate a random integer between 65 and 90, convert it to a character using `CHR()`, and concatenate two such characters.
+5.  **Handling Constraints:** Because the address, city, and state combination must be unique, we use the `ON CONFLICT` clause to ignore any duplicate entries generated during the process.
+
+### Generating Product Data
+Generating product data requires respecting foreign key relationships with the manufacturer table.
+
+1.  **Using `WITH` Clauses:** We use a `WITH` clause to break the query into manageable chunks. First, we generate row numbers for each manufacturer.
+2.  **Product Attributes:** We generate product names as numbers and create random prices. To generate a price between 1 and 10,000, we multiply `RANDOM()` by 10,000 and add 1. We then cast this to a `NUMERIC` type before converting it to a money format.
+3.  **Establishing Foreign Keys:** To link products to manufacturers, we generate a random number corresponding to the row number of a manufacturer. We use a cross join with a table containing the total count of manufacturers to ensure the random selection falls within the valid range of row numbers.
+4.  **Final Insertion:** In the main body of the `WITH` statement, we join the product information with the manufacturer row numbers to map them to the actual manufacturer names, then insert the final result into the product table.
+
+### Purpose and Benefits
+Generating random data is useful for several reasons:
+*   **Performance Testing:** It allows for the creation of large datasets (e.g., a million rows) to test query performance.
+*   **Robustness Testing:** Random data can reveal accidental properties or edge cases in queries, such as issues with nulls or specific data distributions, that manual testing might miss.
+*   **Verification:** By generating multiple random sets, you can ensure that your queries remain functional and consistent across different data variations.

@@ -1,0 +1,21 @@
+### Introduction to Pipelining
+I previously outlined the concept of pipelining as an optimization for sending data from one operation to the next. In this video, we will examine pipelining in greater depth. In the future, when we analyze the costs of various operations, we will discuss how pipelining specifically affects those costs.
+
+### The Concept of Streaming
+To understand pipelining, consider the analogy of music or TV streaming. In these services, a server sends data to your client—such as a TV or phone. The server does not send the entire music or video file at once; it sends small segments. Your client plays the segment, and you watch it. The client might save a small portion so you can rewind, but generally, once you have viewed the data, it is discarded, and the system proceeds to the next segment of the movie.
+
+This is the same mechanism used in database pipelining. We have operations running concurrently. At any given time, we are considering a pair consisting of a child and a parent node in our query tree. Data is sent from the child to the parent. The typical implementation, which is useful to understand, involves a shared buffer. The child sends data into one end of the buffer, filling it up. The data eventually reaches the front, and the parent retrieves it. The buffer holds a small amount of data temporarily, but once the parent consumes it, the data is discarded. While movie streaming allows for rewinding by keeping data in the buffer, in the context of databases, we generally do not retain the data; once it is consumed, it is discarded.
+
+### Requirements for Pipelining
+We can pipeline data from a child to its parent when the output tuple from the child is used only once by the parent. The parent examines the tuple and discards it before looking at the next one. There are two primary conditions for this:
+
+#### 1. The Child-Parent Relationship
+The first condition is that the child can only have one parent. While query plans are typically represented as trees—where a child node has only one parent—this is a simplification. In general, query plans can be graphs. A child tree might represent a sub-computation that is used multiple times in an overall query. If a child has multiple parents, one could theoretically have a shared buffer for each parent to pipeline data to them. However, this introduces issues regarding the size of the shared buffer and the concurrency of the sub-computations. If the sub-computations are not running truly in parallel, or if the query structure is complex, the data might need to be stored for a long time, potentially overflowing the shared buffer and defeating the purpose of pipelining. Therefore, we will simplify our scope and assume that a child has only one parent.
+
+#### 2. Single Consumption of Tuples
+The second condition is that the parent must read each tuple only once. It reads a tuple, processes it, discards it, and then moves to the next tuple. Whether this is possible depends on the specific operation being performed.
+
+### Example: Join Operation
+To illustrate this, consider a simple implementation of a join operation. In this implementation, you iterate through each tuple in one dataset (the outer loop) and, for each of those tuples, you iterate through each tuple from the second dataset (the inner loop). You then perform a comparison, such as an equality check on a foreign key. If the tuples match, you produce an output, send it to the shared buffer, and continue the loops.
+
+In this example, notice that the outer loop (the R dataset) is processed only once. However, the inner loop (the S dataset) is accessed multiple times; you look at every S tuple for every R tuple. Consequently, we are able to pipeline the outer loop, but not the inner loop.

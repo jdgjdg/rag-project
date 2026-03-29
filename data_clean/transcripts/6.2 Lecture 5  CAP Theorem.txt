@@ -1,0 +1,47 @@
+### Introduction to the CAP Theorem
+The CAP theorem is a fundamental concept regarding concurrency in distributed systems. We have previously discussed ACID properties, BASE properties, methods for implementing concurrency, and various notions of consistency. The underlying challenge is that concurrency is inherently complex because multiple processes occur simultaneously, and their interactions must be managed.
+
+The CAP theorem addresses three properties: Consistency, Availability, and Partition Tolerance. The theorem states that in any distributed system, you can achieve any two of these properties, but not all three simultaneously. While it is desirable to have all three, there is no intersection where all three coexist. It is important to emphasize that this applies to any distributed system, not just databases.
+
+### Definitions of CAP Properties
+*   **Consistency:** All nodes have the same data at the same time. The entire system maintains a consistent set of data.
+*   **Availability:** All requests are handled. Even if part of the system or a specific node goes down, the system will still provide a response (even if that response is an error message indicating the node is down).
+*   **Partition Tolerance:** The entire system does not fail even if some nodes or communication edges fail.
+
+### Distributed Model and Trade-offs
+To understand why we cannot satisfy all three properties, consider a simple distributed model consisting of a client node and two storage nodes (N0 and N1). Currently, both nodes store the value V0, meaning they are consistent. The edges represent communication links between all nodes.
+
+#### Example of Inconsistency
+1.  The client writes V1 to N0.
+2.  N0 updates to V1 and responds to the client (satisfying Availability).
+3.  The client reads from N1.
+4.  N1 returns V0.
+This result is inconsistent because the nodes do not hold the same value.
+
+#### Example of Consistency
+To achieve consistency:
+1.  The client writes V1 to N0.
+2.  Before responding to the client, N0 sends a request to N1 to write V1.
+3.  N1 writes V1 and responds to N0.
+4.  N0 then responds to the client.
+5.  When the client reads from N1, it receives V1. From the client's perspective, the system is consistent.
+
+### Proof by Contradiction
+To prove why we cannot satisfy all three properties, we assume a system is partition-tolerant and experiences a partition. We focus on two nodes on opposite sides of the partition that cannot communicate directly.
+
+1.  The client writes V1 to N0.
+2.  Due to Availability, N0 must respond to the client, so it confirms the write.
+3.  Because of the partition, N0 cannot update N1.
+4.  The client reads from N1.
+5.  N1 must respond, but it can only return its current value, V0, because it cannot communicate with N0.
+6.  The system returns V0, which is inconsistent with the write of V1.
+
+Because we cannot have consistency, availability, and partition tolerance simultaneously, we must choose among the trade-offs.
+
+### Practical Applications and Trade-offs
+*   **Web Photo Sharing:** These systems prioritize speed and availability. Users may be willing to accept stale data (inconsistency) if it means the photo displays quickly.
+*   **Airline Reservations:** If a plane is nearly empty, the system prioritizes availability and speed. However, if the plane is near full, double-booking becomes highly problematic. In this case, the customer is willing to wait for a consistent answer to ensure they have a confirmed seat.
+*   **Online Retail (e.g., Amazon):** Shopping carts require high availability and quick response times to prevent customer abandonment. Product information may be stale, which is acceptable. However, during the checkout process, the system must prioritize consistency to ensure the correct credit card, customer, and shipping information are processed. Customers are willing to wait during checkout to ensure this consistency.
+
+### Choosing a Database System
+When selecting a database, you must choose the system that aligns with your requirements for consistency, availability, and partition tolerance. For example, if your application requires high availability and partition tolerance with a key-value structure, you would select a different database than if you required consistency and partition tolerance with a key-value structure. These trade-offs guide the selection of the appropriate database system for your specific use case.

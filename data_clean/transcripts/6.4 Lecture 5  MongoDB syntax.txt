@@ -1,0 +1,17 @@
+### Critique of MongoDB Syntax
+
+In this video, I would like to comment on MongoDB syntax. While SQL is often described as a clunky language to work with syntactically, it can be excused based on when it was designed; it is an old language based on outdated notions of what constitutes good programming language design. MongoDB, however, does not have such excuses.
+
+### Method Forms and Pattern Matching
+
+I want to first look at the forms of the various methods used in MongoDB. In particular, we are using matching, which utilizes a mixture of pattern matching. Pattern matching only goes so far in the form that MongoDB uses, and the system quickly abandons it to start using more regular Boolean expressions. As a result, you get a combination of these two approaches. 
+
+This leads to complicated method arguments that use nested key-value mappings, where the keys are often weird keyword syntax and the values are further key-value mappings due to the nesting. Essentially, this is just emulating a Boolean expression in a strange syntax or using other unusual arguments. It is often difficult to understand or remember when you need a fancy special argument for a general-purpose method versus when there is a special-purpose method that performs that exact function, such as `countDocuments`, which is simple but only handles one specific case.
+
+### Use of Special Symbols and Keywords
+
+Throughout this syntax, there are special symbols that use dollar signs to denote keywords. You encounter keywords like `$lt` instead of a more traditional syntax like "less than." Furthermore, you sometimes use dollar signs on field names—essentially identifiers—but it is difficult to keep track of when you need the dollar sign and when you do not. There does not seem to be much rhyme or reason to that usage.
+
+### Quoting and Embedding Code
+
+There is also a significant amount of quoting involved. Field names must be quoted. If you are embedding code, that must be quoted because it is JavaScript. This is particularly relevant when working in Python, as Python does not natively understand JavaScript; therefore, the code must be represented as a string. Specifically, when using PyMongo to embed MongoDB within Python, these various keywords must also be quoted. This makes the syntax appear silly and often unclear regarding the intended implementation, resulting in a very clunky experience.

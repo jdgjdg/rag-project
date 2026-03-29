@@ -1,0 +1,70 @@
+Previously, we've seen that there are three basic building blocks for ERDs: entity sets, relationships, and attributes. In this video, we will explore specialized variants of each of these.
+
+### Weak Entity Sets
+
+Our first specialized type is a weak entity set. Normal entity sets are technically called strong entity sets, and weak ones are a specialized variation.
+
+Consider an example involving universities and their sports teams. The notation for weak entity sets differs in the use of doubled lines.
+
+A weak entity set is set apart by two requirements:
+
+1.  **Existence or Meaning Dependency:** The existence or meaning of the weak entity set must be dependent upon another entity set. In the university sports team example, the sports teams are dependent upon the university. If the university ceases to exist, so do the sports teams; they have no existence independent of the university.
+2.  **Insufficient Attributes for Identification:** The weak entity set's own attributes are not sufficient to fully identify it. For instance, the attribute "sport" for a team is not enough to uniquely identify it. The notation for this attribute is a dashed underline, indicating it is not a primary key. To fully identify the team, information from the primary key of the identifying entity set (the university) is also needed.
+
+The attribute that helps identify a weak entity set is known as a **partial key**. The primary key of a weak entity set is a combination of its partial key and the primary key of its identifying entity set.
+
+#### Contrasting Examples: University Sports vs. Professional Sports
+
+Let's contrast college sports with professional sports.
+
+*   **University Sports Team:** A university sports team, like the Rice Owls football team, is highly dependent on the specific university. The team cannot simply move and become the "Owls" team for another university. Its existence is tied to Rice University.
+*   **Professional Sports Team:** A professional sports team, however, can relocate. The Houston Oilers moved to Tennessee and became the Tennessee Titans. While associated with a city, the team's existence is not fundamentally tied to that city. It possesses its own identity and primary key separate from the city.
+
+In contrast, a university team's mere existence and concept are inseparable from the university. Without Rice University, the Rice Owls football team cannot exist.
+
+Distinguishing between weak and strong entity sets can be subtle and requires careful consideration of these dependencies.
+
+#### Further Examples of Weak Entity Sets
+
+*   **Employee Dependents:** For insurance purposes, companies track employee dependents. These dependents are listed solely for insurance coverage on the employee's plan. Once the employee leaves the company, the dependents become irrelevant. Their existence in the company's database depends entirely on the employee.
+*   **Purchase Lines on a Receipt:** A receipt embodies a purchase. A "purchase line" represents an item on that receipt. Each line has information about what was bought and its cost. Since the number of purchase lines can vary, they cannot be a simple attribute of the purchase. They need to be in a separate relationship. However, purchase lines by themselves are not very interesting; they are pieces of the purchase.
+
+Frequently, weak entity sets represent an enumeration of parts of a whole. For purchase lines, this enumeration (line 1, line 2, etc.) serves as the partial key. Similarly, dependents might be tracked as the first, second, or third dependent of an employee.
+
+This use of weak entity sets is an effective way to represent sequences in ERDs. Note that this course ignores modern database features like arrays, as ERDs do not inherently support them.
+
+#### Common Mistake with Weak Entity Sets
+
+A common mistake is to consider "product" a weak entity set simply because products are made by manufacturers and might not exist without them. However, this is incorrect. A product is a regular entity set because we can discuss products (e.g., "the latest iPhone," "my new shoes") without mentioning their manufacturers.
+
+### Associative Entity Sets
+
+An associative entity set is an entity set that behaves both as a relationship and an entity set.
+
+*   **Example:** "Enrollment" is a relationship between "Student" and "Course." It can also act as an entity set in another relationship, such as the "Teach" relationship with "Instructor." This represents the concept of a student and a course waiting for an instructor to teach them.
+*   **Another Example:** A speeding ticket can be viewed as a relationship between a driver and a police officer. However, the ticket itself has an existence; it can be taken to court or paid, and it might be related to other entities like a judge or a payment method.
+
+#### Constraints on Associative Entity Sets
+
+Associative entity sets are used only for **many-to-many relationships**, not for one-to-many relationships.
+
+*   **Reasoning for One-to-Many:** For one-to-many relationships, an associative entity set is unnecessary. Consider a "Makes" relationship where a manufacturer makes a product. If "Makes" were an entity set, it would be redundant. Instead, the "Works On" relationship can be directly tied to the "Product" entity set. This is equivalent because each product maps to exactly one manufacturer and thus one entry in the "Makes" relationship.
+
+#### Definitions of Associative Entity Sets
+
+There are two standard definitions:
+
+1.  **First Definition:** All many-to-many relationships are considered associative. The motivation is that relationships, like entity sets, are implemented as tables.
+2.  **Second Definition (Used in this course):** A relationship that also acts as an entity set in the ERD, specifically by being an entity set in another relationship, is associative. This definition represents a subset of many-to-many relationships. The motivation is that these entities act as entity sets within the ERD itself, rather than relying solely on their eventual implementation.
+
+### Specialized Attributes
+
+#### Compound Attributes
+
+A compound attribute is an attribute that can be decomposed into multiple parts. For example, an "address" can be broken down into street, city, state, and zip code. This allows for greater detail and organization.
+
+#### Calculated or Derived Attributes
+
+A calculated or derived attribute is an attribute whose value can be computed from other attributes. These can be marked as special in the ERD.
+
+*   **Example:** The "total price" of a purchase can be calculated from other attributes. In the diagram, this is indicated by a dotted outline, signifying it is a distinct type of attribute. In implementation, there is a choice of how to handle such attributes.

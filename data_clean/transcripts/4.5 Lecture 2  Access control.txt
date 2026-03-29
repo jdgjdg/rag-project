@@ -1,0 +1,43 @@
+### Introduction to Access Control and Authentication
+In this discussion, I will cover the security notions of access control and authentication. While security professionals often separate these concepts, I am grouping them here for convenience. My focus is twofold: protecting against the potential mistakes or nefarious actions of programmers, and protecting against the potential mistakes or nefarious actions of users.
+
+### Programmer-Level Security: Namespaces and APIs
+To mitigate risks associated with programmers, we use namespaces and APIs. Namespaces—known as packages in Java or modules in Python—separate code into groups with distinct names to reduce the possibility of name clashes. 
+
+Additionally, we implement APIs that distinguish between public and private access. For example, Java explicitly defines public and private methods. We can apply similar principles in SQL to restrict access to database objects and actions based on user roles.
+
+### Data Separation and Access Control
+We can protect data by separating it into different tables with distinct access levels. A practical example is the management of patient records in a doctor's office. From a standard design perspective, it might seem logical to store contact information and health information in a single table. However, due to HIPAA laws and the principle that only doctors should access health information, it is safer to separate these into different tables. This allows for different sets of privileges: the contact information carries a lower security risk and can be managed with different access controls than the sensitive health information.
+
+### Users, Roles, and Database Ownership
+The tools used for these controls are privileges, which we can grant, deny, or revoke. In SQL, we create users or roles. In Postgres, these notions are essentially the same. When you create a user with a password and create a database owned by that user, the owner receives full privileges over that specific database, but not over other databases within the same system. A role is effectively a group of users; you can create a role and grant that role to a particular user.
+
+### SQL Namespaces: Databases and Schemas
+SQL utilizes a two-tiered namespace system:
+1. **Database:** The primary namespace.
+2. **Schema:** A secondary namespace within a database. 
+
+Note that this definition of "schema" is strictly a namespace issue and is unrelated to the design descriptions of tables or databases mentioned previously. A database can contain multiple schemas. When creating objects, you can specify the schema and database (e.g., `database.schema.table`). If no specification is provided, the system defaults to a specific schema and database. 
+
+Default schema names vary by system:
+* **Postgres:** `public`
+* **SQL Server:** `DBO` (Database Object)
+* **Oracle:** The username
+* **MySQL:** Does not support schemas; it uses a single-level namespace based on databases.
+
+### Managing Privileges in Postgres
+In Postgres, the `postgres` superuser has access to everything. You should not use this username for routine tasks; instead, work within a specific database using a specific username. 
+
+By default, a database owner has all privileges within their database. The `public` role can execute functions but has very limited access to other objects. This allows for a secure API design where users can execute functions to access underlying tables without having direct access to the tables themselves.
+
+Privileges can be managed using various commands:
+* **Granting/Revoking:** You can grant or revoke privileges such as `UPDATE` or `INSERT` on all tables or specific schemas.
+* **Granularity:** Privileges can be restricted to specific columns, functions, or the ability to create objects within a schema or database.
+* **`WITH GRANT OPTION`:** This allows a user to grant the privileges they possess to other users.
+* **Displaying Privileges:** In `psql`, you can display user privileges using the `\dp` command.
+
+### Managing Privileges via PG Admin
+In the graphical interface of PG Admin, you can manage privileges through the "Grant Wizard." By right-clicking on an object (such as a table), you can select the Grant Wizard to choose the objects and the users or roles to which you wish to grant privileges. The interface displays the corresponding SQL, which can be executed by clicking "Finish."
+
+### Additional Access Control Considerations
+There are various other access control options available. It is also important to consider server-level access, which refers to the credentials required to log in to the server or computer hosting the database, independent of the database program itself. These layers of security build upon the concepts discussed to ensure comprehensive protection.

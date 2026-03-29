@@ -2,6 +2,7 @@
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+import time 
 
 from langchain_community.document_loaders import TextLoader, PyPDFLoader, Docx2txtLoader
 from langchain_core.documents import Document
@@ -86,13 +87,39 @@ def embed_documents(chunks: list[Document]) -> Chroma:
 
     else:
         print("Building vector index...")
-        vectordb = Chroma.from_documents(
-            documents=chunks,
-            embedding=embeddings,
-            persist_directory=str(CHROMA_DIR),
-            collection_name=COLLECTION_NAME,
-        )
-        print(f"Stored {len(chunks)} chunks in {CHROMA_DIR}")
+        BATCH_SIZE = 20  
+        BATCH_DELAY = 15  
+
+        vectordb = None
+        
+        for i in range(0, len(chunks), BATCH_SIZE):
+            batch = chunks[i:i + BATCH_SIZE]
+            print(f"  Embedding batch {i//BATCH_SIZE + 1}/{(len(chunks)-1)//BATCH_SIZE + 1}...")
+            
+            for attempt in range(5):
+                try:
+                    if vectordb is None:
+                        vectordb = Chroma.from_documents(
+                            documents=batch,
+                            embedding=embeddings,
+                            persist_directory=str(CHROMA_DIR),
+                            collection_name=COLLECTION_NAME,
+                        )
+                    else:
+                        vectordb.add_documents(batch)
+                    break
+                except Exception as e:
+                    if "429" in str(e):
+                        wait = 60 * (attempt + 1)  # 60s, 120s, 180s... increasing wait
+                        print(f"    Rate limit hit, waiting {wait} seconds...")
+                        time.sleep(wait)
+                    else:
+                        raise
+
+            else:
+                print(f"    WARNING: batch {i//BATCH_SIZE + 1} failed after all attempts — SKIPPED")
+
+            time.sleep(BATCH_DELAY)
 
     return vectordb
 

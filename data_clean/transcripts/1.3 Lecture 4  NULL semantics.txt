@@ -1,0 +1,28 @@
+# Understanding NULL and UNKNOWN in SQL
+
+## Introduction to NULL
+We have looked at computation in the `SELECT` clause and also saw some issues when values are `NULL`. Let's dive more deeply into what is going on with `NULL`.
+
+As always, we need some example data. We have our products and manufacturers here. The important thing to remember is that `NULL` is not a value in SQL; `NULL` is the lack of a value. Another way to think of it is `NULL` means "I don't know." If you try to add three to "I don't know," the result is "I still don't know." Similarly, if you try to apply some function to "I don't know," you get "I don't know."
+
+## The COALESCE Function
+There are a few exceptions, in particular, the `COALESCE` function. This function is specifically designed to recognize `NULL`. For example, `COALESCE(NULL, 3, 2)` gives you three. It returns the first non-`NULL` result.
+
+Why would you ever want to do that? Here is a typical use, very similar to a previous example we have seen. We are going to concatenate strings together, one of which is the product manufacturer. In our data, VaporWare's product manufacturer is `NULL`. Rather than getting back `NULL`, which then looks like an empty string when concatenated, we instead want some interesting string to go there. In this case, I chose "nobody." We can execute that and see that "VaporWare made by nobody" appears, similar to other examples in this table.
+
+## NULL in Comparisons and the UNKNOWN Boolean
+Let's see what happens when we use `NULL` in comparisons and try to compute a boolean result. If we perform an inequality, for example, "is this thing equal to `NULL`?" or "is this thing equal to 'I don't know'?" the result is essentially also "I don't know." However, rather than saying the result is `NULL`, SQL introduces a special boolean value called `UNKNOWN`.
+
+In SQL, there are three boolean values, not two: `TRUE`, `FALSE`, and `UNKNOWN`.
+
+Let's see what actually happens with an example. If we have an inequality comparison to 'GizmoWorks' and the `prod_manufacturer` is `NULL`, when we execute this, the result for the `NULL` case is `UNKNOWN`. We only want to see results where the `WHERE` condition is `TRUE`, not when it's `FALSE` or `UNKNOWN`.
+
+## UNKNOWN and Boolean Operations
+Now that we have this third boolean, `UNKNOWN`, how does it interact with standard boolean operations? The basic intuition that it behaves like `NULL` is not entirely correct. If `UNKNOWN` is one of the operands, it is frequently the result, but not always.
+
+Consider `AND`. We know that if either of the inputs is `FALSE`, then the result is `FALSE`. This still holds. So, if we have `FALSE AND UNKNOWN`, the result is `FALSE`.
+
+Similarly with `OR`, if either of the inputs is `TRUE`, then the result is `TRUE`. This means `TRUE OR UNKNOWN` is `TRUE`, not `UNKNOWN`.
+
+## Conclusion
+`NULL` and `UNKNOWN` are confusing and new concepts. They do not exist in most other programming languages, and you will encounter issues with them. In this course, I will try to guide you through particularly confusing scenarios. Always be on the lookout for `NULL` values and the resulting `UNKNOWN` booleans.

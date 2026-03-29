@@ -1,0 +1,45 @@
+### Code Placement: Application vs. Database
+
+The next question to address is where code should reside within a system architecture. We have a database, which can host code via functions and other mechanisms. Code can also reside in the application server and the client, which, for this discussion, we will group together as the "application." This is a contentious topic, as there are strong arguments for different approaches. To analyze this, we must first categorize the types of code involved.
+
+### Categorizing Code Types
+
+We can distinguish between several types of code:
+*   **Application Logic:** This typically involves user interaction and interface management.
+*   **Business Logic:** This represents the core computation of the system.
+*   **Data Integrity and Error Checking:** These are mechanisms to ensure data validity.
+*   **API Layer:** The interface between the application and the database.
+
+For example, in a banking system:
+*   **Application Logic:** Includes the user interface (website, mobile, ATM), authentication, and the display of transactions.
+*   **Business Logic:** Includes core operations such as creating an account or computing interest.
+
+### The Application-Centric Perspective
+
+From the perspective of a software engineer, the application is the primary focus. User interface code should never reside in the database, as the database lacks the features to support it. Proponents of this view argue that all code should reside on the application side, treating the database as "dumb storage."
+
+Arguments for the application-centric approach include:
+*   **Scalability:** If more computation is required, one can simply add more application servers to handle the load.
+*   **Database Agnosticism:** Applications should be independent of the underlying database system. This allows the organization to switch database systems based on efficiency, tooling, or cost without rewriting the application code.
+*   **Tooling and Language Preference:** Developers prefer using modern, high-level languages and features rather than older languages like SQL.
+*   **Hiring and Expertise:** It is easier to hire application developers than specialized database programmers. Furthermore, in many organizations, database teams are siloed in different departments, making it difficult for application developers to access or influence database-side code.
+
+### The Database-Centric Perspective
+
+From the perspective of a database administrator or a financial institution, the data is the core of the business. In this view, the database must be protected from inexperienced application developers.
+
+Arguments for the database-centric approach include:
+*   **Security and Integrity:** The database is responsible for data integrity and computation. The application interacts with the data only through a strict, controlled API. This minimizes the data exposed to the application, reducing the risk of security breaches.
+*   **Performance:** By keeping logic on the database side, you minimize communication and I/O between the application and the database.
+*   **Stability:** Applications are often transient and frequently replaced, whereas the database is a constant, long-term asset.
+*   **Optimization:** Database-side queries allow the database engine to maximize optimization and performance.
+*   **Encapsulation:** This approach keeps application programmers at arm's length from the database details, preventing them from writing inefficient SQL or relying on ORM libraries that may not be optimized.
+
+### Summary of Arguments
+
+*   **Application-Side Logic:** Emphasizes convenience for programmers, access to modern languages and tools, and flexibility, allowing the application to control the database.
+*   **Database-Side Logic:** Emphasizes encapsulation, data security, protection from application-level errors, and performance through optimized I/O and query execution.
+
+### Conclusion and Recommendation
+
+A compromise is often the most effective approach, utilizing the best features of each layer. The database should be in charge of basic CRUD operations, data integrity, and data replication. The placement of business logic should be determined by the specific needs of the business. If the business requires the flexibility to swap databases, logic should be placed at the application level. If the business prioritizes security and data protection, logic should be placed within the database. The application should handle all remaining tasks, including the user interface.
