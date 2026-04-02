@@ -8,6 +8,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TagModule } from 'primeng/tag';
 import { marked } from 'marked';
+import { timeout } from 'rxjs/operators';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -78,7 +79,8 @@ export class AppComponent {
         this.http.post<{ answer: string, sources: string[] }>(
             'http://localhost:8000/query',
             { question: currentQuestion}
-        ).subscribe({
+        ).pipe(timeout(60000))
+        .subscribe({
             next: (response) => {
                 this.messages.push({
                     role: 'assistant',
