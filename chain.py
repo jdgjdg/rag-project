@@ -3,11 +3,11 @@ from dotenv import load_dotenv
 
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from langchain_core.runnables import RunnablePassthrough
+from langchain_core.runnables import RunnablePassthrough, RunnableLambda
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from config import FALLBACK_MODELS, LLM_TEMPERATURE
-from retriever import load_vectordb, get_retriever
+from retriever import load_vectordb, get_retriever, rerank
 
 load_dotenv()
 
@@ -37,9 +37,14 @@ def build_chain(retriever, model: str):
         ("human", "Context:\n{context}\n\nQuestion:\n{question}\n\nAnswer:")
     ])
 
+    def retrieve_and_rerank(question: str) -> str:
+        docs = retriever.invoke(question)
+        reranked = rerank(question, docs)
+        return format_docs(reranked)
+
     rag_chain = (
         {
-            "context": retriever | format_docs,
+            "context": RunnableLambda(retrieve_and_rerank),
             "question": RunnablePassthrough(),
         }
         | prompt

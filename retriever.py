@@ -7,10 +7,27 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.load import dumps, loads
 
+from sentence_transformers import CrossEncoder
+
 from config import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL, TOP_K, FALLBACK_MODELS
 
 load_dotenv()
 
+reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+
+def rerank(query: str, docs: list, top_n: int = 3) -> list:
+    """
+    Reranks retrieved documents using a cross-encoder model.
+    Returns the top_n most relevant documents.
+    """
+    if not docs:
+        return docs
+    
+    pairs = [(query, doc.page_content) for doc in docs]
+    scores = reranker.predict(pairs)
+    
+    scored_docs = sorted(zip(scores, docs), key=lambda x: x[0], reverse=True)
+    return [doc for _, doc in scored_docs[:top_n]]
 
 def load_vectordb() -> Chroma:
     """
