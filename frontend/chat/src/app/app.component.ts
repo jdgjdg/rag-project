@@ -91,4 +91,13 @@ export class AppComponent {
     onEnter(event: KeyboardEvent) {
         if (event.key === 'Enter') this.ask();
     }
+
+    copiedMessages = new Set<number>();
+
+    copyMessage(text: string, index: number) {
+        navigator.clipboard.writeText(text).then(() => {
+            this.copiedMessages.add(index);
+            setTimeout(() => this.copiedMessages.delete(index), 2000);
+        });
+    }
 }

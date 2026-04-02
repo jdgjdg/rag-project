@@ -10,7 +10,7 @@
           <p>Ask a question about your database course material</p>
       </div>
 
-      <div *ngFor="let msg of messages" 
+      <div *ngFor="let msg of messages; let i = index" 
            class="message-wrapper"
            [class.user-wrapper]="msg.role === 'user'"
            [class.assistant-wrapper]="msg.role === 'assistant'">
@@ -25,7 +25,13 @@
               </div>
 
               <div class="message-content" [innerHTML]="renderMarkdown(msg.content)"></div>
-
+              <button 
+                  *ngIf="msg.role === 'assistant'"
+                  class="copy-btn"
+                  (click)="copyMessage(msg.content, i)"
+                  title="Copy answer">
+                  <i [class]="copiedMessages.has(i) ? 'pi pi-check' : 'pi pi-copy'"></i>
+              </button>
               <div *ngIf="msg.sources && msg.sources.length > 0" class="sources">
                   <span class="sources-label">Sources</span>
                   <p-tag 
