@@ -7,6 +7,8 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TagModule } from 'primeng/tag';
+import { marked } from 'marked';
+import { timeout } from 'rxjs/operators';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -33,9 +35,24 @@ export class AppComponent {
     messages: Message[] = [];
     question: string = '';
     loading: boolean = false;
+    
+    loadingMessages = [
+        'Searching lecture notes...',
+        'Retrieving relevant chunks...',
+        'Generating answer...',
+        'Consulting the database...',
+        'Almost there...'
+    ];
+    currentLoadingMessage: string = '';
+    loadingInterval: any = null;
+    copiedMessages = new Set<number>();
 
     constructor(private http: HttpClient) {}
 
+    renderMarkdown(text: string): string {
+        return marked(text) as string;
+    }
+    
     @ViewChild('scrollAnchor') scrollAnchor!: ElementRef;
 
     scrollToBottom() {
@@ -57,11 +74,13 @@ export class AppComponent {
         const currentQuestion = this.question;
         this.question = '';
         this.loading = true;
-
+        this.startLoadingMessages();
+        
         this.http.post<{ answer: string, sources: string[] }>(
             'http://localhost:8000/query',
-            { question: currentQuestion }
-        ).subscribe({
+            { question: currentQuestion}
+        ).pipe(timeout(60000))
+        .subscribe({
             next: (response) => {
                 this.messages.push({
                     role: 'assistant',
@@ -69,6 +88,7 @@ export class AppComponent {
                     sources: response.sources
                 });
                 this.loading = false;
+                this.stopLoadingMessages();
                 this.scrollToBottom();
             },
             error: (err) => {
@@ -78,11 +98,37 @@ export class AppComponent {
                     sources: []
                 });
                 this.loading = false;
+                this.stopLoadingMessages();
+                this.scrollToBottom();
             }
         });
     }
 
     onEnter(event: KeyboardEvent) {
         if (event.key === 'Enter') this.ask();
+    }
+
+    copyMessage(text: string, index: number) {
+        navigator.clipboard.writeText(text).then(() => {
+            this.copiedMessages.add(index);
+            setTimeout(() => this.copiedMessages.delete(index), 2000);
+        });
+    }
+
+    startLoadingMessages() {
+        let index = 0;
+        this.currentLoadingMessage = this.loadingMessages[0];
+        this.loadingInterval = setInterval(() => {
+            index = (index + 1) % this.loadingMessages.length;
+            this.currentLoadingMessage = this.loadingMessages[index];
+        }, 4000);
+    }
+    
+    stopLoadingMessages() {
+        if (this.loadingInterval) {
+            clearInterval(this.loadingInterval);
+            this.loadingInterval = null;
+        }
+        this.currentLoadingMessage = '';
     }
 }

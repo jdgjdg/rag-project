@@ -7,10 +7,27 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.load import dumps, loads
 
-from config import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL, TOP_K, NUMBER_OF_QUERIES, FALLBACK_MODELS
+from sentence_transformers import CrossEncoder
+
+from config import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL, TOP_K, FALLBACK_MODELS
 
 load_dotenv()
 
+reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
+
+def rerank(query: str, docs: list, top_n: int = 3) -> list:
+    """
+    Reranks retrieved documents using a cross-encoder model.
+    Returns the top_n most relevant documents.
+    """
+    if not docs:
+        return docs
+    
+    pairs = [(query, doc.page_content) for doc in docs]
+    scores = reranker.predict(pairs)
+    
+    scored_docs = sorted(zip(scores, docs), key=lambda x: x[0], reverse=True)
+    return [doc for _, doc in scored_docs[:top_n]]
 
 def load_vectordb() -> Chroma:
     """
@@ -41,13 +58,13 @@ def get_unique_union(documents: list[list]):
     # Return
     return [loads(doc) for doc in unique_docs]
 
-def get_retriever(vectordb: Chroma):
+def get_retriever(vectordb: Chroma, queries: int=1):
     """
     Returns a retriever from the vector DB.
     k controls how many chunks are returned per query.
     """
-    if NUMBER_OF_QUERIES > 1:
-        template = f"""You are an AI language model assistant. Your task is to generate {NUMBER_OF_QUERIES} 
+    if queries > 1:
+        template = f"""You are an AI language model assistant. Your task is to generate {queries} 
         different versions of the given user question to retrieve relevant documents from a vector 
         database. By generating multiple perspectives on the user question, your goal is to help
         the user overcome some of the limitations of the distance-based similarity search. 
