@@ -16,14 +16,11 @@ CHUNK_OVERLAP = 200
 # ── Retrieval ──────────────────────────────────────────────────────────────
 TOP_K = 6
 
-# ── Query Splitting ──────────────────────────────────────────────────────────────
-NUMBER_OF_QUERIES = 1
-
 # ── Models ─────────────────────────────────────────────────────────────────
 EMBEDDING_MODEL = "gemini-embedding-001"
 FALLBACK_MODELS = [
-    "models/gemini-2.5-pro",                  # smartest stable, try first
-    "models/gemini-3.1-pro-preview",          # smart but hits limit fast
+    #"models/gemini-2.5-pro",                  # smartest stable, try first
+    #"models/gemini-3.1-pro-preview",          # smart but hits limit fast
     "models/gemini-3-flash-preview",          # good balance
     "models/gemini-2.5-flash",                # reliable
     "models/gemini-3.1-flash-lite-preview",   # most generous quota, proven

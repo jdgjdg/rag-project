@@ -10,8 +10,8 @@ from chain import invoke_with_fallback
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     vectordb = load_vectordb()
-    retriever = get_retriever(vectordb)
-    app.state.retriever = retriever
+    app.state.retriever_simple = get_retriever(vectordb, queries=1)
+    app.state.retriever_multi = get_retriever(vectordb, queries=3)
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -26,7 +26,7 @@ app.add_middleware(
 
 # ── Request/Response shapes ────────────────────────────────────────────────
 class QuestionRequest(BaseModel):
-    question: str
+    question: str 
 
 class AnswerResponse(BaseModel):
     answer: str
@@ -35,9 +35,14 @@ class AnswerResponse(BaseModel):
 # ── Endpoint ───────────────────────────────────────────────────────────────
 @app.post("/query", response_model=AnswerResponse)
 def query(request: QuestionRequest):
-    answer = invoke_with_fallback(app.state.retriever, request.question)
+
+    answer = invoke_with_fallback(
+        app.state.retriever_simple,
+        app.state.retriever_multi,
+        request.question,
+    )
     
-    docs = app.state.retriever.invoke(request.question)
+    docs = app.state.retriever_simple.invoke(request.question)
     sources = list({
         d.metadata.get("source", "unknown").split("\\")[-1].split("/")[-1]
         for d in docs

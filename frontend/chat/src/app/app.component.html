@@ -24,7 +24,7 @@
                   {{ msg.role === 'user' ? 'You' : 'Assistant' }}
               </div>
 
-              <div class="message-content">{{ msg.content }}</div>
+              <div class="message-content" [innerHTML]="renderMarkdown(msg.content)"></div>
 
               <div *ngIf="msg.sources && msg.sources.length > 0" class="sources">
                   <span class="sources-label">Sources</span>

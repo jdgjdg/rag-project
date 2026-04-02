@@ -7,6 +7,7 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TagModule } from 'primeng/tag';
+import { marked } from 'marked';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -36,6 +37,10 @@ export class AppComponent {
 
     constructor(private http: HttpClient) {}
 
+    renderMarkdown(text: string): string {
+        return marked(text) as string;
+    }
+    
     @ViewChild('scrollAnchor') scrollAnchor!: ElementRef;
 
     scrollToBottom() {
@@ -60,7 +65,7 @@ export class AppComponent {
 
         this.http.post<{ answer: string, sources: string[] }>(
             'http://localhost:8000/query',
-            { question: currentQuestion }
+            { question: currentQuestion}
         ).subscribe({
             next: (response) => {
                 this.messages.push({
@@ -78,6 +83,7 @@ export class AppComponent {
                     sources: []
                 });
                 this.loading = false;
+                this.scrollToBottom();
             }
         });
     }

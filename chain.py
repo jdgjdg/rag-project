@@ -11,16 +11,6 @@ from retriever import load_vectordb, get_retriever
 
 load_dotenv()
 
-PROMPT = ChatPromptTemplate.from_messages([
-    ("system",
-    "You are a helpful assistant for a database course. Answer the user's question using ONLY the provided context. "
-    "Rewrite the information clearly and in well-structured prose — do not copy the phrasing from the context directly. "
-    "Use complete sentences and organize your answer logically. "
-    "If the answer is not in the context, say: 'I don't know based on the provided context.'"),
-    ("human",
-     "Context:\n{context}\n\nQuestion:\n{question}\n\nAnswer:")
-])
-
 
 def format_docs(docs):
     """
@@ -38,12 +28,21 @@ def build_chain(retriever, model: str):
         temperature=LLM_TEMPERATURE,
     )
 
+    prompt = ChatPromptTemplate.from_messages([
+        ("system",
+        "You are a helpful assistant for a database course. Answer the user's question using ONLY the provided context. "
+        "Rewrite the information clearly and in well-structured prose — do not copy the phrasing from the context directly. "
+        "Use complete sentences and organize your answer logically. "
+        "If the answer is not in the context, say: 'I don't know based on the provided context.'"),  
+        ("human", "Context:\n{context}\n\nQuestion:\n{question}\n\nAnswer:")
+    ])
+
     rag_chain = (
         {
             "context": retriever | format_docs,
             "question": RunnablePassthrough(),
         }
-        | PROMPT
+        | prompt
         | llm
         | StrOutputParser()
     )
@@ -51,17 +50,26 @@ def build_chain(retriever, model: str):
     return rag_chain
 
 
-def invoke_with_fallback(retriever, question: str) -> str:
+def invoke_with_fallback(retriever_simple, retriever_multi, question: str) -> str:
     """
     Tries each model in FALLBACK_MODELS in order.
     Falls back to the next model on 429 errors.
     """
+
     for model in FALLBACK_MODELS:
         try:
-            chain = build_chain(retriever, model)
+            chain = build_chain(retriever_simple, model)
             answer = chain.invoke(question)
             print(f"  [model used] {model}")
+
+            if "I don't know based on the provided context" in answer:
+                print("  [retrying with query translation]")
+                chain = build_chain(retriever_multi, model)
+                answer = chain.invoke(question)
+                print("  [query translation used]")
+            
             return answer
+
         except Exception as e:
             if "429" in str(e):
                 print(f"  [fallback] {model} quota exhausted, trying next...")

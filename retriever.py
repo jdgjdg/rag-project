@@ -7,7 +7,7 @@ from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.load import dumps, loads
 
-from config import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL, TOP_K, NUMBER_OF_QUERIES, FALLBACK_MODELS
+from config import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL, TOP_K, FALLBACK_MODELS
 
 load_dotenv()
 
@@ -41,13 +41,13 @@ def get_unique_union(documents: list[list]):
     # Return
     return [loads(doc) for doc in unique_docs]
 
-def get_retriever(vectordb: Chroma):
+def get_retriever(vectordb: Chroma, queries: int=1):
     """
     Returns a retriever from the vector DB.
     k controls how many chunks are returned per query.
     """
-    if NUMBER_OF_QUERIES > 1:
-        template = f"""You are an AI language model assistant. Your task is to generate {NUMBER_OF_QUERIES} 
+    if queries > 1:
+        template = f"""You are an AI language model assistant. Your task is to generate {queries} 
         different versions of the given user question to retrieve relevant documents from a vector 
         database. By generating multiple perspectives on the user question, your goal is to help
         the user overcome some of the limitations of the distance-based similarity search. 
