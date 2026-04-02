@@ -12,6 +12,7 @@ async def lifespan(app: FastAPI):
     vectordb = load_vectordb()
     app.state.retriever_simple = get_retriever(vectordb, queries=1)
     app.state.retriever_multi = get_retriever(vectordb, queries=3)
+    app.state.exhausted_models = set()
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -40,6 +41,7 @@ def query(request: QuestionRequest):
         app.state.retriever_simple,
         app.state.retriever_multi,
         request.question,
+        app.state.exhausted_models
     )
     
     docs = app.state.retriever_simple.invoke(request.question)

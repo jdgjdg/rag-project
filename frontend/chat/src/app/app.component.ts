@@ -34,6 +34,17 @@ export class AppComponent {
     messages: Message[] = [];
     question: string = '';
     loading: boolean = false;
+    
+    loadingMessages = [
+        'Searching lecture notes...',
+        'Retrieving relevant chunks...',
+        'Generating answer...',
+        'Consulting the database...',
+        'Almost there...'
+    ];
+    currentLoadingMessage: string = '';
+    loadingInterval: any = null;
+    copiedMessages = new Set<number>();
 
     constructor(private http: HttpClient) {}
 
@@ -62,7 +73,8 @@ export class AppComponent {
         const currentQuestion = this.question;
         this.question = '';
         this.loading = true;
-
+        this.startLoadingMessages();
+        
         this.http.post<{ answer: string, sources: string[] }>(
             'http://localhost:8000/query',
             { question: currentQuestion}
@@ -74,6 +86,7 @@ export class AppComponent {
                     sources: response.sources
                 });
                 this.loading = false;
+                this.stopLoadingMessages();
                 this.scrollToBottom();
             },
             error: (err) => {
@@ -83,6 +96,7 @@ export class AppComponent {
                     sources: []
                 });
                 this.loading = false;
+                this.stopLoadingMessages();
                 this.scrollToBottom();
             }
         });
@@ -92,12 +106,27 @@ export class AppComponent {
         if (event.key === 'Enter') this.ask();
     }
 
-    copiedMessages = new Set<number>();
-
     copyMessage(text: string, index: number) {
         navigator.clipboard.writeText(text).then(() => {
             this.copiedMessages.add(index);
             setTimeout(() => this.copiedMessages.delete(index), 2000);
         });
+    }
+
+    startLoadingMessages() {
+        let index = 0;
+        this.currentLoadingMessage = this.loadingMessages[0];
+        this.loadingInterval = setInterval(() => {
+            index = (index + 1) % this.loadingMessages.length;
+            this.currentLoadingMessage = this.loadingMessages[index];
+        }, 4000);
+    }
+    
+    stopLoadingMessages() {
+        if (this.loadingInterval) {
+            clearInterval(this.loadingInterval);
+            this.loadingInterval = null;
+        }
+        this.currentLoadingMessage = '';
     }
 }

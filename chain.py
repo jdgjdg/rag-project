@@ -50,13 +50,17 @@ def build_chain(retriever, model: str):
     return rag_chain
 
 
-def invoke_with_fallback(retriever_simple, retriever_multi, question: str) -> str:
+def invoke_with_fallback(retriever_simple, retriever_multi, question: str, exhausted_models: set) -> str:
     """
     Tries each model in FALLBACK_MODELS in order.
     Falls back to the next model on 429 errors.
     """
 
     for model in FALLBACK_MODELS:
+        if model in exhausted_models:
+            print(f"  [skipping] {model} already exhausted")
+            continue
+        
         try:
             chain = build_chain(retriever_simple, model)
             answer = chain.invoke(question)
@@ -73,6 +77,7 @@ def invoke_with_fallback(retriever_simple, retriever_multi, question: str) -> st
         except Exception as e:
             if "429" in str(e):
                 print(f"  [fallback] {model} quota exhausted, trying next...")
+                exhausted_models.add(model)
                 continue
             raise
 
