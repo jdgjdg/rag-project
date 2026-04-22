@@ -40,6 +40,9 @@
                       severity="secondary">
                   </p-tag>
               </div>
+              <div *ngIf="msg.model" class="model-tag">
+                  {{ msg.model }}
+              </div>
           </div>
       </div>
 
@@ -55,17 +58,31 @@
   </div>
 
   <div class="input-area">
-      <input 
-          pInputText
-          [(ngModel)]="question"
-          (keydown)="onEnter($event)"
-          placeholder="Ask a question..."
-          [disabled]="loading"
-          class="question-input" />
-      <p-button 
-          icon="pi pi-send"
-          [disabled]="loading || !question.trim()"
-          (onClick)="ask()">
-      </p-button>
+      <div class="question-dots">
+          <span
+              *ngFor="let dot of getDots()"
+              class="dot"
+              [class.dot-used]="dot.used">
+          </span>
+      </div>
+    
+      <div *ngIf="questionCount >= questionLimit" class="limit-message">
+          Session limit reached. Please refresh the page to start a new session. 
+      </div>
+      
+      <ng-container *ngIf="questionCount < questionLimit">
+        <input 
+            pInputText
+            [(ngModel)]="question"
+            (keydown)="onEnter($event)"
+            placeholder="Ask a question..."
+            [disabled]="loading"
+            class="question-input" />
+        <p-button 
+            icon="pi pi-send"
+            [disabled]="loading || !question.trim()"
+            (onClick)="ask()">
+        </p-button>
+      </ng-container>
   </div>
 </div>

@@ -32,12 +32,13 @@ class QuestionRequest(BaseModel):
 class AnswerResponse(BaseModel):
     answer: str
     sources: list[str]
+    model_used: str
 
 # ── Endpoint ───────────────────────────────────────────────────────────────
 @app.post("/query", response_model=AnswerResponse)
 def query(request: QuestionRequest):
 
-    answer = invoke_with_fallback(
+    answer, model_used = invoke_with_fallback(
         app.state.retriever_simple,
         app.state.retriever_multi,
         request.question,
@@ -50,4 +51,4 @@ def query(request: QuestionRequest):
         for d in docs
     })
 
-    return AnswerResponse(answer=answer, sources=sources)
+    return AnswerResponse(answer=answer, sources=sources,  model_used=model_used)
