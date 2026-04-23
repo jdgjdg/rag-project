@@ -1,88 +1,124 @@
-<div class="chat-container">
-  <div class="chat-header">
-      <i class="pi pi-database"></i>
-      <span>Database Course Assistant</span>
-  </div>
+<div class="app-container">
 
-  <div class="messages-area">
-      <div *ngIf="messages.length === 0" class="empty-state">
-          <i class="pi pi-comments"></i>
-          <p>Ask a question about your database course material</p>
-      </div>
+    <!-- Sidebar -->
+    <div class="chat-sidebar">
+        <div class="sidebar-header">
+            <span class="sidebar-title">Chats</span>
+            <button class="new-chat-btn" (click)="createNewChat()" title="New Chat">
+                <i class="pi pi-plus"></i>
+            </button>
+        </div>
 
-      <div *ngFor="let msg of messages; let i = index" 
-           class="message-wrapper"
-           [class.user-wrapper]="msg.role === 'user'"
-           [class.assistant-wrapper]="msg.role === 'assistant'">
-          
-          <div class="message-bubble"
-               [class.user-bubble]="msg.role === 'user'"
-               [class.assistant-bubble]="msg.role === 'assistant'">
-              
-              <div class="message-role">
-                  <i [class]="msg.role === 'user' ? 'pi pi-user' : 'pi pi-server'"></i>
-                  {{ msg.role === 'user' ? 'You' : 'Assistant' }}
-              </div>
+        <div class="chat-list">
+            <div *ngFor="let chat of chats"
+                 class="chat-item"
+                 [class.active]="chat.id === currentChatId"
+                 (click)="switchChat(chat.id)">
+                <i class="pi pi-comments chat-item-icon"></i>
+                <span class="chat-item-title">{{ chat.title }}</span>
+                <button class="delete-chat-btn" 
+                        (click)="deleteChat(chat.id, $event)"
+                        title="Delete chat">
+                    <i class="pi pi-trash"></i>
+                </button>
+            </div>
+        </div>
+    </div>
 
-              <div class="message-content" [innerHTML]="renderMarkdown(msg.content)"></div>
-              <button 
-                  *ngIf="msg.role === 'assistant'"
-                  class="copy-btn"
-                  (click)="copyMessage(msg.content, i)"
-                  title="Copy answer">
-                  <i [class]="copiedMessages.has(i) ? 'pi pi-check' : 'pi pi-copy'"></i>
-              </button>
-              <div *ngIf="msg.sources && msg.sources.length > 0" class="sources">
-                  <span class="sources-label">Sources</span>
-                  <p-tag 
-                      *ngFor="let source of msg.sources"
-                      [value]="source"
-                      severity="secondary">
-                  </p-tag>
-              </div>
-              <div *ngIf="msg.model" class="model-tag">
-                  {{ msg.model }}
-              </div>
-          </div>
-      </div>
+    <!-- Main Chat Area -->
+    <div class="chat-container">
+        <div class="chat-header">
+            <i class="pi pi-database"></i>
+            <span>Database Course Assistant</span>
+        </div>
 
-      <div *ngIf="loading" class="loading-wrapper">
-          <p-progressSpinner 
-              strokeWidth="3"
-              [style]="{ width: '2rem', height: '2rem' }">
-          </p-progressSpinner>
-          <span>{{ currentLoadingMessage }}</span>
-      </div>
+        <div class="messages-area">
+            <div class="messages-inner">
+                <div *ngIf="messages.length === 0" class="empty-state">
+                    <i class="pi pi-comments"></i>
+                    <p>Ask a question about your database course material</p>
+                </div>
 
-      <div #scrollAnchor></div>
-  </div>
+                <div *ngFor="let msg of messages; let i = index"
+                    class="message-wrapper"
+                    [class.user-wrapper]="msg.role === 'user'"
+                    [class.assistant-wrapper]="msg.role === 'assistant'">
 
-  <div class="input-area">
-      <div class="question-dots">
-          <span
-              *ngFor="let dot of getDots()"
-              class="dot"
-              [class.dot-used]="dot.used">
-          </span>
-      </div>
-    
-      <div *ngIf="questionCount >= questionLimit" class="limit-message">
-          Session limit reached. Please refresh the page to start a new session. 
-      </div>
-      
-      <ng-container *ngIf="questionCount < questionLimit">
-        <input 
-            pInputText
-            [(ngModel)]="question"
-            (keydown)="onEnter($event)"
-            placeholder="Ask a question..."
-            [disabled]="loading"
-            class="question-input" />
-        <p-button 
-            icon="pi pi-send"
-            [disabled]="loading || !question.trim()"
-            (onClick)="ask()">
-        </p-button>
-      </ng-container>
-  </div>
+                    <div class="message-bubble"
+                        [class.user-bubble]="msg.role === 'user'"
+                        [class.assistant-bubble]="msg.role === 'assistant'">
+
+                        <div class="message-role">
+                            <i [class]="msg.role === 'user' ? 'pi pi-user' : 'pi pi-server'"></i>
+                            {{ msg.role === 'user' ? 'You' : 'Assistant' }}
+                        </div>
+
+                        <div class="message-content" [innerHTML]="renderMarkdown(msg.content)"></div>
+
+                        <button
+                            *ngIf="msg.role === 'assistant'"
+                            class="copy-btn"
+                            (click)="copyMessage(msg.content, i)"
+                            title="Copy answer">
+                            <i [class]="copiedMessages.has(i) ? 'pi pi-check' : 'pi pi-copy'"></i>
+                        </button>
+
+                        <div *ngIf="msg.sources && msg.sources.length > 0" class="sources">
+                            <span class="sources-label">Sources</span>
+                            <p-tag
+                                *ngFor="let source of msg.sources"
+                                [value]="source"
+                                severity="secondary">
+                            </p-tag>
+                        </div>
+
+                        <div *ngIf="msg.model" class="model-tag">
+                            {{ msg.model }}
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngIf="loading" class="loading-wrapper">
+                    <p-progressSpinner
+                        strokeWidth="3"
+                        [style]="{ width: '2rem', height: '2rem' }">
+                    </p-progressSpinner>
+                    <span>{{ currentLoadingMessage }}</span>
+                </div>
+
+                <div #scrollAnchor></div>
+            </div>
+        </div>
+
+        <div class="input-area">
+            <div class="input-inner">
+                <div class="question-dots">
+                    <span
+                        *ngFor="let dot of getDots()"
+                        class="dot"
+                        [class.dot-used]="dot.used">
+                    </span>
+                </div>
+
+                <div *ngIf="questionCount >= questionLimit" class="limit-message">
+                    Session limit reached. 
+                </div>
+
+                <ng-container *ngIf="questionCount < questionLimit">
+                    <input
+                        pInputText
+                        [(ngModel)]="question"
+                        (keydown)="onEnter($event)"
+                        placeholder="Ask a question..."
+                        [disabled]="loading"
+                        class="question-input" />
+                    <p-button
+                        icon="pi pi-send"
+                        [disabled]="loading || !question.trim()"
+                        (onClick)="ask()">
+                    </p-button>
+                </ng-container>
+            </div>
+        </div>
+    </div>
 </div>
