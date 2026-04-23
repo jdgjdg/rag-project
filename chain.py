@@ -77,7 +77,7 @@ def invoke_with_fallback(retriever_simple, retriever_multi, question: str, exhau
                 answer = chain.invoke(question)
                 print("  [query translation used]")
             
-            return answer
+            return answer, model
 
         except Exception as e:
             if "429" in str(e):

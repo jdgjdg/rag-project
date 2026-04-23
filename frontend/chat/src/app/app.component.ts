@@ -14,6 +14,7 @@ interface Message {
     role: 'user' | 'assistant';
     content: string;
     sources?: string[];
+    model?: string;
 }
 
 @Component({
@@ -35,6 +36,8 @@ export class AppComponent {
     messages: Message[] = [];
     question: string = '';
     loading: boolean = false;
+    questionCount: number = 0;
+    questionLimit: number = 10;
     
     loadingMessages = [
         'Searching lecture notes...',
@@ -63,6 +66,7 @@ export class AppComponent {
 
     ask() {
         if (!this.question.trim() || this.loading) return;
+        if (this.questionCount >= this.questionLimit) return;
 
         const userMessage: Message = {
             role: 'user',
@@ -74,9 +78,10 @@ export class AppComponent {
         const currentQuestion = this.question;
         this.question = '';
         this.loading = true;
+        this.questionCount++;
         this.startLoadingMessages();
         
-        this.http.post<{ answer: string, sources: string[] }>(
+        this.http.post<{ answer: string, sources: string[], model_used: string}>(
             'http://localhost:8000/query',
             { question: currentQuestion}
         ).pipe(timeout(60000))
@@ -85,7 +90,8 @@ export class AppComponent {
                 this.messages.push({
                     role: 'assistant',
                     content: response.answer,
-                    sources: response.sources
+                    sources: response.sources, 
+                    model: response.model_used
                 });
                 this.loading = false;
                 this.stopLoadingMessages();
@@ -130,5 +136,11 @@ export class AppComponent {
             this.loadingInterval = null;
         }
         this.currentLoadingMessage = '';
+    }
+
+    getDots() {
+        return Array.from({length: this.questionLimit}, (_, i) => ({
+            used: i >= (this.questionLimit - this.questionCount)
+        }));
     }
 }
