@@ -26,8 +26,13 @@ app.add_middleware(
 )
 
 # ── Request/Response shapes ────────────────────────────────────────────────
+class MessageHistory(BaseModel):
+    role: str
+    content: str
+
 class QuestionRequest(BaseModel):
-    question: str 
+    question: str
+    history: list[MessageHistory] = []
 
 class AnswerResponse(BaseModel):
     answer: str
@@ -37,12 +42,14 @@ class AnswerResponse(BaseModel):
 # ── Endpoint ───────────────────────────────────────────────────────────────
 @app.post("/query", response_model=AnswerResponse)
 def query(request: QuestionRequest):
+    history = [{"role": m.role, "content": m.content} for m in request.history]
 
     answer, model_used = invoke_with_fallback(
         app.state.retriever_simple,
         app.state.retriever_multi,
         request.question,
-        app.state.exhausted_models
+        app.state.exhausted_models, 
+        history
     )
     
     docs = app.state.retriever_simple.invoke(request.question)
