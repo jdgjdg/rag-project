@@ -1,0 +1,121 @@
+Which of account number, legal description, and property address would be a key for the Property relation, or which combinations thereof?
+Choose appropriate generic types for all attributes in the Property relation.
+Find the names and addresses of all employees who work for First Bank Corporation and earn more than $10,000 per year using relational calculus.
+Find the names and addresses of all employees who work for First Bank Corporation and earn more than $10,000 per year using relational algebra.
+Find the names and addresses of all employees who live in the same city and on the same street as any of their managers using relational calculus.
+Find the names and addresses of all employees who live in the same city and on the same street as any of their managers using relational algebra.
+Find the names and addresses of all employees who do not have a manager using relational calculus.
+Find the names and addresses of all employees who do not have a manager using relational algebra.
+Find the names and addresses of all employees who earn strictly more than every employee of Small Bank Corporation using relational calculus.
+Find the names and addresses of all employees who earn strictly more than every employee of Small Bank Corporation using relational algebra.
+Provide three additional realistic examples of data that can be calculated from other data.
+Provide another realistic example of data that needs regular updates, along with a way to fulfill the same goal with unchanging data.
+Provide another realistic example of data that is being improperly grouped, along with the proper way to group it.
+Describe another real-world example where a relationship's cardinality is higher than might first be thought.
+Create an ERD modeling a single library including authors, books, borrowers, and publishers using only basic ERD features.
+Motivate and explain any non-obvious decisions made in the library ERD.
+Revise the library ERD to support authors writing chapters, self-publishing, and books published by authors or publishers.
+Motivate and explain the non-obvious decisions in the revised library ERD, especially regarding chapters and self-publishing.
+Provide schemas that implement the library ERD, specifying all PKs, FKs, NOT NULL, and other constraints.
+Derive Decomposition from Armstrong's Axioms, showing each step and which rule is used.
+Derive Pseudo-transitivity from Armstrong's Axioms, showing each step and which rule is used.
+Briefly explain why removing a functional dependency from consideration once it has been applied does not change the correctness of the closure algorithm.
+Use the BCNF decomposition algorithm on the given relation with FDs, showing each iteration's chosen FD and decomposed relations.
+Show what data from the original table would be in each decomposed table after BCNF decomposition.
+Determine the primary keys of the fully decomposed tables using the given functional dependencies.
+What small change to the given set of functional dependencies would make them more realistic, and why?
+Create an ERD for a genealogical database where people can marry, have children, and have biological and adoptive parents.
+Create a logical ERD for a genealogical database including names, name changes, marriages, and biological and adoptive parent-child relationships.
+Implement the genealogical ERD as SQL tables with all PK, FK, and NOT NULL constraints, ensuring marriages are not listed twice.
+Derive a given functional dependence using Armstrong's Axioms and derived rules, showing each step.
+Prove that every two-attribute relation is in BCNF regardless of its functional dependencies.
+Identify the keys for a given relation with specified functional dependencies.
+Which functional dependencies in the given relation violate BCNF?
+Which functional dependencies in the given relation violate 3NF?
+Apply the BCNF decomposition algorithm to a given relation, showing enough detail including the attribute selected in each step.
+Write a PL/pgSQL function max3() that computes the maximum of three input numbers, and provide a sample call.
+Write a PL/pgSQL function purchase_quantities() that returns the results of a prior problem's query on the Purchase table, and provide a sample call.
+Write a PL/pgSQL trigger function and trigger on the Purchase table that stores half the specified price on any insert or update of the purchase price.
+Which instructors only teach sections with 20 or fewer students? Write a relational calculus version of this query.
+Which instructors only teach sections with 20 or fewer students? Write a relational algebra version of this query.
+Find all instructors who teach at least two sections where less than a quarter of students score below the section average. Write a PostgreSQL query.
+For each section, find the biggest gap between consecutive student scores. Write a PostgreSQL query.
+In the relational calculus, what does each variable represent?
+In the relational algebra, what does each variable represent?
+In the relational calculus, which variables must be quantified with a quantifier such as there exists or for all?
+Construct a logical ER diagram for a music database that tracks songs, recordings, musicians, bands, and instruments played.
+Provide schemas implementing a given ER diagram with all primary key, foreign key, and NOT NULL constraints.
+Given an ER diagram with a cycle, why will the resulting database necessarily allow undesired data?
+Give the conflicting pairs for two serial schedules of two given transactions.
+What is the difference in the conflicting pairs between the two serial schedules?
+Will the two serial schedules have the same or different outcomes for the transactions?
+Given two transactions, if two schedules have identical lists of conflicting pairs, will the two schedules produce the same outcomes? Explain why or why not.
+Construct the conflict graph for a given schedule.
+Is a given schedule serializable? Why or why not?
+Explain the advantages and disadvantages of creating database checkpoints more frequently, including effects on system performance and recovery time.
+What relevant information can a transaction log provide during a security breach investigation when no audit log was set up?
+What SQL injection payload was used in the Hacksplaining SQL injection exercise?
+What ETL steps were required to load the provided CSV data into the Person table?
+Write a MongoDB design for the genealogical database that supports finding and updating parent-child relationships and aggregating descendant counts.
+Write a PyMongo aggregate query to count the number of biological children for each person.
+Write a PyMongo aggregate query to count the number of biological descendants for each person.
+Is the genealogical MongoDB design suitable for also looking at ancestors? Explain why or why not.
+Write a Neo4J design for the genealogical database, listing node types, relationships, and attributes.
+Write a Cypher query to count the number of biological children for each person.
+Write a Cypher query to count the number of biological descendants for each person.
+Is the genealogical Neo4J design suitable for also looking at ancestors? Explain why or why not.
+Design an OLAP dimensional model for the employee, project, department, and expense data, and explain your design choices.
+Design a MongoDB database for the employee, project, department, and expense data, and explain your design choices.
+Write a PyMongo query to compute the total salary of employees for each department.
+Write a PyMongo query to compute the total salary of employees directly or indirectly managed by each employee.
+Write a PyMongo query to compute the minimum, mean, and maximum salary for each position.
+Write a PyMongo query to compute the remaining budget for each project.
+Write a Neo4J design for the employee, project, department, and expense data, and explain your design choices.
+Write a Cypher query to compute the total salary of employees for each department.
+Write a Cypher query to compute the total salary of employees directly or indirectly managed by each employee.
+Write a Cypher query to compute the minimum, mean, and maximum salary for each position.
+Write a Cypher query to compute the remaining budget for each project.
+Compare and contrast using PostgreSQL, MongoDB, and Neo4J for the employee and project data. Which would you use and why?
+How many serial schedules exist for three given transactions T1, T2, T3?
+For each serial schedule of T1, T2, T3, what are the resulting values of A and B as functions of their original values?
+Show two serializable but non-serial schedules for T1, T2, T3, or argue that there are not at least two.
+Show two non-serializable schedules for T1, T2, T3, or argue that there are not at least two.
+List the conflicting pairs for a given schedule with subscript-labeled operations.
+Construct the conflict graph for the given schedule using its conflicting pairs.
+Use the conflict graph to determine whether the given schedule is serializable.
+Explain the drawbacks of using a more relaxed isolation level to speed up a database.
+Concisely summarize why B+-trees are the main data structure for database indices.
+Concisely summarize why a sparse index must be sorted.
+Explain whether and why two different indices on the same search key and table can be different and useful.
+Explain why a DBMS does not automatically create an index for every search key.
+Provide a logical query plan in relational algebra for the given Student-Book-Checkout join query.
+Compute the cardinality of each node in the logical query plan for the Student-Book-Checkout query.
+Provide a physical query plan with no indices for the Student-Book-Checkout query using pipelining wherever possible.
+Compute the cost in disk block reads or writes for each node in the physical query plan without indices.
+Suggest two indices and provide a physical query plan for the Student-Book-Checkout query that uses both, with pipelining.
+Compute the cost in disk block reads or writes for each node in the physical query plan with indices.
+For each of the four IN queries, create a semantically equivalent query using EXISTS.
+Generate appropriate test data for the product and order_items tables to test the IN vs EXISTS claims.
+Test the IN vs EXISTS claims by generating query plans and timing each query in PostgreSQL.
+Summarize the test results for IN vs EXISTS, describing whether the claim holds and explaining any nuances.
+Create a B+-tree index on product_id for each table, then generate query plans and timings for the same queries.
+Summarize the test results after adding indices, including whether the indices were used.
+Design and explain a data warehouse for the babysitter service database to support billing and earnings analysis by week, month, and year.
+Suggest at least three questions a clinic administrator would want answered about clinic operations.
+Describe what should be the facts in a dimensional model for the clinic database, and why.
+Design and explain a dimensional model for the clinic database.
+For a given physical query tree joining Person, Car, and Model, estimate the disk I/O operations and output tuples for each non-leaf node.
+What is the best ordering of filter conditions A, B, C, D given their costs and selectivities?
+Explain a possible reason why a query filtering on a computed expression like salary divided by 12 is slower than expected, and provide a tuning solution.
+Explain a possible reason why a query filtering on salary equals 50000 is slower than expected even with a secondary index, and provide a tuning solution.
+When there are 50 projects, explain whether adding an index on Employee.project is likely to significantly speed up the given filter query.
+When there are 5000 projects, explain whether adding an index on Employee.project is likely to significantly speed up the given filter query.
+Write a Python or Java application that compares the time to insert 1000 tuples one at a time versus in a single bulk insert statement.
+Summarize the four main types of NoSQL databases: document, key-value, column, and graph.
+For each NoSQL type, describe a sample use case that illustrates its differences from other types.
+Provide a sample use case for transactional RDBMS that illustrates its differences from NoSQL databases.
+Concisely summarize why a team might choose BASE over ACID.
+Provide all conflicting pairs for the given schedule R1(C) W2(B) W3(A) R3(B) W1(A) R1(B) R2(C) R1(B) W2(B).
+Provide the conflict graph for the given schedule with all edges.
+According to the conflict graph, is the given schedule serializable, and why?
+Explain which of the four standard isolation levels will allow the given schedule assuming all three transactions use the same isolation level.

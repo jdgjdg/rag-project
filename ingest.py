@@ -10,7 +10,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
 
-from config import DATA_DIR, CHUNK_SIZE, CHUNK_OVERLAP, CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL, ROOT_DIR
+from config import DATA_DIR, CHUNK_SIZE, CHUNK_OVERLAP, CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL, ROOT_DIR, BATCH_DELAY, BATCH_SIZE
 
 load_dotenv()
 
@@ -87,9 +87,7 @@ def embed_documents(chunks: list[Document]) -> Chroma:
         print(f"Loaded {vectordb._collection.count()} chunks from {CHROMA_DIR}")
         return vectordb
 
-    print("Building vector index...")
-    BATCH_SIZE = 10
-    BATCH_DELAY = 30  
+    print("Building vector index...") 
 
     start_batch = 0
     if PROGRESS_FILE.exists():
@@ -140,6 +138,8 @@ def embed_documents(chunks: list[Document]) -> Chroma:
                 else:
                     raise
         else:
+            # Python for-else: this block runs only when the inner loop exhausted all
+            # 5 attempts without a successful break — i.e., the daily quota is truly hit.
             print(f"    Daily limit reached — stopping at batch {batch_num + 1}")
             print(f"    Rerun tomorrow to continue from this point.")
             return vectordb

@@ -1,0 +1,1261 @@
+Problem 1 (15 points total)
+We are modeling the idea of home properties in a typical suburban model.  The basic idea is that a house is built on a lot of land.  Lots are grouped into a block, which is usually the traditional idea of a city block, i.e., the land encircled by streets.  Blocks are grouped into a subdivision, which is typically developed all at one time.  A more detailed explanation is at https://en.wikipedia.org/wiki/Lot_and_block_survey_systemLinks to an external site..
+
+We are using the following schema that is based upon the information used by the local Harris County Appraisal District, http://hcad.org/Links to an external site..  Homes and land are appraised periodically, meaning that their values are estimated so that they can be taxed.  The county is also subdivided into facets, i.e., sections of the overall regional map.  The facet that (the majority of) the lot occurs on is recorded for that lot.
+
+Property(account_num, lot_num, block_num, subdivision, facet, street_num, street_name, city, state, zip, owner_id, land_value, house_value)
+
+There are two other terms often used, both of which should be self-explanatory.
+
+The legal description consists of the lot number, block number, and subdivision.
+The property address consists of the street number, street name, city, state, and ZIP code.
+ 
+
+The following questions ask you about the semantics of this data. You aren't expected to already have that domain knowledge, but it shouldn't be difficult to learn it from the above descriptions, the linked Wikipedia page, and exploring some HCAD data.  See this pageLinks to an external site. for both a simple and advanced property search.
+
+The following are a few less obvious details:
+
+Ownership of a property can be shared.  E.g., in my in-law's family, the three children each inherited a 1/3 share of a farm.  In this case, each fractional owner will have their own account for their share.
+If you own multiple properties, you get an account for each one.
+Ownership of a property doesn't necessarily imply ownership of land.  E.g., you can own a condominium in a building.
+Terminology:  In most parts of the U.S., individual "apartments" in a building are rented by the occupants, while "condominiums" (or condos) are owned by the occupants.
+(10 points) Consider the account number, legal description, and property address.  Which of these, or which combinations thereof, would be a key?  Briefly argue your answer.
+
+Be sure to think about all the different kinds of properties and ownership that such a DB would describe.
+
+(5 points) Choose appropriate types for all attributes in the Property relation.  These should be generic, descriptive types like "number" or "text", rather than specific PostgreSQL data types.  Refer to the linked pages for more information about the data.
+
+
+
+
+
+
+
+Problems
+Consider a database with the following schemas:
+
+Employee(person_name, street, city, company_name, salary)
+For brevity, we'll assume each person has a unique name, rather than using IDs.
+company_name is a FK to Company.company_name
+Company(company_name, city)
+Again, for brevity, we'll assume each company has a unique name, rather than using IDs.
+Manages(subordinate_name, manager_name)
+subordinate_name is a FK to Employee.person_name
+manager_name is a FK to Employee.person_name
+Having a combination key implies that each person can have multiple managers, and that each manager can manage multiple people.
+Managers are also employees, and thus can have managers themselves.
+This is a very simple design with a couple potential design flaws that are irrelevant for the following problems.
+
+Nothing forces a subordinate and their manager work at the same company.
+Nothing forces a consistent hierarchy on the manager relationships.  For example, a person could be their own manager.
+For each of the following, write a query in relational calculus and a query in relational algebra.
+
+Please format the queries so that they are easily readable.  While I encourage you to use the math or equation mode in your editor, that is not required.  You can use normal text like "AND" instead of math symbols, or you can write the math by hand (legibly!).
+
+(25 points) Find the names and addresses of all employees who work for First Bank Corporation and earn more than $10,000 per year.
+(12 points) RC query
+(13 points) RA query
+(25 points) Find the names and addresses of all employees who live in the same city and on the same street as any of their managers.
+(12 points) RC query
+(13 points) RA query
+(25 points) Find the names and addresses of all employees who do not have a manager.
+(12 points) RC query
+(13 points) RA query -- Hint: Which join operation corresponds to finding the elements that don't match a condition?
+(25 points) Find the names and addresses of all employees who earn strictly more than every employee of Small Bank Corporation.
+(12 points) RC query
+(13 points) RA query -- Hint: Here's a hint for each of two different approaches to this problem.  In one approach, we run into the problem that RA doesn't naturally deal with "every" very well.  How can you reword the goal in terms of "some"?  In another approach, we'd like to calculate the maximum salary at SBC, but we haven't discussed RA aggregation.  How can you determine the maximum without aggregation?\
+
+
+
+
+
+
+
+Problems (10 points each)
+Provide three additional realistic examples of data that can be calculated from other data.
+Provide another realistic example of data that needs regular updates, along with a way to fulfill the same goal with unchanging data.
+Provide another realistic example of data that being improperly grouped, along with the proper way.
+
+
+
+
+
+
+
+Problem 1 (10 points)
+Briefly describe another real-world example where a relationship's cardinality is higher than might first be thought.  No ERD is necessary.
+
+
+
+
+
+
+
+Problem 2
+(60 points) Create an ERD modeling the following aspects of a single library.  Use only aspects of ERDs covered in Module 2.2.
+
+The library only keeps information about the books that it has.
+The library does not expect for this database to keep track of inventory, i.e., how many copies of each book it has and where each copy is.  More generally, the database does not need to keep track of separate instances of each book.
+Authors have IDs and names.  They write books and each use only one publisher.
+Books have ISBNs and titles.  Each book is written by authors and published by a publisher on some date.  We want to know every time it is checked out by a borrower.  (An ISBN is an identifier that distinguishes different versions of a book -- e.g., "War and Peace" vs. "The Art of War", hardback vs. softback, publisher A vs. publisher B.)
+Borrowers have a library card number and name.  Whenever they check out a book, we track what date that occurs.  They can check out any number of books at a time.
+Publishers have an ID and name.  They publish books and represent authors.
+We will add to this model in future exercises.
+
+(20 points) Motivate and explain any non-obvious decisions you made for your model.
+
+
+
+
+
+
+
+Problem 3
+(60 points)  Revise the library ERD from the Exercise 2.2 Solutions to address the additional requirements in bold.  Grading will focus on these additional requirements.  Also, you may now use aspects of ERDs from Module 2.3.
+
+The library only keeps information about the books that it has.
+The library does not expect for this database to keep track of inventory, i.e., how many copies of each book it has and where each copy is.  More generally, the database does not need to keep track of separate instances of each book.
+Authors have IDs and names.  They write books or chapters of a book and each use a single publisher.  Books are not necessarily broken down into chapters.   Chapters are not published except as part of a book.
+Books have ISBNs and titles.  Each book is written by authors and published by a publisher or the authors on some date.  We want to know every time it is checked out by a borrower.
+Borrowers have a library card number and name.  Whenever they check out a book, we track what date that occurs.  They can check out any number of books at a time.
+Publishers have an ID and name.  They publish books and represent authors.
+I have not found an ideal solution for this design problem.  (Refer again to Module 2.3 Lecture 6 about ERD limitations.)  You are looking to model the problem as closely as possible, while minimizing the disadvantages.  You should discuss how well your design does that in part (b).  While thinking about this problem, you should explore and choose between competing possibilities.
+
+Some common disadvantages that we would like to avoid, if possible:
+
+The authors that write a book can be different than the authors that publish that book.
+The publisher that represents an author can be different that the publisher that publishes that author's book.
+Only a single author can publish a book.
+A book can published by both a publisher and its authors.
+(20 points)  Motivate and explain any non-obvious decisions you made for your model.  Experience says that both of the highlighted decisions (chapters and self-publishing) are challenging and non-obvious, so be sure to motivate and explain them.
+
+
+
+
+
+
+
+Problem (40 points)
+In Exercise 2.3, you are asked to create an ERD for a library.  Please submit your ERD again for reference, and then provide the schemas that correspond to your ERD.  Specify all PKs, FKs, not-null, and any other constraints in something like the following form.  Providing SQL is not necessary.
+
+X(x1, x2, x3)
+where x2 is not NULL
+Y(y1, y2, y3, y4)
+where y4 is a FK to X.x1
+Assume all super- and subclass entity sets are implemented -- i.e., no simplications.  Grading for this problem will be on whether your schemas correctly implement your ERD.
+
+
+
+
+
+
+
+Problems
+(25 points) Derive Decomposition from Armstrong's Axioms.  I.e., assume 
+, and prove both 
+ and 
+ by only using Armstrong's Axioms.  Each derivation step must indicate which rule is being used and on which antecedents.
+
+(25 points) Derive Pseudo-transitivity from Armstrong's Axioms.  I.e., assume 
+ and 
+, and prove 
+ by only using Armstrong's Axioms.  Each derivation step must indicate which rule is being used and on which antecedents.
+
+(10 points) Let 
+ be a set of attributes, and let 
+ be a set of functional dependences.  Module 2.5 Lecture 5 presented a 
+-time algorithm to compute the closure of a set of attributes.  The version here has been slightly optimized from the original by removing each functional dependence from consideration once it has been applied.  The changes are in bold.  Briefly explain why this optimization doesn't change the algorithm's correctness.
+
+Closure(A) =
+    Result = A
+    Remaining = F
+    Repeat until Result doesn’t change:
+        For each FD 
+ in Remaining:
+            if 
+,
+            then
+                Add C to Result
+                Remove 
+ from Remaining
+    Return Result
+Optional Problem (0 points)
+This is not a realistic or even pragmatically useful database example, but more of an exercise in combinatorics while following the rules of FD implications.
+
+For the set 
+, find a set of FDs that will maximize the number of candidate keys.  Argue that the set is indeed maximal.
+
+Hint:  First solve for 
+, then generalize your solution to a set with more attributes.
+
+
+
+
+
+
+
+Problem (40 points total)
+We will use the relation 
+ with the following data.
+
+name	ssn	phone	city	zip
+Mary	123-45-6789	713-555-1234	Houston	77055
+Mary	123-45-6789	713-555-6543	Houston	77055
+Joe	987-65-4321	281-555-2121	Houston	77043
+Joe	987-65-4321	281-555-1234	Houston	77043
+We are given the FDs 
+ and 
+.  Note that these are intended to represent your home ZIP and city, rather than where you happen to be currently.
+
+(20 points) Use the BCNF decomposition algorithm on 
+.  For each iteration of the algorithm, show
+the chosen functional dependency 
+the sets 
+ and 
+the decomposed relations 
+ and 
+(5 points) Once you have the fully decomposed table schemas from the previous step, show what data from above would be in each of these tables.
+(5 points) In the fully decomposed table schemas, use the functional dependencies to determine the primary keys of these tables.
+(10 points) The set of provided FDs is not quite realistic in that they don't quite embody the desired common-sense semantics.  This leads to the decomposition not being what you might expect.  What small change to the set of FDs would be more realistic?  Briefly explain your answer.
+
+
+
+
+
+
+
+See Assignment 2 first for a full specification of the assignment.
+
+See the course resource:  Creating ER diagrams
+
+This deadline is for a preliminary version of the required ERD for you to receive initial feedback.  The ERD may ignore any assignment details irrelevant for the requirements specified here.  You do not need to supply any text description of your design, but the names and relationships must have clear and meaningful names.
+
+This preliminary ERD will be judged only on how well it can model the following requirements.  See the assignment rubric for details.  These requirements catch many of the bigger design mistakes for the assignment.  However, it omits a number of the requirements, including two of the more difficult -- that given and family names can be sequences, and that various data (names, marriages, adoptive parents) can change over time.
+
+(2 points) People can marry.
+(3 points) People can have children.
+(3 points) People can have biological and adoptive parents.
+(2 points) ERD is syntactically correct.
+Your preliminary ERD may model more of the Assignment 2 requirements, but it does not need to.
+
+
+
+
+
+
+
+(40 points)
+
+Create a logical ERD for this problem.  Include lookup tables where useful.  Determining the relevant entity sets, relationships, and attributes is part of your task.   Submit a single PDF file with the following:
+
+Create an ER diagram.  (You may decompose the ERD into smaller diagrams.)  Use the ER notation introduced in this course (shapes mandatory, color optional).  You may draw the diagram by hand or by software.  It must be legible, and it should use names that are clear and meaningful.
+Provide supporting text explaining any modeling decisions that might not be clear from the design itself.
+Grading:
+
+(2 points) General design issues
+(4 points) Person
+(6 points) Names
+(8 points) Name changes
+(6 points) Marriage
+(6 points) Biological parent/child
+(8 points) Adoptive parent/child
+(10 points total)
+
+Implement the previous ERD as tables.  Follow the ERD implementation rules from the lectures, with no normalization.  Include all relevant PK, FK, and not-NULL constraints.  Ensure that marriages are not listed twice (e.g., Mary married John, and John married Mary.  (Hint: You might need a constraint similar to that in the solutions of Assignment 1.)  Submit one of the following two options. 
+
+Submit a SQL file (i.e., a plain text file with the .sql file name extension) with the appropriate CREATE TABLE statements for the tables.  Include any supporting explanatory text as SQL comments.
+Submit a PDF file with the appropriate schemas for the tables.  Include any supporting explanatory text.  Typing and nicely formatting your answers will help grading be faster, but you may scan hand-written answers.
+Grading:
+
+(5 points) tables and their attributes
+(2 points) PKs
+(2 points) FKs
+(1 point) other constraints
+Part 2 (40 points)
+Submit a separate PDF with answers to the following problems.  Typing and nicely formatting your answers will help grading be faster, but you may scan hand-written answers.
+
+(10 points)
+
+You are given the following functional dependences:
+
+ 
+ 
+ 
+Derive the functional dependence 
+ .  Show each step of the derivation, indicating which rule and previous results are being used.  You may use the three Armstrong’s Axioms and the three derived rules Union, Decomposition, and Pseudo-transitivity.  
+
+(10 points)
+
+Prove that every two-attribute relation 
+  is in BCNF, regardless of what functional dependences it has.
+
+Hint:  What functional dependences might exist?
+
+(20 points -- 5 points each part)
+
+You are given the following functional dependences for 
+  :
+
+ 
+ 
+ 
+What are the keys?
+
+Which (if any) FDs violate BCNF?  Briefly explain your reasoning.
+
+Which (if any) FDs violate 3NF?  Briefly explain your reasoning.
+
+Use the presented BCNF decomposition algorithm.  You must show enough detail, including the attribute selected in each step, that the reasoning and correctness clearly follows.
+
+
+
+
+
+
+
+(25 points total)
+(20 points) Write a function max3() that computes the maximum of three input numbers.
+(5 points) Write a sample call of the function.
+(25 points total) Refer to Exercise 3.1 Problem 1 and its Purchase table.  Copy the provided code into your SQL file.
+(20 points) Write a function purchase_quantities() on no arguments that returns the results of Problem 1c.
+(5 points) Write a sample call of the function.
+(40 points total) We want a trigger and associated function on the Purchase table.  Any time that there is an insert or update operation on the purchase price, store the provided new data, except that the stored price is half of what the operation specified.
+(20 points) Function
+(20 points) Trigger
+
+
+
+
+
+
+
+Relational DB Theory and Queries (48 points)
+For this section, you will be using the following schemas about university courses and grades during one
+semester.
+• Instructor(id, name)
+• Course(id, name)
+• Section(id, course_id, number, instructor_id), where course_id is a FK to Course.id, and
+instructor_id is a FK to Instructor.id
+o The sections of a course are distinguished by having different numbers. While course_id
+and number could have been a combination PK, I have introduced a synthetic PK id to
+simplify the key.
+• Student(id, name)
+• Enroll(section_id, student_id, total_score), where section_id is a FK to Section.id, and student_id
+is a FK to Student.id
+1. (10 points total) Which instructors only teach sections with 20 or fewer students?
+a. (5 points) Create a relational calculus (RC) version of this query.
+b. (5 points) Create a relational algebra (RA) version of this query.
+2. (20 points) The administrator B.C. Bodie has decided that heavily skewed scores are an indicator
+of bad teaching. More specifically, they want to find all instructors who teach at least two
+sections where less than a quarter of the students in that section score below the section’s
+average.
+Create a PostgreSQL version of this query. Do not use the built-in functions to find percentiles
+as part of the “less than a quarter” conditional test. It is a feature we did not cover, and it
+should not be difficult to write that test given the covered features.
+3. (12 points) For each section, what is the biggest gap in student’s scores? For example, if that
+section has scores 95, 90, 82, 82, 78, then the biggest gap is 8 (between 90 and 82).
+Create a PostgreSQL version of this query.
+4. (6 points total)
+a. (2 points) In the relational calculus, what does each variable represent? Choose one of
+the following:
+A table
+A tuple of a table
+An attribute of a table
+A cell of a table
+None of these. The relational calculus does not use variables.
+b. (2 points) In the relational algebra, what does each variable represent? Choose of the
+following:
+A table
+A tuple of a table
+An attribute of a table
+A cell of a table
+None of these. The relational algebra does not use variables.
+c. (2 points) In the relational calculus, a quantifier (i.e., “there exists” ∃ and “for all” ∀)
+needs to be used on which variables?
+Entity-Relationship Design (35 points)
+5. (20 points) Construct the best possible logical ER diagram for the following description that
+obeys the guidelines given in this course.
+Your company is creating a prototype for a music database similar to what IMDB does for
+movies. In other words, a primary goal is to store who does what on each recording, although
+numerous details will be omitted or simplified for this prototype. This prototype will focus on
+the musicians and writers and ignore the engineers, producers, and such. Also, it will focus on
+recordings of individual songs or composition and ignore how those can be combined into
+albums.
+One goal is to distinguish between a song and the potentially multiple recordings of that song.
+For example, the song “Yesterday” was written by Paul McCartney and John Lennon, initially
+recorded by The Beatles, but it has been covered (i.e., recorded by other groups) at least 1,600
+times. More technically, a song is written by one or more people, but we will ignore any
+distinction between those writing the music versus those writing the lyrics.
+We will ignore mashups, where a recording incorporates multiple songs.
+Describing who made a given recording of the song can be a bit more difficult, as we wish to
+take two different views simultaneously. To start, we say that a recording is made by one or
+more people performing, along with what instruments each plays. For this we will include one’s
+voice (i.e., singing) and a baton (i.e., conducting) as possible instruments.
+Furthermore, those performing musicians might be grouped into which can be called a band, or
+more generically, a group. Examples:
+• “Something Just Like This” was originally recorded by Drew Taggart, Alex Pall, Chris
+Martin, Jonny Buckland, Guy Berryman, Will Champion, and Phil Harvey – the first two
+are The Chainsmokers, and the rest are the band Coldplay.
+• One recording of “Faure’s Requiem” has many musicians who can be grouped into the
+Atlanta Symphony Orchestra, the Atlanta Symphony Chorus, plus Robert Shaw
+conducting.
+• “Battle of Evermore” was originally recorded by Robert Plant, Jimmy Page, John Paul
+Jones, and Sandy Denny – all but the last of whom were part of the band Led Zeppelin.
+(Led Zeppelin member John Bonham was not on the recording.)
+A complication here is that the membership of a group or band changes over time. So, when we
+associate people with a band, our database will do so only in the context of a recording. E.g., for
+the original recording of “Yesterday”, Paul McCartney performed as part of The Beatles,
+whereas in the original recording of “Band on the Run”, he performed as part of Wings, and for
+the original recording of “Maybe I’m Amazed”, he performed simply as an individual.
+We hope to avoid any redundancy in the resulting relationships.
+6. (10 points) Following the rules given in this course, provide schemas to implement the following
+ER diagram. You need to indicate all the resulting primary key, foreign key, and required NOT
+NULL constraints. Use the names in the ER diagrams for the resulting tables and attributes. You
+do not need to indicate data types. You do not need to use SQL CREATE TABLE syntax.
+For simplicity, this ER diagram assumes that each department has exactly one major available.
+7. (5 points) Given an ER diagram with a cycle (such as the Department-Student-Section-Instructor-
+Department or Course-Course cycle in the previous problem), why will the resulting database
+necessarily allow undesired data?
+
+
+
+
+
+
+
+
+(50 points -- 10 points each part) Consider the following two transactions.
+
+There are two possible serial schedules.  Schedule 1 is 
+ followed by 
+, while Schedule 2 is 
+ followed by 
+.
+
+Give the conflicting pairs for Schedule 1.
+Give the conflicting pairs for Schedule 2.
+What is the difference in the conflicting pairs between the two schedules?
+Will these two schedules have the same or different outcomes for the transactions?
+More generally, given two transactions, if two schedules of these transactions have identical lists of conflicting pairs (i.e., the same pairs, in the same order, and each pair having the same order), will the two schedules produce the same outcomes for the transactions?  Briefly explain why or why not.
+(20 points total) Consider the following schedule.
+
+(15 points) Construct its conflict graph.
+(5 points) Is this schedule serializable? Why or why not?
+
+
+
+
+
+
+
+(20 points -- 10 points advantages, 10 points disadvantages) Explain the advantages and disadvantages of creating checkpoints more frequently.  Include in your answer how the frequency of checkpointing affects the following:
+System performance when no failure occurs
+Recovery time
+(10 points) Our previous database administrator did not set up the system to create an audit log.  Unfortunately, we have had a security breach.  You have been given the challenge to glean as much relevant information as possible from the transaction log.  Even though the transaction log isn’t intended for this purpose, what relevant information can it provide?
+
+
+
+
+
+
+
+(10 points)  Follow the instructions for this simple demo:  https://www.hacksplaining.com/exercises/sql-injectionLinks to an external site.
+
+What was the payload you used, i.e., the hack input that worked?
+
+(40 points)  Get the data from the following two small CSV files into a table with the following declaration. You will need to transform the data some to get it to load.  The provided data sets are tiny, so you can do the transformations by hand or in code.
+
+CREATE TABLE Person (
+    p_id INT,
+    p_fname CHAR(20),
+    p_lname CHAR(20),
+    p_favorite CHAR(20),
+    PRIMARY KEY (p_id)
+)
+etldata1.csvDownload etldata1.csv
+
+eltdata2.csvDownload eltdata2.csv
+
+What ETL steps did you do?  You only need to do steps that are necessary for the given data.
+Show the output of SELECT * FROM Person.  I.e., verify that you actually did these steps.
+
+
+
+
+
+
+
+Overview
+You will write a database system consisting of both a database layer and an application layer.  You will manage the security of the system so that the database provides an API for all database access from this or any other application.  The application is, in principle, publicly available and not highly trusted by the database.
+
+Of course, to keep the assignment manageable, we need to limit its scope.
+
+The database layer will be built upon the provided solution code to the genealogical database of Assignment 2.  You will mostly leave this provided code unchanged.  You will add code for the API and to manage security.  The API will only support a limited set of the overall functionality of the database -- in particular, loading data into some of the tables.
+The application layer will use this API.  Ideally, we would have a web-based application to manage each user's family tree, but that is too much for one assignment.  Furthermore, a web-based interface is beyond the scope of the course.  This application will only have one task -- to read data from a data file, and load it into the database by using the database's provided API.
+While we greatly limit the required functionality, this is structured in the same way that a more fully-featured database system could be.
+
+Data
+To limit the scope of the assignment, we will be focusing on the biological parent-child relationships and loading data into the associated tables.  Implementing other parts of the database would be very similar, so we omit it.  You will not need to either find or use data that falls outside the specifications.
+
+You need to have at least 20 inter-related people in your data.
+
+More specifically, you need to load data into the following tables.  Other tables do not need to be supported for this assignment.
+
+Person
+GivenName -- Only birth names.  Changing names does not need to be supported.
+FamilyName -- Only birth names.  Changing names does not need to be supported.
+GenderIdentity -- Only birth genders.  Changing genders does not need to be supported.
+Gender -- This data can be inserted when the table is defined, and need not come from a file.
+BioParent
+Do not change the provided table definitions, except as described below for auditing.  If your data source lacks data for some attributes, use NULL.  You will need to create appropriate IDs for the various tables' primary keys.
+
+You can use any data source of genealogical data, as long as it relates people by at least parent-child relationships.  A good index for such sites is at
+
+https://familyhistorydaily.com/genealogy-resources/50-free-genealogy-sites/Links to an external site.
+
+However, to narrow your search, the following are sites previous students have used successfully.  On most, you will have to create a free account.
+
+tngsitebuilding.com/usersites.phpLinks to an external site. -- Free.  Choose a family tree and a person in that tree.  Select the GEDCOM tab.
+www.wikitree.comLinks to an external site. -- Free.  Find anyone's ID, then you can download their family tree.  (GEDCOMLinks to an external site. or JSONLinks to an external site.)
+www.geni.comLinks to an external site. -- Free.  Add one person, then you can download their entire family tree. (GEDCOMLinks to an external site.)
+www.ancestry.comLinks to an external site. -- Free+pay.  Add a family tree, then you can download it. (GEDCOMLinks to an external site.)
+en.geneanet.orgLinks to an external site. -- Free.  Add a family tree, then you can download it. (GEDCOMLinks to an external site.)
+www.familysearch.orgLinks to an external site. -- Free.  Need an application (some free) to download. (GEDCOMLinks to an external site.)
+en.wikipedia.org/wiki/List_of_family_treesLinks to an external site. -- Free.  Need to type the data into some application.
+You only need to use one source, so there's no need to try to match one source's John Smith with another's.
+
+ETL (Extract-Transform-Load)
+Extraction is loading the data from its original source, in this case downloading it from a website into a GEDCOM or CSV file.
+Transform is getting the data ready for the database.  This can either be done by code in either the application or the database or it can be done "by hand", modifying the source data file.
+Load is getting the data into the database.  This will be done by application code calling your database API code.
+If the transform is in the application, then we have the following data flow:
+
+(Application) For each data item read from source ...
+(Application) Transform that data item
+(Application) Call API to send transformed data to database.
+(Database) API code stores the result into tables.
+If the transform is in the database, then we have the following data flow:
+
+(Application) For each data item read from source ...
+(Application) Call API to send untransformed data to database.
+(Database) API code transforms data.
+(Database) API code stores the transformed data into tables.
+If the transform is by hand, then we have the following data flow:
+
+(You) Modify the source file data.
+(Application) For each data item read from source ...
+(Application) Call API to send transformed data to database.
+(Database) API code stores the transformed data into tables.
+The following are the kinds of transformations that are the most likely in this assignment.
+
+Completing incomplete dates -- e.g., "1900" into "1/1/1900".  This is discussed more in the "Dates" section below.
+Splitting names -- e.g., "John David Greiner" into "John", "David", "Greiner".  This is discussed more in the "Names" section below.
+Fixing misspellings.  This is discussed more in the "Names" section below.
+Filling in missing data with NULL.
+Removing unexpected or unsupported characters.  This is discussed more in the "Application-Side Code" section below.
+Dates
+The start date for a person's name and gender should be their birth date, assuming that is known.  Note that partial dates like '1967' and '1967 February' are not supported by the DATE type.  As a workaround, it is acceptable to use the first day of the year or month, e.g., '1967 January 1' and '1967 February 1', respectively.  Changes dates in the data file like this is an example of a transformation that you may need to do.
+
+Aside:  "Partial dates" are part of the ISO 8601 standard.  While programming languages typically use that standard, they generally don't support partial dates.  As an alternative, we could have used separate Year, Month, and Day fields or even just stored dates as a text field.  For this assignment, we won't deal with partial dates.
+
+Names
+If the data source provides a person's name as either one string ("John David Greiner") or two ("John David" and "Greiner"), deciding how to break those into sequences of strings can be difficult -- for example, consider "Simón José Antonio de la Santísima Trinidad Bolívar y Palacios Ponte-Andrade y Blanco" or "Johannes Diderik van der Waals".  For this assignment, pick a simple heuristic.
+
+To enforce some consistency on the data (and so you can demonstrate use of a trigger), you will use a trigger to automatically fix some common given name misspellings.  For example, "Jonh" instead of "John".  Have a table with two attributes -- a misspelled name and the correct spelling.  Put some appropriate data in the table.  Create a trigger that automatically replaces any misspelled names listed in this table.  (This is arguably a bad design decision, since there are many non-traditional names and many similar spellings of names.  But, again, it is an excuse for using a trigger.)
+
+Application-side code
+You need to write application code that connects to the database as ricepublic, a user with low security clearance, loads the data from your data file, and upserts the data via the database API.  I.e., if we reload data from the same source, it will insert any rows with new PKs, and update any rows with existing PKs.  Your application need not take any input from the user, i.e., from the keyboard or mouse.  It doesn't need any sort of a graphical interface.  This is a small, but representative, part of what would be an appropriate front-end user interface for the database.
+
+You can use any application language.  However, we strongly recommend that you use Python or Java and that you use the provided function-calling code as a starting point.
+
+To load the data you can either use a file that you upload to Vocareum or use an API that the data source provides.  It is fully expected that your code will be specialized to your one chosen data source.  You may use any useful library for reading the data source.  For example, there are libraries in many languages for reading CSV, GEDCOM, or JSON files.  If you are not familiar with reading a data file in your chosen application language, you can find plenty of examples online.
+
+Python CSV libraryLinks to an external site. (standard library)
+Python GEDCOM libraryLinks to an external site. (version 0.4.4 is installed on Vocareum)
+Python JSON libraryLinks to an external site. (standard library)
+CSV in JavaLinks to an external site.
+Java GEDCOM libraryLinks to an external site. (installed on Vocareum) -- Note that I can no longer find the documentation for this library.
+GEDCOM standardLinks to an external site. -- Be sure to read about the format, so that your code can read the data correctly.
+Because some online genealogy files are huge, you may limit how much data that will be imported, for example, by restricting birth dates or names to a range.  As previously stated, you don't need to load data that is outside the scope of the project.
+
+Another detail to watch out for when loading data is that SQL TEXT strings only allow ASCIILinks to an external site. characters (think unaccented letters and numbers), but the data file might have other characters (e.g., accented letters or letters from other alphabets).  We could have used the SQL type NVARCHAR that allows UnicodeLinks to an external site. characters, but we did not.  Somehow those have to be dealt with so that you do not pass them to SQL.
+
+You will also need to provide instructions on how to compile (if relevant) and run your code.
+
+Database-side code
+The SQL table definitions will be provided as part of the Assignment 2 solutions.
+
+You need to write an API for upserting data into the database.  Since it needs to do upserts, you need to use a function-based API, rather than view-based.  The API only needs to cover the functionality needed for your one data source and the scope of the project.  The functions need to have the appropriate security, as described below.
+
+Auditing
+Change the Person table definition to have a last_updated attribute of type DATE.  Add a trigger that stores the CURRENT_DATE in that attribute for each inserted or updated row.
+
+Security
+There are two relevant levels of security.
+
+A "private" level has access to all tables.  For this, we will use the user postgres, since that user is already provided by Vocareum and has sufficient privileges.
+
+A "public" level does not have access to any tables.  However, it does have access to the API (tables or views).  The standard Postgres user for this would be public.  Since Vocareum doesn't provide that, we'll instead use the user ricepublic.  Your database code should create this user and assign its privileges.  Your application code should use this user to connect to the database.
+
+Using Vocareum
+The following file is provided:
+
+A JAR file that you need to include in your classpath if you are using Java (e.g., java -classpath .:resource/lib/public yourprogramname)
+In addition, you should use the following files as starting points for your code.
+
+SQL table schemas solution from Assignment 2.
+Sample application code in Python or Java from Module 4.
+Your Code -- Organization review and how to run it
+You might write your code in Vocareum or on your own machine.  Either way, you need to end up with and least two code files and one data file in the work folder of this Vocareum assignment.  At least one file with all of your SQL code.  One file with all of your application code (Python or Java).  Plus one file with your data (GEDCOM or CSV).
+
+In Vocareum, run psql as user postgres.  Load all of your SQL code.  This includes the provided table definitions, slightly modified for auditing.  This includes your API, defined with either views or functions, and including a trigger.  This includes the security steps of defining user ricepublic and its privileges.  Get out of psql.
+
+In Vocareum, run python or java.  Run your application code.  Your application code should connect to the database as user ricepublic.  It should read the data from your data file.  For each line of data, it should check whether it is defining a person or a child/parent relationship.  It handles each possibility with one or more calls to the database API.
+
+To test, in Vocareum, run psql as user postgres, and query the database contents, verifying it has the expected results.
+
+Testing
+By this specification, the application code does not print or return anything.  However, I strongly encourage you to include some print statements while you are debugging.
+
+You and the grader will want to see if your code has loaded the data correctly into the database.  In the README, you will provide documentation of this.
+
+Include picture(s) or description(s) of the source data compared to the picture(s) or description(s) of the resulting data to confirm that you have loaded the family tree accurately.  For example, some genealogy web sites will display an entire family tree in graphical or text form.
+
+Advice
+Don't put off selecting a data source and paying attention to how you will get the data from the source.  Loading data from a file or from an online data source hasn't specifically been covered in this course, so you may need time to figure that out.
+
+Determine how you will recognize that a single person is mentioned several times in the input data.  For example, if one entry says that Mary Jones is the mother of Fred Jones, then another entry says that Mary Jones is the husband of Mark Jones.  The GEDCOM file format uses an identifier for each individual so that you can do this.
+
+You can test your API and database code even if your application code isn't done.  For testing purposes, you can create a simple application that calls the database with some hard-wired data.
+
+Submission
+In Vocareum we will expect to find
+
+a PDF or TXT file called README, including
+The URL or other description of your data source
+A description of the data in your data source
+A list of the data transformations used and how they were done (e.g., by hand, with spreadsheet commands, with another application program)
+A step-by-step description and list of commands on how to run the code
+Picture(s) or description(s) of the source data compared to the picture(s) or description(s) of the resulting data to confirm that you have loaded the family tree accurately.  For example, some genealogy web sites will display an entire family tree in graphical or text form.
+all application source code -- Is possibly a modified version of the sample Python or Java code provided in Module 4.
+a SQL file containing all database code -- Includes the table definitions from Assignment 2 solution.
+Potential difficulty
+In the BioParent table, you need to add data for child and parent.  When do you create these entries?
+
+The seeming difficulty here is that as you read your data file, the following happens.
+
+You read data on John Doe and create a Person tuple for John Doe.
+As part of this data, you read that he is parent to Jane Doe.  However, you haven't read her data yet.
+So when do you enter data?  There are several options.
+
+Guarantee that your data file has John Doe's and Jane Doe's data before their parent/child relationship data.
+Read all the data file, then process individuals' data before parent/child relationships.
+Read the data file multiple times, first processing individuals' data, then process parent/child relationships.
+When reading the parent/child relationship, store a reminder to deal with that later, after reading Jane Doe's data.
+When reading the parent/child relationship, create a tuple for Jane Doe, and store a reminder to update that same tuple later when reading her data.
+These "reminders" can be handled in the database code (API functions) or in the application code.
+
+Potential misunderstandings
+If you are doing the following, you have misunderstood the requirements:
+
+Reading data files from SQL code -- e.g., \copy
+In your application code, executing SQL statements that create tables or any other database object.
+In your application code, executing SQL statements like "INSERT INTO TableName ...", where TableName is the name of a table.
+Using Jupyter Notebook -- If you want to use Jupyter Notebook while developing your code, and then move it into separate SQL and application files, that's OK.
+Make sure your application code connects to the database with the correct credentials.  Database name is 'postgres' (the default database name in Vocareum).  User and password should be those of the public user that you created.
+
+Grading
+(10 points) Extract
+Application code reads the relevant data from a data file (probably GEDCOM or CSV).
+(22 points) Transform
+(12 points) Application or database code transforms original data, or you do this "by hand".  Describe these steps in the README.
+(10 points) Create trigger(s) to implement name consistency.
+(23 points) Load/API
+(15 points) Create API (database functions) to insert data into correct tables and attributes.
+(5 points) All loads are upserts.
+(3 points) Application writes to database only via this API.
+(10 points) Logging
+(8 points) Trigger(s) update the last_updated date on each insert or update.
+(2 points) Person table has a last_updated date.
+(10 points) Security
+(8 points) Create "public" user with privileges allowing access only to API.
+(2 points) Application accesses the database as this "public" user.
+This tool needs to be loaded in a new browser window
+
+
+
+
+
+
+
+Problems
+(10 points total)
+
+Consider the three following transactions.
+
+T1: A+=10;  B+=15;
+T2: A*=2;  B*=2;
+T3: B+=10;  A+=50;
+Assume that each instruction is atomic and takes one time step to execute.  Assume that we have a single processor, so we are only interested in schedules that have exactly one instruction per time step.
+
+How many distinct schedules are there?  That can be computed by the following:
+.
+
+(2 points) How many serial schedules are there, i.e., where the transactions do not overlap at all?
+(2 points) For each of the serial schedules, how are the values in A and B changed?  These should be stated as functions of their original values.  For example, for the ordering (T1; T2; T3), we have A+=10; B+=15; A*=2; B*=2; B+=10; A+=50;.  Thus, Afinal = (Astart + 10) * 2 + 50 = 2 * Astart + 70.
+(3 points)  Show two serializable, but non-serial schedules, or argue that there are not at least two.
+(3 points)  Show two non-serializable schedules, or argue that there are not at least two.
+(10 points total)
+
+Consider the following schedule, were the subscript indicates the transaction:  
+
+(4 points) List the conflicting pairs.
+(4points) Use the conflicting pairs to construct the conflict graph.
+(2 points) Use the conflict graph to determine whether the schedule is serializable.
+(5 points)
+
+Your colleague says that you should use a more relaxed isolation level in order to speed up your database.  Clearly, but concisely, explain the drawbacks of that idea.
+
+
+
+
+
+
+
+
+
+Problems
+(10 points)  Concisely summarize why B+-trees are the main data structure for database indices.
+(10 points)  Concisely summarize why a sparse index must be sorted.
+(10 points)  Explain if and why we might want two different indices on the same search key and table.  I.e., can two different indices on the same search key and table be somehow different (and thus differently useful)?
+(10 points)  Explain why a DBMS doesn't automatically create an index for each search key.
+
+
+
+
+
+
+Students generally find this exercise very challenging.  The problems as presented as a series of steps to help guide you through the overall process of calculating the cost of a query plan.  You will likely need to review all the formulas presented in Module 5.3, along with how pipelining affects these formulas.  You will have additional chances to work on such problems in Live Session 11 and Assignment 5. 
+
+Consider the following schema and query:
+
+Student(sid, name, age, address)
+Book(bid, title, author)
+Checkout(sid, bid, date), where sid is a FK to Student.sid, and bid is a FK to Book.bid
+SELECT s.name
+FROM Student AS s
+    INNER JOIN Checkout AS c ON c.sid = s.sid
+    INNER JOIN Book AS b ON b.bid = c.bid
+WHERE b.author = 'Huckleberry Finn' AND
+      s.age BETWEEN 13 AND 19
+Assumptions:
+
+10,000 Student records on 1,000 pages (i.e., blocks)
+50,000 Book records on 5,000 pages (i.e., blocks)
+300,000 Checkout records on 15,000 pages (i.e., blocks)
+500 authors
+Student ages range uniformly from 7 to 24.
+Memory can hold 20 blocks.
+Problems
+In the following, you may present your query plans as text or as trees.
+
+(10 points) Provide a logical query plan, i.e., a relational algebra query, for this query.
+
+There are multiple correct options.  Pick any one.  Your choice need not be optimal.
+
+You may present your plan in relational algebra notion, as a tree, or as an ordered list of operations.  I use a ordered list of operations, so that I can refer to each of these steps by number in later problems.
+
+(10 points) Compute the cardinality, i.e., number of tuples, of the result of each node.  Remember that this is a step towards computing the cost of each node, since the cost depends on the amount of data involved.
+
+(10 points) Assume there are no indices, and no table is stored in sorted order.  Provide a physical query plan that follows this logical query plan.  Use pipelining wherever possible in this physical query plan.
+
+Again, given your logical query plan, there are multiple correct physical query plans.   Pick any one.  Your choice need not be optimal.
+
+The uses of pipelining can be drawn on tree edges or simply described in text.
+
+(30 points) Compute the cost of each node of this physical query plan, in terms of the number of disk blocks read or written.
+
+(10 points) Suggest two indices to use.  Provide a physical query plan that follows the logical query plan and that uses both indices.  Again, use pipelining wherever possible in this physical query plan.
+
+Once again, your choice and use of indices need not be optimal.
+
+(30 points) Compute the costs of each node of this physical query plan (the one with indices), in terms of the number of disk blocks read or written.
+
+You may ignore the costs of reading the indices, or equivalently, assume the indices are stored in memory.
+
+
+
+
+
+
+
+The Claims
+We have seen examples where a query using EXISTS produces the same query plan as a query using IN.  However, there was a web site (still broken?  https://beginner-sql-tutorial.com/sql-query-tuning.htm) claiming the following:
+
+Use operator EXISTS, IN and table joins appropriately in your query.
+
+Usually IN has the slowest performance.
+
+IN is efficient when most of the filter criteria is in the sub-query.
+
+EXISTS is efficient when most of the filter criteria is in the main query.
+
+For example: Write the query as
+
+select * from product as p
+where EXISTS (select * from order_items as o
+              where o.product_id = p.product_id)
+Instead of:
+
+select * from product as p
+where p.product_id IN (select o.product_id
+                       from order_items as o)
+Not explicitly stated on that page, but (b) would favor a query such as the following.
+
+select * from product as p
+where p.product_id IN (select o.product_id
+                       from order_items as o
+                       where o.product_quantity > 10 and p.product_type = "gizmo")
+Testing the Claims
+You should not simply accept such claims.  They might be correct, incorrect, or something in-between.  They might only hold for certain versions of some database servers, since query optimization varies between implementations.  Your job here is to test these claims for the version of PostgreSQL installed on Vocareum.
+
+We will use four queries using IN, each similar, but with varying details to see if these effect the results.
+
+Simple subquery:
+
+select *
+from product as p
+where p.product_id IN (select o.product_id
+                       from order_items as o)
+Correlated subquery:
+
+select *
+from product as p
+where p.product_id IN (select o.product_id
+                       from order_items
+                       where o.product_quantity > 10 and p.product_type = "gizmo")
+Simple subquery with conditions in main query:
+
+select *
+from product as p
+where product_id IN (select o.product_id from order_items as o)
+      and p.product_type = "gizmo" and p.product_color = "green"
+Negated to be anti-join:
+
+select *
+from product as p
+where p.product_id NOT IN (select o.product_id from order_items as o)
+Thus, we will have the following table schemas:
+
+product(product_id, product_type, product_color)
+order_items(order_id, product_id, product_quantity), where product_id is a FK to product.product_id
+ 
+
+(10 points) For each of these queries, create a semantically-equivalent one using EXISTS.
+(20 points) Generate test data for these two tables.
+The text data doesn't need to be proper English.  E.g., generating "abcdef" is a perfectly fine as a product name.
+The data needs to conform to the referential integrity constraint.  I.e., each order_items.product_id is a value of product.product_id.
+The data needs to appropriately test these queries.
+Most importantly, some products need to not be in order_items.
+There needs to be enough data in each table.  With small data sets, many queries are implemented by simple linear scans because they have no overhead.  Also, small data sets generally result in small run times whose differences are less than their variances.
+Include various combinations of the mentioned attribute data -- e.g., green gizmos, not-green gizmos, green non-gizmos, and non-green non-gizmos.  The easiest way to do this is to generate lots of data (at least thousands of tuples in each tables) so that each combination is statistically almost guaranteed to happen.
+(10 points) Test the above claims by generating query plans and timing each query.  If any query takes much too long to time it, you may abort it.
+(15 points) Summarize your test results, describing whether or not the claim holds or if the distinction is more complex.  Your write-up should be convincing, yet concise.
+(5 points) For each table, create a B+-tree index on the product_id attribute.  One would assume that these indices will speed up each query, but it is unclear whether the impact will be the same on each.
+(10 points) Again, generate each query plan and timing.
+(15 points) Again, summarize your test results.  This includes explaining if the indices were not used.
+
+
+
+
+
+
+
+Problem 1 (30 points)
+The Rice Student Association is conducting a babysitter service as a fundraiser for different clubs on campus.  Each babysitter credits their work towards the fundraising benefit of one club.  The transactional database schema follows:
+
+Club(name, contact, phone)
+Sitter(id, name, address, phone, club_name)
+club_name references Club.name
+Job(id, sitter_id, customer_id, job_date, start_time, end_time, amount)
+sitter_id references Sitter.id
+customer_id references Customer.id
+Customer(id, name, address, phone)
+The SA treasurer wants a data warehouse for this.  They would like to be able to determine each of the following:
+
+How much each customer was billed by week, month, and year
+How much each employee earned by week, month, and year
+How much work is done on weekends, holidays, or other special days
+Design and explain a data warehouse to provide this information.   Choose either a Kimball-style dimensional model or an Inmon-style normalized model,  whichever is best for the stated goals.
+
+Problem 2 (70 points total)
+The Baylor Clinic is interested in tracking the use of its facilities.  They are particularly interested in understanding how effectively they run their operations.  The administrator is interested in questions like
+
+How many hours can each nurse bill?
+What is our income by doctor or by treatment?
+Which doctors see the most patients?
+The following is the clinic's transactional model:
+
+clinic ERD
+
+(15 points total -- 5 points per question)  Alas, we don't have the client on hand, so suggest at least three other questions that the administrator would like to solve.  Remember that the high-level goal is to understand the clinic operations.
+(20 points) Describe what should be the fact(s) and why.
+(35 points) Design and explain a dimensional model.  Remember that this includes not just the table organization, but also any useful data replication and aggregation.  An OLAP cube can include aggregate a fact table attribute along the dimensions without that aggregation being modeled as an attribute.
+
+
+
+
+
+
+
+(10 points)
+
+We have the following database schema:
+
+Person(id, first_name, last_name, gender, car_vin, ...)
+car_vin references Car.vin
+Car(vin, model_id, type, ... )
+model_id references Model.id
+Model(id, company, ...)
+Consider the following query and corresponding physical query tree.
+
+SELECT p.first_name, p.last_name, m.company
+FROM Person AS p
+INNER JOIN Car AS c ON p.car_vin = c.vin
+INNER JOIN Model AS m ON c.model_id = m.id
+WHERE p.gender = 'F' AND c.type IN ('sedan', 'coupe')
+Query plan
+
+For each non-leaf node, estimate the number of disk I/O operations for the represented operation, and estimate the number of tuples output by the operation.
+
+Assumptions:
+
+There are 100,000 persons with 1,000 tuples per block.
+There are 80,000 cars with 2,000 tuples per block
+There are 50 models all in one block.
+There are 5 car types and 2 genders, each uniformly distributed.
+Memory can store 100 blocks at a time.
+Pipelining is used wherever possible.
+(5 points)
+
+We have a query with a conjunctive filter condition A AND B AND C AND D.  Assume that the query plan applies one condition clause at a time.  What is the best ordering of those clauses?
+
+Condition	Cost per Tuple for Applying Condition	Selectivity of Condition
+A	1	0.01
+B	100	0.001
+C	10	0.2
+D	30	0.05
+(10 points)
+
+You discover that the following important query is significantly slower than expected. While division is a relatively slow operation, that is not sufficient to account for the observed slowdown.  It is a simple query, and there is a secondary index on salary.  Assume that any table statistics are sufficiently up to date and accurate.  Please explain a possible reason, and provide a tuning solution that addresses that reason.
+
+SELECT *
+FROM Employee AS e
+WHERE e.salary/12 = 4000
+(14 points)
+
+You discover that the following query is significantly slower than expected. There is a secondary index on salary, and you have verified that the query plan is using it.  Assume that any table statistics are sufficiently up to date and accurate.  Please explain a possible reason, and provide a tuning solution that addresses that reason.
+
+SELECT *
+FROM Employee AS e
+WHERE e.salary = 50000
+(16 points total)
+
+This query is a simple filter.  The only possible implementations are a sequential scan with a filter or an index lookup if we have an index.  Explain whether and why/why not adding an index on Employee.project is likely to significantly speed up this query in each of the following two cases.  After all, in Live Session 11 Problem 2, we saw using an index isn't always faster than a sequential scan.  As always, since we have no other information, assume that employees are uniformly distributed among the projects.
+
+Assume there are 30 Employee records per disk block, but we don't know how many employees there are.  Each employee belongs to one project, but each project can have many employees.
+
+You can ignore any issues about the specific index structure, including the exact cost of an index lookup and the possibility of that cost degrading as the number of projects increases.
+
+From the problem wording, this has something to do with the number of projects.  For full credit, be sure to not just have the right high-level idea, but quantify that idea with the given numbers.
+
+SELECT e.ssn
+FROM Employee AS e
+WHERE e.project = 'GenealogyDB'
+(8 points) ... when there are 50 projects
+(8 points) ... when there are 5000 projects
+
+
+
+
+
+
+
+There are two parts to this part, both in Vocareum.  One is a Jupyter Notebook, and the other is a small programming and analysis problem, described here.
+
+In Vocareum, you need to click Submit for each part -- Jupyter and Linux.
+
+Jupyter Problems (35 points total)
+See Vocareum.
+
+Programming and Analysis Problem (15 points total)
+In the class videos, I claimed that an application inserting one tuple at a time is slower that one insert of many rows.  Here, you will test that claim.
+
+Write an small Python or Java application that times and compares two different series of operations:
+
+Iterate over 1000 data tuples.  Each iteration calls the database to execute one SQL INSERT INTO tablename VALUES tuple statement to insert that one tuple.  The following is a pseudo-code outline.
+
+for x in 1 to 1000
+    execute("INSERT INTO tablename VALUES" + thistuple)
+  
+Iterate over 1000 data tuples.  Each iteration helps build a single large string which is a SQL INSERT INTO tablename VALUES tuple1, tuple2, tuple3, ... statement with all of those tuples.  After the loop ends, call the database to execute that one large SQL string.  The following is a pseudo-code outline.
+
+query = "INSERT INTO tablename VALUES"
+for x in 1 to 1000
+    query += thistuple
+execute(query)
+  
+No separate file of SQL code is needed.  Before the loops, your application will need to
+
+Connect to the database.  Be sure to use the appropriate connection string for Vocareum.  Host and password are generated each use.  User and DB are "postgres".  
+Execute SQL code to create the table.
+To time operations, one standard approach is to get the current time, do the operations, get the current time again, and show the difference between the times.
+
+Place the following files in Vocareum:
+
+all application code
+a PDF or TXT file called README that describes how to use the application code
+a PDF file with a short comparison of the times
+Grading:
+
+(5 points) Code: connection to database & creation of table
+(5 points) Code: Data insertions & timings
+(5 points) Comparison of results
+This tool needs to be loaded in a new browser window
+
+
+
+
+
+
+
+(45 points total)
+(20 points -- 5 points each) Summarize in your own words the four main types of NoSQL databases (document, key-value, column, graph).
+(20 points -- 5 points each) For each of these, describe a sample use case that illustrates their differences, and describe how this example does so.
+(5 points) Also provide a sample use case for transactional RDBMS, i.e., what we focused on for most of the course, that illustrates its differences from these others, and describe how this example does so.
+(10 points)  Concisely summarize why a team might choose BASE over ACID.
+
+
+
+
+
+
+
+
+(60 points) Recall our genealogical database from Assignment 2 and Live Session 12 (which only considered some of the data).  Design a version for MongoDB that can store all the original data.  We would like to use it for standard genealogical tasks like finding and updating information about a person's children and parents.  In addition, we would also like to use it to aggregate the same data as in the OLAP version:
+For each person, count the number of biological children.
+For each person, count the number of biological descendants.
+For each person, count the number of minimum and maximum number of generations of biological descendants.  E.g., if Joe had a son Bob who died without offspring (or simply no children of Bob are known in the database), Joe's minimum would be 1.  Meanwhile, if Joe's other child Mary has young kids. Joe's maximum would be 2.
+Your design should list the following: document classes, and for each document class, list each attribute and its type of value.  If the value is an embedded document or an array of embedded documents, then you should list its attributes and types of values, as well.
+
+You also need to motivate your choices for what are document classes vs. embedded documents.  Your choices should match the MongoDB design principles covered in the course.
+
+Guidance:  You already have an ERD and SQL implementation from Assignment 2.  That design was relatively complicated since there was no convenient way to unify the various kinds of parent relations, for example.  The problem was that the different parent relations had different attributes, and ERD/SQL doesn't naturally support variant tuples.  MongoDB does support variants, i.e., documents having different fields.  So, my suggestion is to use your ERD/SQL design as a starting point and simplify it with such variants.  In addition, you can use ideas from Module 2.3 Lecture 4 for representing the hierarchical relationships.
+
+(30 points -- 15 points each query) With what we have covered, can you write pyMongo .aggregate() queries for the first two aggregations listed above?  If so, do so.  If not, explain why not.  (You are not expected to write a Python program or investigate other pyMongo features.  You are not expected to enter data and test your queries.)
+
+(10 points) The previous design problem emphasized looking at descendants.  Would your design be suitable if our goals also included looking at ancestors, e.g., counting the number of known ancestors?  Explain why or why not.
+
+
+
+
+
+
+
+
+Problems
+(60 points) Recall our genealogical database from Assignment 2, Live Session 12 (which only considered some of the data), and Exercise 6.4.  Design a version for Neo4J that can store all the original data.  We would like to use it for standard genealogical tasks like finding and updating information about a person's children and parents.  In addition, we would also like to use it to aggregate the same data as in the OLAP version:
+For each person, count the number of biological children.
+For each person, count the number of biological descendants.
+For each person, count the number of minimum and maximum number of generations of biological descendants.  E.g., if Joe had a son Bob who died without offspring (or simply that no children are known for Bob), Joe's minimum would be 1.  Meanwhile, if Joe's other child Mary has young kids. Joe's maximum would be 2.
+Your design should list the following: node types, relationships, and attributes for each of those.
+
+You also need to motivate your choices in this design.  Your choices should match the Neo4J design principles covered in the course.
+
+(30 points -- 15 points each query) Write Cypher queries for the first two aggregations listed above.  (You are not expected to enter data and test your queries.)
+
+(10 points) The previous design problem emphasized looking at descendants.  Would your design be suitable if our goals also included looking at ancestors, e.g., counting the number of known ancestors?  Explain why or why not.
+
+
+
+
+
+
+
+Submit a PDF file with all your answers.
+
+The following schemas are suitable for a relational, transactional database.  I
+
+n the problems below, you will adapt this design for other database models.
+
+Employee(id, first_name, last_name, position, supervisor_id, dept_id, salary, hire_date)
+supervisor_id references Employee.id
+dept_id references Department.id
+salary >= 0
+Project(id, name, manager_id, budget)
+manager_id references Employee.id
+budget >= 0
+ProjectMember(proj_id, emp_id)
+Which employees work on which projects?
+proj_id references Project.id
+emp_id references Employee.id
+ProjectExpense(id, proj_id, emp_id, reason, amount)
+proj_id references Project.id
+emp_id references Employee.id
+amount >= 0
+Department(id, name, manager_id, budget)
+manager_id references Employee.id
+budget >= 0
+DepartmentExpense(id, dept_id, emp_id, reason, amount)
+dept_id references Department.id
+emp_id references Employee.id
+amount >= 0
+In this design, employees can work in one department, but multiple projects.  Rather than specifying how to split the salary among these, salaries are simply kept separate.  Neither the expenses nor budget of departments and projects include salaries.  Budgets are intended to cap the (non-salary) expenses.
+
+Problems
+(15 points total)
+
+(10 points) For the above data, use dimensional modeling to produce a design, suitable for an OLAP database, consisting of one or more stars.
+
+(5 points) Explain of your design choices.
+
+Assume that we are primarily interested in making the following kinds of queries:
+
+total salaries within departments
+total salaries directly or indirectly under supervisors
+comparing salaries of employees in the same position
+comparing total expenses to budgets within both projects and departments
+(15 points total)
+
+(10 points) For the above data, create a design (schemas) for a MongoDB database.  I.e., what kinds of documents will you use, what attributes will they use, and what kind of data will those attributes have?
+
+(5 points) Explain your design choices.
+
+Make the same assumptions about the primary uses of the data.
+
+(20 points total -- 5 points each)
+
+For each of the following, either write a PyMongo query, or explain why it is not possible with what we covered.
+
+Because we did not provide a design or data for this problem, we also did not provide a Jupyter Notebook in Vocareum.  If you wish to test your queries, we offer to options.  In the provided Vocareum Workspace, you can use the notebook sample.ipynb, which has the initial code to connect to MongoDB.  Alternatively, you can use mongoplayground.netLinks to an external site..
+
+For each department, compute the total salary of its employees.
+For each employee, compute the total salary of employees directly or indirectly managed by them.
+For each position, compute the minimum, mean, and maximum salary.
+For each project, compute the remaining budget (i.e., project budget minus total project expenses).
+(15 points total)
+
+(10 points) For the above data, create a design (schemas) for a Neo4J database.  I.e., what node types and relation types will you use, what properties will these have, and what kinds of data will these properties have?
+
+(5 points) Explain your design choices.
+
+Make the same assumptions about the primary uses of the data.
+
+(20 points total -- 5 points each)
+
+Write Cypher queries for each of the questions above.
+
+Again, if you wish to test your queries, use Vocareum Workspace or neo4j.com/sandbox/Links to an external site..
+
+(5 points)
+
+Compare and contrast using PostgreSQL, MongoDB, and Neo4J for this data.  Which would you use and why?
+
+
+
+
+
+
+
+Problem 1 (10 points total)
+Rice Software Inc. has a simple organization into departments and employees within those departments.
+This leads to the following database schema.
+• Department(dept_id, dept_name)
+o dept_name is not null.
+• Employee(emp_id, emp_name, dept_id, salary)
+o emp_name is not null.
+o dept_id references Department.dept_id and is not null.
+(10 points) Write a PL/pgSQL function DeptEmpCount() that takes no argument and returns a table listing
+each department ID, name, and number of employees in that department.
+Include the appropriate keyword: IMMUTABLE, STABLE, or VOLATILE.
+Problem 2 (21 points total)
+In Module 3.3, we presented three different SQL implementations of A ANTI-JOIN B. We repeat that SQL
+code here.
+SELECT A.i
+FROM A
+WHERE NOT EXISTS (SELECT B.i FROM B WHERE A.i = B.i);
+SELECT A.i
+FROM A
+WHERE A.i NOT IN (SELECT B.i FROM B);
+SELECT A.i
+FROM A
+LEFT JOIN B ON A.i = B.i
+WHERE B.i IS NULL;
+For this problem, you will need to write and run SQL code to compare these three implementations. You
+may use PostgreSQL on Vocareum, your own computer, or DB-Fiddle, but use a single platform. (However,
+it is awkward to write functions in DB-Fiddle.) Show the code used in each step.
+a. (5 points) Write a PL/pgSQL function rand_upto(num INT). It returns a random integer
+between from 1 to N.
+b. (0 points) Use the following code to create two tables.
+DROP TABLE A IF EXISTS;
+DROP TABLE B IF EXISTS;
+CREATE TABLE A(i INT);
+CREATE TABLE B(i INT);
+c. (1 point) Using rand_upto(), insert 20,000 random integers between 1 and 1000 into table A.
+Do the same for table B. (I.e., we expect the two tables to have different contents.)
+(For code style and performance, it would have been better to create a function that did all this
+work in one function call per table. However, we defined rand_upto() this way for pedagogical
+reasons.)
+d. (1 point) Using this data, determine the running time of each of the three anti-join implementations
+above.
+e. (2 points) Using this data, generate and show the query plan used for each of these three anti-join
+implementations.
+f. (6 points) PostgreSQL gives these query plans in a form that is only marginably human-readable.
+Describe these query plans in more understandable terms. For each step, describe the operation,
+its estimated cardinality, and its estimated time. If any of the queries use the same query plan,
+then do this only once per distinct query plan.
+g. (6 points) Explain the relative differences in running times for these query plans. E.g., if one query
+plan is much faster than the other two, what in its query plan explains that?
+Problem 3 (54 points total)
+You work at Some Other University, which currently uses a relational database with the following EERD.
+Every attribute is simply a number or string, except that the doubled border on Faculty.degrees means that
+a faculty member can have multiple degrees. We did not allow that in our ERDs, but some do.
+a. (10 points) MongoDB design: Motivate what you will use as document collections. For each entity
+set, describe why you will have that information in its own document collection, merge it into
+another document collection, and/or embed it or part of it in another document collection.
+b. (10 points) MongoDB design: For each document class, list its attributes, indicate which
+attributes’ values are arrays, subdocuments, or IDs of other document classes, and recursively do
+the same within any subdocuments. You do not need to choose which primitive datatypes to use
+in the values.
+Grading will be based on how well this implements your design from the previous part.
+c. (2 points) MongoDB query: Give a pyMongo query that uses data in your design to find all the
+faculty members teaching a course named “Databases”. The results should include one faculty ID
+per document but may have additional fields.
+(This query should be simple, if your design allows it to be.)
+d. (12 points) MongoDB query: Give a pyMongo query that uses data in your design to find, for each
+faculty member, the students in at least two of that faculty member’s courses. The resulting data
+should be in either of the following forms. Each document has a faculty ID and a list of all the
+appropriate student IDs, so each faculty member is in one document. Alternatively, each
+document has a faculty ID and one appropriate student ID, so each faculty member is in multiple
+documents.
+For each stage of the aggregation pipeline, describe the form of the resulting data. This should
+help you correctly develop the pipeline, and it will also help us grade it. To avoid double-counting
+mistakes, we will assume that your code correctly implements the desired result in each stage
+when grading the following stages.
+(This will be a real test of your understanding pyMongo queries. No, you cannot use multiple
+queries or any Python outside of the query.)
+e. (10 points) Neo4J design: Motivate and give a corresponding Neo4J-style design. Identify what
+will be the node types, the relationships, and the attributes of each of those.
+f. (10 points) Neo4J query: Give a Cypher query that uses data in your design to find, for each faculty
+member, the students in at least two of that faculty member’s courses. A student should be
+shown only once per faculty member.
+Problem 4 (15 points total)
+You have the following schedule:
+R 1 (C) W 2 (B) W 3 (A) R 3 (B) W 1(A) R 1 (B) R 2 (C) R 1 (B) W 2 (B)
+a. (4 points) Provide all the conflicting pairs.
+b. (2 points) Provide the conflict graph with all edges. Describe in text or provide a picture.
+We will grade according to this corresponding to your previous answer.
+c. (2 points) According to the conflict graph, is the schedule serializable, and why?
+We will grade according to this corresponding to your previous answer.
+d. (7 points) Assume that all three transactions use the same isolation level. Explain which of the
+four standard isolation levels will allow this schedule.

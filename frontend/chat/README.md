@@ -1,59 +1,71 @@
-# Chat
+# Frontend — Database Course Assistant
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.22.
+Angular 19 chat interface for the RAG backend. Provides a multi-chat sidebar, markdown rendering, per-message source citations, and a 10-question session limit.
 
-## Development server
+---
 
-To start a local development server, run:
+## Requirements
+
+- Node.js 18+
+- npm 9+
+- Backend running at `http://localhost:8000` (see root README)
+
+---
+
+## Development
+
+```bash
+npm install      # first time only
+npm start        # serves at http://localhost:4200 with live reload
+```
+
+Alternatively, using the Angular CLI directly:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
-
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## Production build
 
 ```bash
-ng generate component component-name
+ng build         # outputs to dist/chat/
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+## Tests
 
 ```bash
-ng generate --help
+ng test          # unit tests via Karma
 ```
 
-## Building
+---
 
-To build the project run:
+## Key files
 
-```bash
-ng build
-```
+| File | Purpose |
+|---|---|
+| `src/app/app.component.ts` | All component logic (chat state, HTTP calls, markdown) |
+| `src/app/app.component.html` | Template — sidebar + message list + input bar |
+| `src/app/app.component.css` | Dark theme styles |
+| `src/app/app.config.ts` | Angular providers (HTTP client, PrimeNG theme) |
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+---
 
-## Running unit tests
+## Notable behaviour
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+- **Stateless**: conversation history is held in memory and sent to the backend on every request. Refreshing the page clears all chats.
+- **Session limit**: 10 questions per browser session, enforced client-side. The dot-row in the input area shows remaining questions.
+- **Timeout**: requests time out after 60 seconds — the backend can take a while when the model falls back through the quota chain.
+- **Markdown**: assistant responses are rendered through `marked` so the LLM can use bold, lists, code blocks, etc.
 
-```bash
-ng test
-```
+---
 
-## Running end-to-end tests
+## UI library
 
-For end-to-end (e2e) testing, run:
+[PrimeNG](https://primeng.org/) v19 with the Aura theme preset. Icons from PrimeIcons.
 
-```bash
-ng e2e
-```
+---
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+## Additional Angular resources
 
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- [Angular CLI reference](https://angular.dev/tools/cli)
+- [PrimeNG docs](https://primeng.org/installation)
