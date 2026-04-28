@@ -1,0 +1,799 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Database Course Assistant — Architecture Overview</title>
+<style>
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --surface2: #263348;
+    --border: #334155;
+    --blue: #3b82f6;
+    --blue-light: #60a5fa;
+    --green: #22c55e;
+    --amber: #f59e0b;
+    --red: #ef4444;
+    --purple: #a78bfa;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --code-bg: #0d1117;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+  }
+
+  a { color: var(--blue-light); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+
+  /* ── Layout ──────────────────────────────────────────────────────── */
+  .page {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 3rem 2rem;
+  }
+
+  /* ── Hero ────────────────────────────────────────────────────────── */
+  .hero {
+    text-align: center;
+    margin-bottom: 4rem;
+  }
+  .hero-badge {
+    display: inline-block;
+    background: var(--blue);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 0.25rem 0.75rem;
+    border-radius: 999px;
+    margin-bottom: 1.25rem;
+  }
+  .hero h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    background: linear-gradient(135deg, #fff 30%, var(--blue-light));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  .hero p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* ── Section ─────────────────────────────────────────────────────── */
+  section {
+    margin-bottom: 3.5rem;
+  }
+  .section-label {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--blue-light);
+    margin-bottom: 0.5rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1.25rem;
+  }
+  h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  p { margin-bottom: 0.85rem; color: var(--text-muted); }
+  p:last-child { margin-bottom: 0; }
+  strong { color: var(--text); }
+
+  /* ── Card ────────────────────────────────────────────────────────── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1rem;
+  }
+  .card h3 { margin-bottom: 0.5rem; }
+
+  /* ── Flow diagram ────────────────────────────────────────────────── */
+  .flow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem;
+    overflow-x: auto;
+  }
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 0;
+  }
+  .flow-node {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .flow-node.blue  { border-color: var(--blue);   color: var(--blue-light); }
+  .flow-node.green { border-color: var(--green);  color: var(--green); }
+  .flow-node.amber { border-color: var(--amber);  color: var(--amber); }
+  .flow-node.purple{ border-color: var(--purple); color: var(--purple); }
+  .flow-node.red   { border-color: var(--red);    color: var(--red); }
+
+  .flow-arrow {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    padding: 0 0.5rem;
+    flex-shrink: 0;
+  }
+  .flow-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+  .flow-arrow-down {
+    color: var(--text-muted);
+    font-size: 1rem;
+    line-height: 1.5;
+    text-align: center;
+  }
+
+  .flow-section {
+    margin-bottom: 1.5rem;
+  }
+  .flow-label {
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 0.5rem;
+  }
+
+  /* ── Big flow diagram ────────────────────────────────────────────── */
+  .bigflow {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    align-items: flex-start;
+  }
+  .bigflow-step {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    width: 100%;
+    margin-bottom: 0;
+  }
+  .bigflow-connector {
+    display: flex;
+    align-items: center;
+    padding-left: 1.6rem;
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    line-height: 1.2;
+    margin: 0.15rem 0;
+  }
+  .bigflow-branch {
+    padding-left: 3rem;
+    border-left: 2px solid var(--border);
+    margin-left: 1.6rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  /* ── File tree ───────────────────────────────────────────────────── */
+  .tree {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.5rem;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.82rem;
+    line-height: 1.9;
+    overflow-x: auto;
+  }
+  .tree .dir  { color: var(--blue-light); }
+  .tree .file { color: var(--text); }
+  .tree .note { color: var(--text-muted); }
+  .tree .hl   { color: var(--green); }
+
+  /* ── Table ───────────────────────────────────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.88rem;
+  }
+  th {
+    text-align: left;
+    padding: 0.6rem 0.8rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  td {
+    padding: 0.6rem 0.8rem;
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    vertical-align: top;
+  }
+  td strong { color: var(--text); }
+  tr:hover td { background: var(--surface2); }
+
+  /* ── Code ────────────────────────────────────────────────────────── */
+  code {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1em 0.4em;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.85em;
+    color: var(--blue-light);
+  }
+  pre {
+    background: var(--code-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1.25rem;
+    overflow-x: auto;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.82rem;
+    line-height: 1.7;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+  }
+  pre code {
+    background: none;
+    border: none;
+    padding: 0;
+    color: inherit;
+    font-size: inherit;
+  }
+
+  /* ── Tag ─────────────────────────────────────────────────────────── */
+  .tag {
+    display: inline-block;
+    padding: 0.15rem 0.55rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    margin-right: 0.3rem;
+  }
+  .tag-blue   { background: rgba(59,130,246,0.15); color: var(--blue-light); }
+  .tag-green  { background: rgba(34,197,94,0.15);  color: var(--green); }
+  .tag-amber  { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .tag-purple { background: rgba(167,139,250,0.15);color: var(--purple); }
+
+  /* ── Divider ─────────────────────────────────────────────────────── */
+  hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 3rem 0;
+  }
+
+  /* ── Steps ───────────────────────────────────────────────────────── */
+  .steps { counter-reset: step; }
+  .step {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    align-items: flex-start;
+  }
+  .step-num {
+    counter-increment: step;
+    background: var(--blue);
+    color: #fff;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: 700;
+    margin-top: 2px;
+  }
+  .step-body h3 { margin-bottom: 0.3rem; }
+  .step-body p  { margin-bottom: 0; font-size: 0.9rem; }
+
+  /* ── Footer ──────────────────────────────────────────────────────── */
+  footer {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <div class="hero">
+    <div class="hero-badge">RAG System</div>
+    <h1>Database Course Assistant</h1>
+    <p>
+      A Retrieval-Augmented Generation chatbot that helps students learn database
+      concepts from lecture material — without giving away assignment answers.
+    </p>
+  </div>
+
+  <!-- ── What it does ─────────────────────────────────────────── -->
+  <section>
+    <div class="section-label">Overview</div>
+    <h2>What the system does</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>📚 Retrieves course material</h3>
+        <p>When a student asks a question, the system searches a vector database of
+        chunked lecture slides and cleaned transcripts to find the most relevant passages.</p>
+      </div>
+      <div class="card">
+        <h3>🤖 Generates Socratic answers</h3>
+        <p>A Gemini LLM reads those passages and produces a concise, step-by-step
+        response — asking guiding questions rather than handing over solutions.</p>
+      </div>
+      <div class="card">
+        <h3>🛡️ Blocks assignment leakage</h3>
+        <p>A separate vector index of assignment questions detects verbatim or
+        near-verbatim matches. On a hit, the assistant asks the student what
+        they've already tried instead of providing any guidance.</p>
+      </div>
+      <div class="card">
+        <h3>🔄 Handles quota limits</h3>
+        <p>If a Gemini model hits its rate limit (HTTP 429), the system automatically
+        falls back through a chain of four models, so the service stays up.</p>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── Request flow ──────────────────────────────────────────── -->
+  <section>
+    <div class="section-label">Architecture</div>
+    <h2>Request flow — what happens when a student asks a question</h2>
+    <div class="flow">
+      <table style="border:none; width:100%;">
+        <tr>
+          <td style="border:none; padding: 0.4rem 0; white-space:nowrap; vertical-align:middle;">
+            <span class="flow-node blue">Browser (Angular :4200)</span>
+          </td>
+          <td style="border:none; padding: 0.4rem 0.5rem; vertical-align:middle; color:var(--text-muted);">→</td>
+          <td style="border:none; padding: 0.4rem 0; color:var(--text-muted); font-size:0.82rem;">
+            <code>POST /query</code> with <code>{ question, history[] }</code>
+          </td>
+        </tr>
+        <tr>
+          <td style="border:none; padding: 0.4rem 0; vertical-align:middle;">
+            <span class="flow-node blue">FastAPI server (api.py :8000)</span>
+          </td>
+          <td style="border:none;"></td>
+          <td style="border:none; padding: 0.4rem 0.5rem; color:var(--text-muted); font-size:0.82rem;">
+            Receives request, orchestrates the pipeline
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" style="border:none; padding: 0.5rem 0 0.5rem 2rem;">
+            <table style="border:none; width:100%;">
+              <tr>
+                <td style="border:none; padding:0.3rem 0; vertical-align:middle; white-space:nowrap;">
+                  <span style="color:var(--text-muted); font-size:1rem;">├─</span>
+                  <span class="flow-node red" style="margin-left:0.5rem;">assignment_guard.py</span>
+                </td>
+                <td style="border:none; padding:0.3rem 0.5rem; color:var(--text-muted); font-size:0.82rem;">
+                  Cosine similarity search against <code>chroma_assignment/</code>.
+                  If score ≥ 0.80 → sets <strong>is_assignment = True</strong>
+                </td>
+              </tr>
+              <tr>
+                <td style="border:none; padding:0.3rem 0; vertical-align:middle; white-space:nowrap;">
+                  <span style="color:var(--text-muted); font-size:1rem;">└─</span>
+                  <span class="flow-node amber" style="margin-left:0.5rem;">chain.py</span>
+                </td>
+                <td style="border:none; padding:0.3rem 0.5rem; color:var(--text-muted); font-size:0.82rem;">
+                  Builds the RAG chain, invokes LLM, handles fallback
+                </td>
+              </tr>
+              <tr>
+                <td colspan="2" style="border:none; padding: 0.2rem 0 0 3rem;">
+                  <table style="border:none; width:100%;">
+                    <tr>
+                      <td style="border:none; padding:0.25rem 0; vertical-align:middle; white-space:nowrap;">
+                        <span style="color:var(--text-muted);">├─</span>
+                        <span class="flow-node green" style="margin-left:0.5rem;">retriever.py — fetch</span>
+                      </td>
+                      <td style="border:none; padding:0.25rem 0.5rem; color:var(--text-muted); font-size:0.82rem;">
+                        Searches <code>chroma_db/</code> with Gemini embeddings → top <strong>6 chunks</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="border:none; padding:0.25rem 0; vertical-align:middle; white-space:nowrap;">
+                        <span style="color:var(--text-muted);">├─</span>
+                        <span class="flow-node green" style="margin-left:0.5rem;">retriever.py — rerank</span>
+                      </td>
+                      <td style="border:none; padding:0.25rem 0.5rem; color:var(--text-muted); font-size:0.82rem;">
+                        CrossEncoder scores each chunk → keeps top <strong>3</strong>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td style="border:none; padding:0.25rem 0; vertical-align:middle; white-space:nowrap;">
+                        <span style="color:var(--text-muted);">└─</span>
+                        <span class="flow-node purple" style="margin-left:0.5rem;">Gemini LLM</span>
+                      </td>
+                      <td style="border:none; padding:0.25rem 0.5rem; color:var(--text-muted); font-size:0.82rem;">
+                        System prompt + context + history + question → answer
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="border:none; padding: 0.4rem 0; vertical-align:middle;">
+            <span class="flow-node blue">Browser</span>
+          </td>
+          <td style="border:none; padding: 0.4rem 0.5rem; vertical-align:middle; color:var(--text-muted);">←</td>
+          <td style="border:none; padding: 0.4rem 0; color:var(--text-muted); font-size:0.82rem;">
+            <code>{ answer, sources[], model_used }</code> — rendered as markdown with source tags
+          </td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── Files ─────────────────────────────────────────────────── -->
+  <section>
+    <div class="section-label">Codebase</div>
+    <h2>File by file</h2>
+    <div class="tree">
+<span class="dir">RAG project/</span><br>
+│<br>
+├── <span class="hl">api.py</span>              <span class="note"># FastAPI — single /query endpoint, startup lifecycle</span><br>
+├── <span class="hl">chain.py</span>            <span class="note"># Builds LangChain RAG chain; fallback across 4 Gemini models</span><br>
+├── <span class="hl">retriever.py</span>        <span class="note"># Chroma vector DB connection; multi-query retrieval; CrossEncoder rerank</span><br>
+├── <span class="hl">assignment_guard.py</span> <span class="note"># Embeds assignment questions; similarity check per request</span><br>
+├── <span class="hl">ingest.py</span>           <span class="note"># Loads data_clean/, chunks, embeds, writes chroma_db/</span><br>
+├── <span class="hl">config.py</span>           <span class="note"># All constants: paths, models, prompts, thresholds</span><br>
+├── <span class="hl">query.py</span>            <span class="note"># CLI testing tool — bypasses frontend</span><br>
+├── <span class="hl">rewrite_transcripts.py</span> <span class="note"># One-time LLM cleanup of raw transcripts</span><br>
+│<br>
+├── <span class="dir">frontend/chat/</span>      <span class="note"># Angular 19 chat UI (port 4200)</span><br>
+│   └── <span class="dir">src/app/</span><br>
+│       ├── app.component.ts    <span class="note"># Component logic: chat state, HTTP, markdown</span><br>
+│       ├── app.component.html  <span class="note"># Template: sidebar + messages + input</span><br>
+│       └── app.component.css   <span class="note"># Dark theme</span><br>
+│<br>
+├── <span class="dir">data/</span>               <span class="note"># Raw PDFs + transcripts (not read directly by ingest)</span><br>
+├── <span class="dir">data_clean/</span>         <span class="note"># Cleaned data — what ingest.py actually reads</span><br>
+├── <span class="dir">chroma_db/</span>          <span class="note"># Main vector index (built by ingest.py)</span><br>
+├── <span class="dir">chroma_assignment/</span>  <span class="note"># Assignment question index (built on first API startup)</span><br>
+│<br>
+├── requirements.txt            <span class="note"># Python deps</span><br>
+├── start.bat                   <span class="note"># Windows one-click launcher</span><br>
+└── <span class="hl">overview.html</span>       <span class="note"># ← you are here</span><br>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── Components deep-dive ─────────────────────────────────── -->
+  <section>
+    <div class="section-label">Components</div>
+    <h2>Component deep-dives</h2>
+
+    <!-- config.py -->
+    <div class="card" style="margin-bottom:1rem;">
+      <h3><code>config.py</code> — Central configuration</h3>
+      <p>Single source of truth for every tunable constant. Change things here and they propagate everywhere.</p>
+      <table style="margin-top:0.75rem;">
+        <thead><tr><th>Constant</th><th>Default</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><strong>CHUNK_SIZE</strong></td><td>1000 chars</td><td>How much text each vector represents</td></tr>
+          <tr><td><strong>CHUNK_OVERLAP</strong></td><td>200 chars</td><td>Context continuity across chunk boundaries</td></tr>
+          <tr><td><strong>TOP_K</strong></td><td>6</td><td>Chunks retrieved from Chroma per query</td></tr>
+          <tr><td><strong>RERANK_TOP_N</strong></td><td>3</td><td>Chunks passed to the LLM after reranking</td></tr>
+          <tr><td><strong>SIMILARITY_THRESHOLD</strong></td><td>0.80</td><td>Cosine similarity cutoff for assignment detection</td></tr>
+          <tr><td><strong>FALLBACK_MODELS</strong></td><td>4 models</td><td>Tried in order when the previous one hits 429</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- ingest.py -->
+    <div class="card" style="margin-bottom:1rem;">
+      <h3><code>ingest.py</code> — Document ingestion pipeline</h3>
+      <p>Run this once before starting the API. It reads <code>data_clean/</code>, splits every document into
+      overlapping chunks, embeds them with <strong>Gemini embedding-001</strong>, and writes the results to
+      <code>chroma_db/</code>. Batches 10 chunks at a time (30 s delay between batches) to respect API quotas.
+      Progress is saved to <code>embed_progress.json</code> after every batch, so an interrupted run can resume
+      exactly where it left off.</p>
+      <pre><code>python ingest.py</code></pre>
+    </div>
+
+    <!-- retriever.py -->
+    <div class="card" style="margin-bottom:1rem;">
+      <h3><code>retriever.py</code> — Retrieval &amp; reranking</h3>
+      <p><strong>Two-stage retrieval</strong> improves answer quality significantly over raw similarity search:</p>
+      <ol style="color:var(--text-muted); padding-left:1.25rem; margin-top:0.5rem; font-size:0.9rem; line-height:2;">
+        <li><strong>Bi-encoder (Chroma + Gemini)</strong> — fast ANN search, optimised for recall → returns top 6 chunks.</li>
+        <li><strong>Cross-encoder (ms-marco-MiniLM-L-6-v2)</strong> — scores every (query, chunk) pair precisely, optimised for precision → keeps top 3.</li>
+      </ol>
+      <p style="margin-top:0.75rem;">The <strong>multi-query</strong> retriever variant (used when the first answer contains the fail-safe phrase)
+      generates 3 alternative phrasings of the question with an LLM, retrieves chunks for each, deduplicates,
+      then reranks the union. This overcomes cases where the student's wording doesn't match the lecture's wording.</p>
+    </div>
+
+    <!-- assignment_guard.py -->
+    <div class="card" style="margin-bottom:1rem;">
+      <h3><code>assignment_guard.py</code> — Academic integrity guard</h3>
+      <p>On first API startup (or if <code>chroma_assignment/</code> doesn't exist) the file
+      <code>data_clean/assignment_questions_clean.txt</code> is embedded and stored as a second Chroma collection.</p>
+      <p>Every incoming question is compared against this index. Chroma returns a cosine distance;
+      the code converts it to a similarity score (<code>1 − distance</code>). If the score is ≥ 0.80,
+      the question is flagged and the system prompt is overridden with an instruction to ask the student
+      what they've already tried — no hints, no partial answers.</p>
+    </div>
+
+    <!-- chain.py -->
+    <div class="card" style="margin-bottom:1rem;">
+      <h3><code>chain.py</code> — RAG chain &amp; model fallback</h3>
+      <p>Builds a LangChain LCEL chain: <em>retriever → reranker → prompt → LLM → string output</em>.
+      The system prompt instructs the model to act as a Socratic database tutor and to say
+      <em>"I lack specific course context"</em> if the retrieved chunks aren't relevant enough.
+      <code>invoke_with_fallback()</code> catches that phrase and retries with multi-query retrieval
+      before escalating.</p>
+      <p>On HTTP 429 (quota exceeded), the current model is marked exhausted and the next model in
+      <code>FALLBACK_MODELS</code> is tried. Exhausted models are remembered for the lifetime of the
+      server process.</p>
+    </div>
+
+    <!-- api.py -->
+    <div class="card" style="margin-bottom:1rem;">
+      <h3><code>api.py</code> — FastAPI server</h3>
+      <p>Single endpoint: <code>POST /query</code>. On startup (via <code>lifespan</code>), it loads both Chroma
+      collections and creates both retriever variants — so they're warm for every request. CORS is restricted
+      to <code>localhost:4200</code>.</p>
+      <p>Sources returned to the frontend are the unique filenames from chunks retrieved by the simple retriever,
+      giving students visibility into which lectures were consulted.</p>
+    </div>
+
+    <!-- Frontend -->
+    <div class="card">
+      <h3><code>frontend/chat/</code> — Angular 19 UI</h3>
+      <p>Standalone Angular component (no NgModule). All state is in-memory — switching or refreshing clears chats.
+      The full conversation history is serialised and sent with every request so the backend can be completely
+      stateless. Session limit of 10 questions is enforced client-side via a dot-progress indicator.</p>
+      <p>Markdown rendering via <code>marked</code> lets the LLM use formatting. PrimeNG provides the spinner,
+      tags, and buttons.</p>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── Data pipeline ────────────────────────────────────────── -->
+  <section>
+    <div class="section-label">Data</div>
+    <h2>Data pipeline</h2>
+    <div class="flow" style="padding: 1.5rem 2rem;">
+      <table style="border:none; width:100%; font-size:0.85rem;">
+        <tr>
+          <td style="border:none; padding:0.5rem 0; white-space:nowrap; vertical-align:middle;">
+            <span class="flow-node">data/transcripts/*.txt</span>
+          </td>
+          <td style="border:none; padding:0 0.75rem; vertical-align:middle; color:var(--text-muted);">→</td>
+          <td style="border:none; padding:0.5rem 0; white-space:nowrap; vertical-align:middle;">
+            <span class="flow-node amber">rewrite_transcripts.py</span>
+            <span style="color:var(--text-muted); font-size:0.75rem; margin-left:0.5rem;">(LLM cleanup, one-time)</span>
+          </td>
+          <td style="border:none; padding:0 0.75rem; vertical-align:middle; color:var(--text-muted);">→</td>
+          <td style="border:none; padding:0.5rem 0; white-space:nowrap; vertical-align:middle;">
+            <span class="flow-node green">data_clean/transcripts/*.txt</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="border:none; padding:0.5rem 0; white-space:nowrap; vertical-align:middle;">
+            <span class="flow-node">data/pdfs/*.pdf</span>
+          </td>
+          <td style="border:none; padding:0 0.75rem; vertical-align:middle; color:var(--text-muted);">→</td>
+          <td style="border:none; padding:0.5rem 0; white-space:nowrap; vertical-align:middle;">
+            <span class="flow-node" style="color:var(--text-muted);">shutil.copy2 (unchanged)</span>
+          </td>
+          <td style="border:none; padding:0 0.75rem; vertical-align:middle; color:var(--text-muted);">→</td>
+          <td style="border:none; padding:0.5rem 0; white-space:nowrap; vertical-align:middle;">
+            <span class="flow-node green">data_clean/pdfs/*.pdf</span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" style="border:none; padding:0.5rem 0; white-space:nowrap; vertical-align:middle;">
+            <span class="flow-node green">data_clean/ (all files)</span>
+          </td>
+          <td style="border:none; padding:0 0.75rem; vertical-align:middle; color:var(--text-muted);">→</td>
+          <td style="border:none; padding:0.5rem 0; white-space:nowrap; vertical-align:middle;">
+            <span class="flow-node blue">ingest.py → chroma_db/</span>
+          </td>
+        </tr>
+        <tr>
+          <td colspan="3" style="border:none; padding:0.5rem 0; white-space:nowrap; vertical-align:middle;">
+            <span class="flow-node">assignment_questions_clean.txt</span>
+          </td>
+          <td style="border:none; padding:0 0.75rem; vertical-align:middle; color:var(--text-muted);">→</td>
+          <td style="border:none; padding:0.5rem 0; white-space:nowrap; vertical-align:middle;">
+            <span class="flow-node red">assignment_guard.py → chroma_assignment/</span>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── Setup ─────────────────────────────────────────────────── -->
+  <section>
+    <div class="section-label">Setup</div>
+    <h2>Getting started</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-body">
+          <h3>Install Python dependencies</h3>
+          <pre><code>python -m venv .venv
+.venv\Scripts\activate
+pip install -r requirements.txt</code></pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-body">
+          <h3>Add your Google API key</h3>
+          <p>Create <code>.env</code> in the project root:</p>
+          <pre><code>GOOGLE_API_KEY=your_key_here</code></pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-body">
+          <h3>Build the vector database <span style="color:var(--text-muted); font-size:0.8rem; font-weight:400;">(first run only)</span></h3>
+          <pre><code>python ingest.py</code></pre>
+          <p>Takes a while due to API batching. Safe to interrupt and re-run.</p>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-body">
+          <h3>Install frontend dependencies <span style="color:var(--text-muted); font-size:0.8rem; font-weight:400;">(first run only)</span></h3>
+          <pre><code>cd frontend/chat
+npm install</code></pre>
+        </div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-body">
+          <h3>Launch</h3>
+          <pre><code>start.bat          # Windows one-click
+# or manually:
+uvicorn api:app --reload        # terminal 1 (port 8000)
+cd frontend/chat &amp;&amp; npm start   # terminal 2 (port 4200)</code></pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <hr />
+
+  <!-- ── Model fallback chain ──────────────────────────────────── -->
+  <section>
+    <div class="section-label">Resilience</div>
+    <h2>Model fallback chain</h2>
+    <p>Each Gemini model has its own free-tier quota. When a model returns HTTP 429 it is marked
+    exhausted for the process lifetime and the next model is tried immediately.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Model</th><th>Role</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>1</td>
+          <td><strong>gemini-3-flash-preview</strong></td>
+          <td>Primary — good balance of speed and quality</td>
+        </tr>
+        <tr>
+          <td>2</td>
+          <td><strong>gemini-2.5-flash</strong></td>
+          <td>Reliable stable fallback</td>
+        </tr>
+        <tr>
+          <td>3</td>
+          <td><strong>gemini-3.1-flash-lite-preview</strong></td>
+          <td>Most generous quota</td>
+        </tr>
+        <tr>
+          <td>4</td>
+          <td><strong>gemini-2.5-flash-lite</strong></td>
+          <td>Last resort</td>
+        </tr>
+      </tbody>
+    </table>
+    <p style="margin-top:0.75rem;">The model actually used is returned in the API response and displayed
+    under every assistant message in the UI.</p>
+  </section>
+
+  <hr />
+
+  <!-- ── Prompt engineering ────────────────────────────────────── -->
+  <section>
+    <div class="section-label">Prompt engineering</div>
+    <h2>System prompt design</h2>
+    <div class="card-grid">
+      <div class="card">
+        <h3>Role &amp; source restriction</h3>
+        <p>The LLM is told it is a <em>"Supportive Database Tutor"</em> whose only permitted
+        sources are the provided lecture context and official PostgreSQL / PyMongo / Neo4j docs.
+        If the context is insufficient it must say the sentinel phrase
+        <em>"I lack specific course context"</em> rather than hallucinating.</p>
+      </div>
+      <div class="card">
+        <h3>Guardrails</h3>
+        <p>Explicitly forbidden: full ERDs, schemas, code solutions, or BCNF/3NF derivations.
+        User input is wrapped in <code>&lt;user_query&gt;</code> XML tags and the prompt instructs
+        the model to treat the tag contents as data only, ignoring any override instructions.</p>
+      </div>
+      <div class="card">
+        <h3>Socratic protocol</h3>
+        <p>Responses must: identify the core concept, ask one targeted question, validate
+        small wins before moving on, and offer a real-world analogy after 3+ failed attempts.
+        Responses are capped at 150 words where possible.</p>
+      </div>
+      <div class="card">
+        <h3>Assignment override</h3>
+        <p>When <code>assignment_guard</code> flags a question, an additional <em>CRITICAL OVERRIDE</em>
+        block is appended to the system prompt. It forbids any guidance and instructs the model
+        to acknowledge the assignment question and ask what the student has tried.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Database Course Assistant &mdash; Rice University
+  </footer>
+
+</div>
+</body>
+</html>

@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 
 from retriever import load_vectordb, get_retriever
 from chain import invoke_with_fallback
+from assignment_guard import load_assignment_db, is_assignment_question
 
 # ── Startup: load vectordb and chain once ──────────────────────────────────
 @asynccontextmanager
@@ -13,6 +14,7 @@ async def lifespan(app: FastAPI):
     app.state.retriever_simple = get_retriever(vectordb, queries=1)
     app.state.retriever_multi = get_retriever(vectordb, queries=3)
     app.state.exhausted_models = set()
+    app.state.assignment_db = load_assignment_db()
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -44,12 +46,18 @@ class AnswerResponse(BaseModel):
 def query(request: QuestionRequest):
     history = [{"role": m.role, "content": m.content} for m in request.history]
 
+    is_assignment, matched = is_assignment_question(
+        request.question,
+        app.state.assignment_db
+    )
+
     answer, model_used = invoke_with_fallback(
         app.state.retriever_simple,
         app.state.retriever_multi,
         request.question,
         app.state.exhausted_models, 
-        history
+        history, 
+        is_assignment
     )
     
     docs = app.state.retriever_simple.invoke(request.question)

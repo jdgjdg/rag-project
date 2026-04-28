@@ -7,4 +7,5 @@ python-dotenv
 pypdf
 docx2txt
 fastapi
-uvicorns
+uvicorn
+sentence-transformers

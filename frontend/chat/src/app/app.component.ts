@@ -9,6 +9,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
 import { TagModule } from 'primeng/tag';
 import { marked } from 'marked';
 import { timeout } from 'rxjs/operators';
+import katex from 'katex';
 
 interface Message {
     role: 'user' | 'assistant';
@@ -101,7 +102,23 @@ export class AppComponent {
     // Utils
 
     renderMarkdown(text: string): string {
-        return marked(text) as string;
+        let html = marked(text) as string;
+        
+        // Render block math: $$...$$
+        html = html.replace(/\$\$([^$]+)\$\$/g, (_, math) => {
+            try {
+                return katex.renderToString(math, { displayMode: true });
+            } catch { return math; }
+        });
+        
+        // Render inline math: $...$
+        html = html.replace(/\$([^$\n]+)\$/g, (_, math) => {
+            try {
+                return katex.renderToString(math, { displayMode: false });
+            } catch { return math; }
+        });
+        
+        return html;
     }
     
     @ViewChild('scrollAnchor') scrollAnchor!: ElementRef;

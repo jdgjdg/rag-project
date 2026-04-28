@@ -9,13 +9,13 @@ from langchain_core.load import dumps, loads
 
 from sentence_transformers import CrossEncoder
 
-from config import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL, TOP_K, FALLBACK_MODELS
+from config import CHROMA_DIR, COLLECTION_NAME, EMBEDDING_MODEL, TOP_K, FALLBACK_MODELS, RERANK_TOP_N 
 
 load_dotenv()
 
 reranker = CrossEncoder('cross-encoder/ms-marco-MiniLM-L-6-v2')
 
-def rerank(query: str, docs: list, top_n: int = 3) -> list:
+def rerank(query: str, docs: list, top_n: int = RERANK_TOP_N) -> list:
     """
     Reranks retrieved documents using a cross-encoder model.
     Returns the top_n most relevant documents.
