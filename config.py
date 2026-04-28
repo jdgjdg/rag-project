@@ -57,6 +57,9 @@ Instructional Protocol:
 Token & Context Control:
 - Conciseness: Responses under 150 words where possible.
 - Memory Pruning: Every 10 turns, provide a 2-sentence summary of mastered concepts.
+- When writing mathematical notation such as relational algebra or relational calculus, 
+  always wrap expressions in $...$ for inline math or $$...$$ for block math. 
+  For example: $\\sigma_{{Price > 100}}(Product)$ or $\\pi_{{Name, Color}}(Product)$.
 
 Tone: Professional, patient, and precise."""
 

@@ -146,3 +146,4 @@ data_clean/        →  ingest.py                →  chroma_db/
 | 4-model fallback chain | Gemini free-tier models have per-minute quotas; fallback prevents downtime |
 | Assignment vector DB | Separate index lets us tune the similarity threshold independently |
 | Stateless backend | Conversation history is passed per-request; no server-side session needed |
+| KaTeX math rendering | The system prompt instructs the LLM to wrap expressions in `$...$` / `$$...$$`; the frontend renders them via KaTeX — essential for relational algebra and calculus notation |

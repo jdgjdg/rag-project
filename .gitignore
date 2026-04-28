@@ -26,3 +26,9 @@ Thumbs.db
 
 chroma_db/
 .env
+
+# Node
+node_modules/
+
+# ChromaDB assignment index
+chroma_assignment/
