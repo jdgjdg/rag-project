@@ -1,4 +1,14 @@
-<div class="app-container">
+<div *ngIf="!idToken" class="signin-container">
+    <div class="signin-box">
+        <i class="pi pi-database signin-icon"></i>
+        <h2>Database Course Assistant</h2>
+        <p>Sign in with your Rice University account to continue</p>
+        <div id="google-signin-button"></div>
+        
+    </div>
+</div>
+
+<div *ngIf="idToken" class="app-container">
 
     <!-- Sidebar -->
     <div class="chat-sidebar">

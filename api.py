@@ -7,6 +7,32 @@ from retriever import load_vectordb, get_retriever
 from chain import invoke_with_fallback
 from assignment_guard import load_assignment_db, is_assignment_question
 
+from google.oauth2 import id_token
+from google.auth.transport import requests as google_requests
+from fastapi import Request, HTTPException
+
+GOOGLE_CLIENT_ID = "552296794218-rs88k3i25s97snuomulfnurpfd36bct6.apps.googleusercontent.com"
+
+def verify_token(request: Request) -> str:
+    auth_header = request.headers.get("Authorization")
+    if not auth_header or not auth_header.startswith("Bearer "):
+        raise HTTPException(status_code=401, detail="Missing token")
+    
+    token = auth_header.split(" ")[1]
+    
+    try:
+        payload = id_token.verify_oauth2_token(
+            token,
+            google_requests.Request(),
+            GOOGLE_CLIENT_ID
+        )
+        email = payload.get("email", "")
+        if not email.endswith("@rice.edu"):
+            raise HTTPException(status_code=403, detail="Must use Rice University account")
+        return email
+    except Exception as e:
+        raise HTTPException(status_code=401, detail=f"Invalid token: {str(e)}")
+    
 # ── Startup: load vectordb and chain once ──────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -22,7 +48,10 @@ app = FastAPI(lifespan=lifespan)
 # ── CORS: allows Angular (localhost:4200) to talk to this server ───────────
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=[
+        "http://localhost:4200",
+        "https://rag-assistant-552296794218.us-central1.run.app"
+    ],
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -43,7 +72,9 @@ class AnswerResponse(BaseModel):
 
 # ── Endpoint ───────────────────────────────────────────────────────────────
 @app.post("/query", response_model=AnswerResponse)
-def query(request: QuestionRequest):
+def query(request: QuestionRequest, http_request: Request):
+    email = verify_token(http_request)
+    print(f"  [user] {email}")
     history = [{"role": m.role, "content": m.content} for m in request.history]
 
     is_assignment, matched = is_assignment_question(
