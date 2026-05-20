@@ -1,10 +1,16 @@
 # config.py
+import os
 from pathlib import Path
 
 # ── Paths ──────────────────────────────────────────────────────────────────
 ROOT_DIR   = Path(__file__).parent
 DATA_DIR   = ROOT_DIR / "data_clean"
-CHROMA_DIR = ROOT_DIR / "chroma_db"
+
+# In Cloud Run (K_SERVICE is set), databases live in /tmp (writable).
+# Locally they live next to this file.
+_cloud_run = bool(os.getenv("K_SERVICE"))
+CHROMA_DIR            = Path("/tmp/chroma_db")         if _cloud_run else ROOT_DIR / "chroma_db"
+ASSIGNMENT_CHROMA_DIR = Path("/tmp/chroma_assignment") if _cloud_run else ROOT_DIR / "chroma_assignment"
 
 # ── Models ─────────────────────────────────────────────────────────────────
 EMBEDDING_MODEL = "gemini-embedding-001"

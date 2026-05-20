@@ -344,3 +344,40 @@
 .dot-used {
     background: rgba(255,255,255,0.15);
 }
+
+.signin-container {
+    display: flex;
+    height: 100vh;
+    align-items: center;
+    justify-content: center;
+    background: #0f172a;
+}
+
+.signin-box {
+    background: #1e293b;
+    padding: 3rem;
+    border-radius: 16px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    max-width: 400px;
+}
+
+.signin-icon {
+    font-size: 3rem;
+    color: #3b82f6;
+}
+
+.signin-box h2 {
+    color: #fff;
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+.signin-box p {
+    color: rgba(255,255,255,0.5);
+    margin: 0;
+    font-size: 0.9rem;
+}

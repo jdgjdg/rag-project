@@ -32,3 +32,5 @@ node_modules/
 
 # ChromaDB assignment index
 chroma_assignment/
+
+env.yaml
