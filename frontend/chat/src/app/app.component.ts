@@ -1,4 +1,4 @@
-import { Component, ViewChild, ElementRef } from '@angular/core';
+import { Component, ViewChild, ElementRef, NgZone } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -42,7 +42,7 @@ interface Chat {
 
 export class AppComponent {
     chats: Chat[] = [];
-    currentChatId: string | null = null;    
+    currentChatId: string | null = null;
     question: string = '';
     loading: boolean = false;
     questionCount: number = 0;
@@ -62,7 +62,7 @@ export class AppComponent {
     loadingInterval: any = null;
     copiedMessages = new Set<number>();
 
-    constructor(private http: HttpClient) {
+    constructor(private http: HttpClient, private ngZone: NgZone) {
         this.createNewChat();
     }
 
@@ -83,11 +83,12 @@ export class AppComponent {
                     );
                 }, 100);
             } else {
-                setTimeout(initGoogle, 100);  // retry until Google script loads
+                setTimeout(initGoogle, 100);
             }
         };
         initGoogle();
     }
+
     // Chat
 
     get currentChat(): Chat | null {
@@ -253,10 +254,11 @@ export class AppComponent {
     }
 
     handleGoogleSignIn(response: any) {
-        this.idToken = response.credential;
-        // Decode the JWT to get user info
-        const payload = JSON.parse(atob(response.credential.split('.')[1]));
-        this.userEmail = payload.email;
-        console.log('Signed in as:', this.userEmail);
+        this.ngZone.run(() => {
+            this.idToken = response.credential;
+            const payload = JSON.parse(atob(response.credential.split('.')[1]));
+            this.userEmail = payload.email;
+            console.log('Signed in as:', this.userEmail);
+        });
     }
 }

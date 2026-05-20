@@ -5,7 +5,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 from langchain_chroma import Chroma
 import time
 
-from config import EMBEDDING_MODEL, ROOT_DIR, SIMILARITY_THRESHOLD, ASSIGNMENT_COLLECTION, ASSIGNMENT_FILE, ASSIGNMENT_BATCH_DELAY, ASSIGNMENT_BATCH_SIZE
+from config import EMBEDDING_MODEL, ROOT_DIR, SIMILARITY_THRESHOLD, ASSIGNMENT_COLLECTION, ASSIGNMENT_FILE, ASSIGNMENT_BATCH_DELAY, ASSIGNMENT_BATCH_SIZE, ASSIGNMENT_CHROMA_DIR
 
 load_dotenv()
 
@@ -13,7 +13,7 @@ load_dotenv()
 
 def load_assignment_db() -> Chroma:
     embeddings = GoogleGenerativeAIEmbeddings(model=EMBEDDING_MODEL)
-    assignment_db_dir = ROOT_DIR / "chroma_assignment"
+    assignment_db_dir = ASSIGNMENT_CHROMA_DIR
 
     if assignment_db_dir.exists():
         print("Loading existing assignment question index...")

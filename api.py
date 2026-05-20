@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
@@ -10,6 +12,27 @@ from assignment_guard import load_assignment_db, is_assignment_question
 from google.oauth2 import id_token
 from google.auth.transport import requests as google_requests
 from fastapi import Request, HTTPException
+
+from config import CHROMA_DIR, ASSIGNMENT_CHROMA_DIR
+
+GCS_BUCKET = "rag-assistant-db-ai-tutor"
+
+def _download_from_gcs(prefix: str, local_path: Path) -> None:
+    if local_path.exists():
+        return
+    from google.cloud import storage as gcs_storage
+    print(f"  [startup] Downloading gs://{GCS_BUCKET}/{prefix} ...")
+    client = gcs_storage.Client()
+    bucket = client.bucket(GCS_BUCKET)
+    blobs = list(bucket.list_blobs(prefix=prefix))
+    local_path.mkdir(parents=True, exist_ok=True)
+    for blob in blobs:
+        if blob.name.endswith("/"):
+            continue
+        dest = local_path / blob.name[len(prefix):]
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        blob.download_to_filename(str(dest))
+    print(f"  [startup] Done ({len(blobs)} files → {local_path})")
 
 GOOGLE_CLIENT_ID = "552296794218-rs88k3i25s97snuomulfnurpfd36bct6.apps.googleusercontent.com"
 
@@ -36,6 +59,9 @@ def verify_token(request: Request) -> str:
 # ── Startup: load vectordb and chain once ──────────────────────────────────
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    if os.getenv("K_SERVICE"):
+        _download_from_gcs("chroma_db/", CHROMA_DIR)
+        _download_from_gcs("chroma_assignment/", ASSIGNMENT_CHROMA_DIR)
     vectordb = load_vectordb()
     app.state.retriever_simple = get_retriever(vectordb, queries=1)
     app.state.retriever_multi = get_retriever(vectordb, queries=3)
@@ -50,7 +76,8 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "http://localhost:4200",
-        "https://rag-assistant-552296794218.us-central1.run.app"
+        "https://rag-assistant-552296794218.us-central1.run.app",
+        "https://poetic-puffpuff-a13e5c.netlify.app"
     ],
     allow_methods=["*"],
     allow_headers=["*"],

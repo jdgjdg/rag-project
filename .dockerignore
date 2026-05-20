@@ -4,6 +4,9 @@ __pycache__/
 frontend/
 notebooks/
 data/
+data_clean/
+chroma_db/
+chroma_assignment/
 *.pyc
 *.bat
 node_modules/
