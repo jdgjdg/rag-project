@@ -29,7 +29,7 @@ def format_docs(docs):
     return "\n\n---\n\n".join(d.page_content for d in docs)
 
 
-def build_chain(retriever, model: str, history: list = [], is_assignment: bool = False):
+def build_chain(retriever, model: str, history: list = [], is_assignment: bool = False, image: str = None, imageType: str = None):
     """
     Builds and returns the full RAG chain using the specified model.
     """
@@ -42,15 +42,35 @@ def build_chain(retriever, model: str, history: list = [], is_assignment: bool =
 
     assignment_note = ASSIGNMENT_NOTE if is_assignment else ""
 
+    if image:
+        human_message = [
+            {
+                "type": "image_url",
+                "image_url": {"url": f"data:{imageType};base64,{image}"}
+            },
+            {
+                "type": "text",
+                "text": """Context:\n{context}
+
+                Conversation History:
+                {history}
+
+                <user_query>{question}</user_query>
+                Answer:"""
+            }
+        ]
+    else:
+        human_message = """Context:\n{context}
+
+        Conversation History:
+        {history}
+
+        <user_query>{question}</user_query>
+        Answer:"""
+
     prompt = ChatPromptTemplate.from_messages([
         ("system", SYSTEM_PROMPT + assignment_note),
-        ("human", """Context:\n{context}
-         
-         Conversation History:
-         {history}
-         
-         <user_query>{question}</user_query>
-         Answer:""")
+        ("human", human_message)
     ])
 
     def retrieve_and_rerank(question: str) -> str:
@@ -72,36 +92,48 @@ def build_chain(retriever, model: str, history: list = [], is_assignment: bool =
     return rag_chain
 
 
-def invoke_with_fallback(retriever_simple, retriever_multi, question: str, exhausted_models: set, history: list = [], is_assignment: bool = False) -> tuple[str, str]:
+def invoke_with_fallback(retriever_simple, retriever_multi, question: str, exhausted_models: set, history: list = [], is_assignment: bool = False, image: str = None, imageType: str = None, progress: callable | None = None) -> tuple[str, str]:
     """
     Tries each model in FALLBACK_MODELS in order.
     Falls back to the next model on 429 errors.
     """
 
+    def _progress(stage: str):
+        progress(stage) if progress else None
+
     for model in FALLBACK_MODELS:
         if model in exhausted_models:
             print(f"  [skipping] {model} already exhausted")
+            _progress("skipping_model")
             continue
         
         try:
-            chain = build_chain(retriever_simple, model, history, is_assignment)
+            _progress("building_chain")
+            chain = build_chain(retriever_simple, model, history, is_assignment, image, imageType)
+            _progress("invoking_question")
+            print(type(chain))
             answer = chain.invoke(question)
             print(f"  [model used] {model}")
+            _progress("model_used")
 
             # The system prompt instructs the LLM to say this exact phrase when it
             # can't find relevant context. We catch it here to retry with richer
             # retrieval (multi-query expansion) before giving up.
             if "I lack specific course context" in answer:
                 print("  [retrying with query translation]")
-                chain = build_chain(retriever_multi, model, history, is_assignment)
+                _progress("retrying_query_translation")
+                chain = build_chain(retriever_multi, model, history, is_assignment, image, imageType)
+                _progress("invoking_question")
                 answer = chain.invoke(question)
                 print("  [query translation used]")
+                _progress("query_translation_used")
             
             return answer, model
 
         except Exception as e:
             if "429" in str(e):
                 print(f"  [fallback] {model} quota exhausted, trying next...")
+                _progress("fallback_model")
                 exhausted_models.add(model)
                 continue
             raise

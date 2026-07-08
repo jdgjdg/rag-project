@@ -1,7 +1,11 @@
+import json
 import os
+import threading
+from queue import Queue
 from pathlib import Path
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel
 from contextlib import asynccontextmanager
 
@@ -91,14 +95,11 @@ class MessageHistory(BaseModel):
 class QuestionRequest(BaseModel):
     question: str
     history: list[MessageHistory] = []
-
-class AnswerResponse(BaseModel):
-    answer: str
-    sources: list[str]
-    model_used: str
+    image: str | None = None
+    imageType: str | None = None
 
 # ── Endpoint ───────────────────────────────────────────────────────────────
-@app.post("/query", response_model=AnswerResponse)
+@app.post("/query")
 def query(request: QuestionRequest, http_request: Request):
     email = verify_token(http_request)
     print(f"  [user] {email}")
@@ -109,19 +110,51 @@ def query(request: QuestionRequest, http_request: Request):
         app.state.assignment_db
     )
 
-    answer, model_used = invoke_with_fallback(
-        app.state.retriever_simple,
-        app.state.retriever_multi,
-        request.question,
-        app.state.exhausted_models, 
-        history, 
-        is_assignment
-    )
-    
-    docs = app.state.retriever_simple.invoke(request.question)
-    sources = list({
-        d.metadata.get("source", "unknown").split("\\")[-1].split("/")[-1]
-        for d in docs
-    })
+    progress_queue: Queue[object] = Queue()
 
-    return AnswerResponse(answer=answer, sources=sources,  model_used=model_used)
+    def _format_sse(event: str, data: str) -> str:
+        return f"event: {event}\ndata: {data}\n\n"
+
+    def progress(stage: str) -> None:
+        payload = {"stage": stage}
+        progress_queue.put(_format_sse("progress", json.dumps(payload)))
+
+    def worker() -> None: 
+        try:
+            answer, model_used = invoke_with_fallback(
+                app.state.retriever_simple,
+                app.state.retriever_multi,
+                request.question,
+                app.state.exhausted_models,
+                history,
+                is_assignment,
+                image=request.image,
+                imageType=request.imageType,
+                progress=progress,
+            )
+            docs = app.state.retriever_simple.invoke(request.question)
+            sources = list({
+                d.metadata.get("source", "unknown").split("\\")[-1].split("/")[-1]
+                for d in docs
+            })
+            progress_queue.put(_format_sse("answer", json.dumps({"answer": answer, "sources": sources, "model_used": model_used})))
+            progress_queue.put(_format_sse("done", json.dumps({})))
+        except Exception as e:
+            progress_queue.put(_format_sse("error", json.dumps({"message": str(e)})))
+        finally:
+            progress_queue.put(None)
+
+    thread = threading.Thread(target=worker)
+    thread.start()
+
+    def event_generator():
+        try:
+            while True:
+                item = progress_queue.get()
+                if item is None:
+                    break
+                yield item
+        finally:
+            thread.join()
+
+    return StreamingResponse(event_generator(), media_type="text/event-stream")
