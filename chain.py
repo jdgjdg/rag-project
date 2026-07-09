@@ -92,7 +92,7 @@ def build_chain(retriever, model: str, history: list = [], is_assignment: bool =
     return rag_chain
 
 
-def invoke_with_fallback(retriever_simple, retriever_multi, question: str, exhausted_models: set, history: list = [], is_assignment: bool = False, image: str = None, imageType: str = None, progress: callable | None = None) -> tuple[str, str]:
+def invoke_with_fallback(retriever_simple, retriever_multi, question: str, exhausted_models: set, history: list = [], is_assignment: bool = False, image: str = None, imageType: str = None, progress: object | None = None) -> tuple[str, str]:
     """
     Tries each model in FALLBACK_MODELS in order.
     Falls back to the next model on 429 errors.
