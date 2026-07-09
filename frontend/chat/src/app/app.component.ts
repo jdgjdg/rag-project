@@ -241,7 +241,7 @@ export class AppComponent {
         }));
 
         const controller = new AbortController();
-        fetch('http://localhost:8000/query', {
+        fetch('https://rag-assistant-552296794218.us-central1.run.app/query', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${this.idToken}`},
             body: JSON.stringify({ question: currentQuestion, history: history, image: currentImage, imageType: currentImageType }),
